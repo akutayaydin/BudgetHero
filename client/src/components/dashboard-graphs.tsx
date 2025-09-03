@@ -34,20 +34,33 @@ interface NetWorthData {
 
 /* ---------- Helpers ---------- */
 
-const generateNetWorthData = (current: number, period: Period) => {
+const generateNetWorthData = (current: number, period: Period, firstDataDate?: Date) => {
   const days = { "1M": 30, "3M": 90, "6M": 180, "1Y": 365 }[period];
   const now = new Date();
+  
+  // Use a realistic first data date if not provided (simulate account linking ~45 days ago)
+  const actualFirstDate = firstDataDate || new Date(now.getTime() - 45 * 24 * 60 * 60 * 1000);
+  const periodStartDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+  
+  // Determine the actual start date for data generation
+  const dataStartDate = actualFirstDate > periodStartDate ? actualFirstDate : periodStartDate;
+  const daysWithData = Math.floor((now.getTime() - dataStartDate.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+  
   const growth = {
     "1Y": 0.08,
     "6M": 0.06,
     "3M": 0.04,
     "1M": 0.02
   }[period];
-  const start = current / (1 + growth);
+  
+  // Calculate start value based on actual time period with data
+  const actualGrowthRate = growth * (daysWithData / days);
+  const start = current / (1 + actualGrowthRate);
 
-  return Array.from({ length: days }, (_, i) => {
-    const t = i / (days - 1);
-    const date = new Date(now.getTime() - (days - 1 - i) * 24 * 60 * 60 * 1000);
+  // Generate data points only for the period with actual data
+  const dataPoints = Array.from({ length: daysWithData }, (_, i) => {
+    const t = i / (daysWithData - 1);
+    const date = new Date(dataStartDate.getTime() + i * 24 * 60 * 60 * 1000);
     
     // Create label based on period for internal use
     let label: string;
@@ -65,9 +78,31 @@ const generateNetWorthData = (current: number, period: Period) => {
     return { 
       label, 
       netWorth, 
-      date: new Date(date) // Keep full date for tooltip formatting
+      date: new Date(date),
+      isValidData: true
     };
   });
+  
+  // Add empty data points before the first valid date if the period extends earlier
+  const emptyDaysBefore = Math.max(0, Math.floor((dataStartDate.getTime() - periodStartDate.getTime()) / (24 * 60 * 60 * 1000)));
+  const emptyPoints = Array.from({ length: emptyDaysBefore }, (_, i) => {
+    const date = new Date(periodStartDate.getTime() + i * 24 * 60 * 60 * 1000);
+    let label: string;
+    if (period === "1M") {
+      label = `${date.getMonth() + 1}/${date.getDate()}`;
+    } else {
+      label = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    }
+    
+    return {
+      label,
+      netWorth: null, // No data available
+      date: new Date(date),
+      isValidData: false
+    };
+  });
+  
+  return [...emptyPoints, ...dataPoints];
 };
 
 const formatCompactCurrency = (value: number): string => {
@@ -117,10 +152,11 @@ export function DashboardGraphs() {
   
   const previousNetWorth = currentNetWorth - netWorthChange;
 
-  const netWorthData = useMemo(
-    () => generateNetWorthData(currentNetWorth, netWorthPeriod),
-    [currentNetWorth, netWorthPeriod],
-  );
+  const netWorthData = useMemo(() => {
+    // Simulate first data date - in a real app, this would come from when accounts were first linked
+    const firstDataDate = new Date(new Date().getTime() - 45 * 24 * 60 * 60 * 1000); // 45 days ago
+    return generateNetWorthData(currentNetWorth, netWorthPeriod, firstDataDate);
+  }, [currentNetWorth, netWorthPeriod]);
 
   const monthlySpendingComparison = useMemo(() => {
     if (!transactions) return { current: 0, previous: 0, change: 0 };
@@ -323,6 +359,12 @@ export function DashboardGraphs() {
                   if (active && payload && payload.length) {
                     const dataPoint = payload[0].payload;
                     const value = payload[0].value as number;
+                    
+                    // Don't show tooltip for invalid data points
+                    if (!dataPoint.isValidData || value === null) {
+                      return null;
+                    }
+                    
                     const formattedDate = formatTooltipDate(dataPoint);
                     return (
                       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
@@ -337,7 +379,7 @@ export function DashboardGraphs() {
                   }
                   return null;
                 }}
-              />
+              />              
               <Area
                 type="monotone"
                 dataKey="netWorth"
@@ -347,6 +389,7 @@ export function DashboardGraphs() {
                 strokeWidth={3}
                 dot={false}
                 activeDot={{ r: 4, fill: "#8B5CF6", stroke: "#fff", strokeWidth: 2 }}
+                connectNulls={false}
               />
             </ComposedChart>
           </ResponsiveContainer>
