@@ -54,9 +54,11 @@ import { PlaidLink } from '@/components/PlaidLink';
 interface Asset {
   id: string;
   name: string;
-  type: 'real_estate' | 'vehicle' | 'cash' | 'investment' | 'personal_property';
-  value: number;
+  type: string;
+  subtype: string;
+  currentValue: string;
   description?: string;
+  includeInNetWorth?: boolean;
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -65,10 +67,11 @@ interface Asset {
 interface Liability {
   id: string;
   name: string;
-  type: 'mortgage' | 'auto_loan' | 'credit_card' | 'personal_loan' | 'student_loan' | 'other_debt';
-  balance: number;
-  interestRate?: number;
-  monthlyPayment?: number;
+  type: string;
+  subtype: string;
+  currentBalance: string;
+  interestRate?: string;
+  monthlyPayment?: string;
   description?: string;
   userId: string;
   createdAt: string;
@@ -79,10 +82,12 @@ interface Account {
   id: string;
   name: string;
   type: string;
-  balance: number;
+  subtype?: string;
+  currentBalance: string;
+  mask?: string;
   institutionName?: string;
   isActive: boolean;
-  lastSynced?: string;
+  lastSyncAt?: string;
 }
 
 const ASSET_TYPES = {
@@ -325,7 +330,7 @@ export default function WealthManagement() {
   const addAssetMutation = useMutation({
     mutationFn: async (data: z.infer<typeof assetSchema>) => {
       console.log('Sending asset data:', data);
-      return apiRequest('POST', '/api/assets', data);
+      return apiRequest('/api/assets', 'POST', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/assets'] });
@@ -350,7 +355,7 @@ export default function WealthManagement() {
   // Liability mutation
   const addLiabilityMutation = useMutation({
     mutationFn: async (data: z.infer<typeof liabilitySchema>) => {
-      return apiRequest('POST', '/api/liabilities', data);
+      return apiRequest('/api/liabilities', 'POST', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/liabilities'] });
