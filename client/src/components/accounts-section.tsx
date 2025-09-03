@@ -104,16 +104,30 @@ export function AccountsSection({ className }: AccountsSectionProps) {
           {isExpanded('checking') && (
             <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-3">
               {checkingAccounts.map((account) => (
-                <div key={account.id} className="flex items-center justify-between py-2">
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">{account.name}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {account.officialName} •••{account.mask}
-                    </p>
+                <div key={account.id} className="flex items-center gap-3 py-2">
+                  {/* Institution Logo or Placeholder */}
+                  <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                      {account.name.charAt(0).toUpperCase()}
+                    </span>
                   </div>
-                  <span className="font-semibold text-gray-900 dark:text-white">
+
+                  {/* Account Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {account.name}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {account.mask ? `••${account.mask}` : ''}
+                      {account.mask && account.officialName ? ' | ' : ''}
+                      {account.officialName || ''}
+                    </div>
+                  </div>
+
+                  {/* Balance */}
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
                     ${((typeof account.currentBalance === 'string' ? parseFloat(account.currentBalance) : account.currentBalance) || 0).toLocaleString()}
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -152,16 +166,30 @@ export function AccountsSection({ className }: AccountsSectionProps) {
           {isExpanded('credit') && (
             <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-3">
               {creditAccounts.map((account) => (
-                <div key={account.id} className="flex items-center justify-between py-2">
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">{account.name}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {account.officialName} •••{account.mask}
-                    </p>
+                <div key={account.id} className="flex items-center gap-3 py-2">
+                  {/* Institution Logo or Placeholder */}
+                  <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                      {account.name.charAt(0).toUpperCase()}
+                    </span>
                   </div>
-                  <span className="font-semibold text-red-600 dark:text-red-400">
+
+                  {/* Account Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {account.name}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {account.mask ? `••${account.mask}` : ''}
+                      {account.mask && account.officialName ? ' | ' : ''}
+                      {account.officialName || ''}
+                    </div>
+                  </div>
+
+                  {/* Balance */}
+                  <div className="text-sm font-semibold text-red-600 dark:text-red-400 text-right">
                     ${Math.abs(account.currentBalance).toLocaleString()}
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>
