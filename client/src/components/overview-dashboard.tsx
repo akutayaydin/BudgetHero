@@ -1,38 +1,25 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  useWindowDimensions,
-  Platform,
-} from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import {
-  VictoryChart,
-  VictoryLine,
-  VictoryArea,
-  VictoryAxis,
-} from "victory-native";
-import Feather from "react-native-vector-icons/Feather";
-import SummaryCard from "./SummaryCard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 
 const timeRanges = ["1M", "3M", "6M", "1Y"] as const;
 type TimeRange = (typeof timeRanges)[number];
 
 const currentPeriod = [
-  { x: new Date(2024, 0, 1), y: 2000 },
-  { x: new Date(2024, 0, 15), y: 2500 },
-  { x: new Date(2024, 0, 30), y: 3000 },
-  { x: new Date(2024, 1, 14), y: 3500 },
+  { date: "Jan 1", value: 2000 },
+  { date: "Jan 15", value: 2500 },
+  { date: "Jan 30", value: 3000 },
+  { date: "Feb 14", value: 3500 },
 ];
 
 const previousPeriod = [
-  { x: new Date(2023, 11, 1), y: 1500 },
-  { x: new Date(2023, 11, 15), y: 1700 },
-  { x: new Date(2023, 11, 30), y: 1800 },
-  { x: new Date(2024, 0, 14), y: 1900 },
+  { date: "Dec 1", value: 1500 },
+  { date: "Dec 15", value: 1700 },
+  { date: "Dec 30", value: 1800 },
+  { date: "Jan 14", value: 1900 },
 ];
 
 const faqs = [
@@ -46,8 +33,34 @@ const faqs = [
   },
 ];
 
+interface SummaryCardProps {
+  title: string;
+  value: string;
+  change: number;
+}
+
+function SummaryCard({ title, value, change }: SummaryCardProps) {
+  const isPositive = change > 0;
+  
+  return (
+    <Card className="flex-1">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground">{title}</p>
+            <p className="text-2xl font-bold">{value}</p>
+          </div>
+          <div className={`flex items-center gap-1 ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+            {isPositive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+            <span className="text-sm font-medium">{Math.abs(change)}</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function OverviewDashboard() {
-  const { width } = useWindowDimensions();
   const [range, setRange] = useState<TimeRange>("1M");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -56,199 +69,90 @@ export default function OverviewDashboard() {
   };
 
   return (
-    <View style={styles.container}>
-      <LinearGradient colors={["#ff5f6d", "#ffc371"]} style={styles.header}>
-        <Text style={styles.headerTitle}>Net Worth</Text>
-        <Text style={styles.netWorth}>$12.5k</Text>
-        <View style={styles.rangeRow}>
-          {timeRanges.map((t) => (
-            <TouchableOpacity
-              key={t}
-              onPress={() => setRange(t)}
-              style={[styles.rangeBtn, range === t && styles.rangeBtnActive]}
-            >
-              <Text
-                style={[
-                  styles.rangeText,
-                  range === t && styles.rangeTextActive,
-                ]}
+    <div className="space-y-6">
+      {/* Header Section */}
+      <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+        <CardHeader>
+          <CardTitle className="text-white">Net Worth</CardTitle>
+          <div className="text-3xl font-bold">$12.5k</div>
+          <div className="flex gap-2 mt-4">
+            {timeRanges.map((t) => (
+              <Button
+                key={t}
+                variant={range === t ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setRange(t)}
+                className={range === t ? "bg-white/20 text-white" : "text-white/80 hover:text-white hover:bg-white/10"}
               >
                 {t}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </LinearGradient>
-      <ScrollView
-        style={styles.content}
-        contentContainerStyle={{ paddingBottom: 80 }}
-      >
-        <VictoryChart
-          width={width - 32}
-          height={200}
-          padding={{ top: 20, left: 40, right: 20, bottom: 40 }}
-        >
-          <VictoryAxis
-            tickFormat={(t) => `${t.getMonth() + 1}/${t.getDate()}`}
-            style={{ tickLabels: { fontSize: 10, angle: -40 } }}
-          />
-          <VictoryArea
-            data={previousPeriod}
-            style={{ data: { fill: "rgba(255,99,132,0.2)" } }}
-          />
-          <VictoryLine
-            data={currentPeriod}
-            style={{ data: { stroke: "#ff5f6d", strokeWidth: 2 } }}
-          />
-        </VictoryChart>
-        <View style={styles.cardsRow}>
-          <SummaryCard title="Assets" value="$5.83k" change={127} />
-          <SummaryCard title="Debt" value="$1.20k" change={4} />
-          <SummaryCard title="Net Worth" value="$4.63k" change={187} />
-        </View>
-        <View style={styles.faqSection}>
-          <Text style={styles.faqTitle}>Frequently Asked Questions</Text>
-          {faqs.map((item, idx) => (
-            <View key={idx} style={styles.faqItem}>
-              <TouchableOpacity
-                style={styles.faqHeader}
-                onPress={() => toggleFaq(idx)}
-              >
-                <Text style={styles.faqQuestion}>{item.q}</Text>
-                <Feather
-                  name={openFaq === idx ? "chevron-up" : "chevron-down"}
-                  size={16}
+              </Button>
+            ))}
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Chart Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Net Worth Trend</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={currentPeriod}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Area 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke="#8884d8" 
+                  fill="#8884d8" 
+                  fillOpacity={0.3}
                 />
-              </TouchableOpacity>
-              {openFaq === idx && (
-                <Text style={styles.faqAnswer}>{item.a}</Text>
-              )}
-            </View>
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <SummaryCard title="Assets" value="$5.83k" change={127} />
+        <SummaryCard title="Debt" value="$1.20k" change={4} />
+        <SummaryCard title="Net Worth" value="$4.63k" change={187} />
+      </div>
+
+      {/* FAQ Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Frequently Asked Questions</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {faqs.map((item, idx) => (
+            <Collapsible key={idx}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex w-full justify-between p-0 h-auto"
+                  onClick={() => toggleFaq(idx)}
+                >
+                  <span className="text-left">{item.q}</span>
+                  {openFaq === idx ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-2">
+                <p className="text-sm text-muted-foreground">{item.a}</p>
+              </CollapsibleContent>
+            </Collapsible>
           ))}
-        </View>
-      </ScrollView>
-      <View style={styles.bottomNav}>
-        <NavItem icon="home" label="Dashboard" />
-        <NavItem icon="repeat" label="Recurring" />
-        <NavItem icon="pie-chart" label="Spending" />
-        <NavItem icon="list" label="Transactions" />
-        <NavItem icon="more-horizontal" label="More" />
-      </View>
-    </View>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
-
-function NavItem({ icon, label }: { icon: string; label: string }) {
-  return (
-    <TouchableOpacity style={styles.navItem}>
-      <Feather name={icon} size={20} color="#444" />
-      <Text style={styles.navLabel}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  header: {
-    paddingTop: 40,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-  },
-  headerTitle: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  netWorth: {
-    color: "#fff",
-    fontSize: 32,
-    fontWeight: "bold",
-    marginVertical: 8,
-  },
-  rangeRow: {
-    flexDirection: "row",
-    marginTop: 8,
-  },
-  rangeBtn: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 12,
-    marginRight: 8,
-  },
-  rangeBtnActive: {
-    backgroundColor: "rgba(255,255,255,0.3)",
-  },
-  rangeText: {
-    color: "#fff",
-    fontSize: 12,
-  },
-  rangeTextActive: {
-    fontWeight: "700",
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  cardsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginVertical: 16,
-  },
-  faqSection: {
-    marginTop: 16,
-  },
-  faqTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  faqItem: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    marginBottom: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  faqHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  faqQuestion: {
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  faqAnswer: {
-    marginTop: 8,
-    fontSize: 13,
-    color: "#555",
-  },
-  bottomNav: {
-    ...Platform.select({
-      web: { position: "fixed" },
-      default: { position: "absolute" },
-    }),
-    left: 0,
-    right: 0,
-    bottom: 0,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#fff",
-    paddingVertical: 8,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: "#ddd",
-  },
-  navItem: {
-    alignItems: "center",
-  },
-  navLabel: {
-    fontSize: 12,
-    marginTop: 2,
-    color: "#444",
-  },
-});
