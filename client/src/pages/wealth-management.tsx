@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -217,7 +218,8 @@ const assetSchema = z.object({
     if (isNaN(num) || num < 0) throw new Error('Invalid value');
     return cleaned; // Return as string, not number
   }),
-  description: z.string().max(500, 'Description too long').optional()
+  description: z.string().max(500, 'Description too long').optional(),
+  includeInNetWorth: z.boolean().default(true)
 });
 
 const liabilitySchema = z.object({
@@ -300,7 +302,8 @@ export default function WealthManagement() {
       type: 'real_estate',
       subtype: '',
       currentValue: '',
-      description: ''
+      description: '',
+      includeInNetWorth: true
     }
   });
 
@@ -1123,6 +1126,31 @@ export default function WealthManagement() {
                       />
                     </FormControl>
                     <FormMessage id="asset-value-error" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={assetForm.control}
+                name="includeInNetWorth"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 bg-gray-50 dark:bg-gray-800">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base font-medium">
+                        Include this value in Net Worth
+                      </FormLabel>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                        Switching this on will add the value of this asset to your total Net Worth.
+                      </div>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        aria-describedby="asset-include-error"
+                      />
+                    </FormControl>
+                    <FormMessage id="asset-include-error" />
                   </FormItem>
                 )}
               />

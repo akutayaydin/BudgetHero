@@ -251,6 +251,7 @@ export const assets = pgTable("assets", {
   purchaseDate: timestamp("purchase_date"),
   description: text("description"),
   notes: text("notes"),
+  includeInNetWorth: boolean("include_in_net_worth").default(true),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
