@@ -38,7 +38,13 @@ const generateNetWorthData = (current: number, period: Period) => {
   const points = { "1M": 4, "3M": 12, "6M": 24, "1Y": 12 }[period];
   const now = new Date();
   const growth =
-    period === "1Y" ? 0.08 : period === "6M" ? 0.06 : period === "3M" ? 0.04 : 0.02;
+    period === "1Y"
+      ? 0.08
+      : period === "6M"
+        ? 0.06
+        : period === "3M"
+          ? 0.04
+          : 0.02;
   const start = current / (1 + growth);
 
   return Array.from({ length: points }, (_, i) => {
@@ -60,7 +66,7 @@ const generateNetWorthData = (current: number, period: Period) => {
 const generateNetWorthComparisonData = (
   current: number,
   previous: number,
-  period: Period
+  period: Period,
 ) => {
   const cur = generateNetWorthData(current, period);
   const prev = generateNetWorthData(previous, period);
@@ -74,21 +80,32 @@ const generateNetWorthComparisonData = (
 /* ---------- Component ---------- */
 
 export function DashboardGraphs() {
-  const [activeGraph, setActiveGraph] = useState<"networth" | "spending">("networth");
+  const [activeGraph, setActiveGraph] = useState<"networth" | "spending">(
+    "networth",
+  );
   const [netWorthPeriod, setNetWorthPeriod] = useState<Period>("1M");
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  const { data: netWorthSummary } = useQuery<NetWorthData>({ queryKey: ["/api/net-worth"] });
-  const { data: transactions } = useQuery<any[]>({ queryKey: ["/api/transactions"] });
+  const { data: netWorthSummary } = useQuery<NetWorthData>({
+    queryKey: ["/api/net-worth"],
+  });
+  const { data: transactions } = useQuery<any[]>({
+    queryKey: ["/api/transactions"],
+  });
 
   const currentNetWorth = netWorthSummary?.totalNetWorth ?? 0;
   const netWorthChange = 2500;
   const previousNetWorth = currentNetWorth - netWorthChange;
 
   const netWorthComparisonData = useMemo(
-    () => generateNetWorthComparisonData(currentNetWorth, previousNetWorth, netWorthPeriod),
-    [currentNetWorth, previousNetWorth, netWorthPeriod]
+    () =>
+      generateNetWorthComparisonData(
+        currentNetWorth,
+        previousNetWorth,
+        netWorthPeriod,
+      ),
+    [currentNetWorth, previousNetWorth, netWorthPeriod],
   );
 
   const monthlySpendingComparison = useMemo(() => {
@@ -98,17 +115,17 @@ export function DashboardGraphs() {
     const curEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const prevEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-    const expenses = transactions.filter(t => t.type === "expense");
+    const expenses = transactions.filter((t) => t.type === "expense");
 
     const current = expenses
-      .filter(t => {
+      .filter((t) => {
         const d = new Date(t.date);
         return d >= curStart && d <= curEnd;
       })
       .reduce((s, t) => s + Math.abs(parseFloat(t.amount)), 0);
 
     const previous = expenses
-      .filter(t => {
+      .filter((t) => {
         const d = new Date(t.date);
         return d >= prevStart && d <= prevEnd;
       })
@@ -134,18 +151,23 @@ export function DashboardGraphs() {
     const curStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const nextStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const curDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const curDays = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+    ).getDate();
     const prevDays = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
 
-    const expenses = transactions.filter(t => t.type === "expense");
+    const expenses = transactions.filter((t) => t.type === "expense");
     const curDaily = Array(curDays).fill(0);
     const prevDaily = Array(prevDays).fill(0);
 
-    expenses.forEach(t => {
+    expenses.forEach((t) => {
       const d = new Date(t.date);
       const amt = Math.abs(parseFloat(t.amount));
       if (d >= curStart && d < nextStart) curDaily[d.getDate() - 1] += amt;
-      else if (d >= prevStart && d < curStart) prevDaily[d.getDate() - 1] += amt;
+      else if (d >= prevStart && d < curStart)
+        prevDaily[d.getDate() - 1] += amt;
     });
 
     const max = Math.max(curDays, prevDays);
@@ -155,7 +177,11 @@ export function DashboardGraphs() {
     for (let i = 0; i < max; i++) {
       if (i < curDays) curRun += curDaily[i];
       if (i < prevDays) prevRun += prevDaily[i];
-      data.push({ day: i + 1, current: Math.round(curRun), previous: Math.round(prevRun) });
+      data.push({
+        day: i + 1,
+        current: Math.round(curRun),
+        previous: Math.round(prevRun),
+      });
     }
     return data;
   }, [transactions]);
@@ -163,14 +189,17 @@ export function DashboardGraphs() {
   const totalSpending = monthlySpendingComparison.current;
   const spendingChange = monthlySpendingComparison.change;
 
-  const handleNext = () => setActiveGraph(g => (g === "networth" ? "spending" : "networth"));
-  const handlePrev = () => setActiveGraph(g => (g === "spending" ? "networth" : "spending"));
+  const handleNext = () =>
+    setActiveGraph((g) => (g === "networth" ? "spending" : "networth"));
+  const handlePrev = () =>
+    setActiveGraph((g) => (g === "spending" ? "networth" : "spending"));
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
-  const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchMove = (e: React.TouchEvent) =>
+    setTouchEnd(e.targetTouches[0].clientX);
   const onTouchEnd = () => {
     if (!touchStart || touchEnd === null) return;
     const dist = touchStart - touchEnd;
@@ -194,11 +223,15 @@ export function DashboardGraphs() {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-purple-600" />
-            Net Worth Overview
+            
+            Total Net Worth
           </CardTitle>
           <Link href="/wealth-management">
-            <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 dark:text-purple-400">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-purple-600 hover:text-purple-700 dark:text-purple-400"
+            >
               View Net Worth <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </Link>
@@ -218,16 +251,19 @@ export function DashboardGraphs() {
               )}
               <span
                 className={`text-sm font-medium ${
-                  netWorthChange >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                  netWorthChange >= 0
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400"
                 }`}
               >
-                {netWorthChange >= 0 ? "+" : "-"}${Math.abs(netWorthChange).toLocaleString()} vs last month
+                {netWorthChange >= 0 ? "+" : "-"}$
+                {Math.abs(netWorthChange).toLocaleString()} vs last month
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-            {(["1M", "3M", "6M", "1Y"] as const).map(p => (
+            {(["1M", "3M", "6M", "1Y"] as const).map((p) => (
               <Button
                 key={p}
                 variant={netWorthPeriod === p ? "default" : "ghost"}
@@ -249,19 +285,41 @@ export function DashboardGraphs() {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={netWorthComparisonData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
+              <XAxis
+                dataKey="label"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#6B7280", fontSize: 12 }}
+              />
               <YAxis
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: "#6B7280", fontSize: 12 }}
-                tickFormatter={v => `$${(v / 1000).toFixed(0)}k`}
+                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
               />
               <Tooltip
-                formatter={(v: any, name: string) => [`$${v.toLocaleString()}`, name === "current" ? "This Month" : "Last Month"]}
+                formatter={(v: any, name: string) => [
+                  `$${v.toLocaleString()}`,
+                  name === "current" ? "This Month" : "Last Month",
+                ]}
                 labelStyle={{ color: "#374151" }}
               />
-              <Area type="monotone" dataKey="previous" name="Last Month" fill="#EDE9FE" stroke="#EDE9FE" fillOpacity={0.5} />
-              <Line type="monotone" dataKey="current" name="This Month" stroke="#8B5CF6" strokeWidth={3} dot={{ r: 3 }} />
+              <Area
+                type="monotone"
+                dataKey="previous"
+                name="Last Month"
+                fill="#EDE9FE"
+                stroke="#EDE9FE"
+                fillOpacity={0.5}
+              />
+              <Line
+                type="monotone"
+                dataKey="current"
+                name="This Month"
+                stroke="#8B5CF6"
+                strokeWidth={3}
+                dot={{ r: 3 }}
+              />
               <Legend />
             </LineChart>
           </ResponsiveContainer>
@@ -275,11 +333,14 @@ export function DashboardGraphs() {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <PieChart className="h-5 w-5 text-blue-600" />
-            Spending Analysis
+            Current Spend This Month
           </CardTitle>
           <Link href="/spending">
-            <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 dark:text-blue-400">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
+            >
               View Spending <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </Link>
@@ -299,10 +360,13 @@ export function DashboardGraphs() {
               )}
               <span
                 className={`text-sm font-medium ${
-                  spendingChange >= 0 ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"
+                  spendingChange >= 0
+                    ? "text-red-600 dark:text-red-400"
+                    : "text-green-600 dark:text-green-400"
                 }`}
               >
-                {spendingChange >= 0 ? "+" : "-"}${Math.abs(spendingChange).toLocaleString()} vs last month
+                {spendingChange >= 0 ? "+" : "-"}$
+                {Math.abs(spendingChange).toLocaleString()} vs last month
               </span>
             </div>
           </div>
@@ -312,20 +376,42 @@ export function DashboardGraphs() {
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={spendingComparisonData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
+              <XAxis
+                dataKey="day"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#6B7280", fontSize: 12 }}
+              />
               <YAxis
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: "#6B7280", fontSize: 12 }}
-                tickFormatter={v => `$${(v / 1000).toFixed(0)}k`}
+                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
               />
               <Tooltip
-                formatter={(v: any, name: string) => [`$${v.toLocaleString()}`, name === "current" ? "This Month" : "Last Month"]}
-                labelFormatter={l => `Day ${l}`}
+                formatter={(v: any, name: string) => [
+                  `$${v.toLocaleString()}`,
+                  name === "current" ? "This Month" : "Last Month",
+                ]}
+                labelFormatter={(l) => `Day ${l}`}
                 labelStyle={{ color: "#374151" }}
               />
-              <Area type="monotone" dataKey="previous" name="Last Month" fill="#BFDBFE" stroke="#BFDBFE" fillOpacity={0.4} />
-              <Line type="monotone" dataKey="current" name="This Month" stroke="#3B82F6" strokeWidth={3} dot={false} />
+              <Area
+                type="monotone"
+                dataKey="previous"
+                name="Last Month"
+                fill="#BFDBFE"
+                stroke="#BFDBFE"
+                fillOpacity={0.4}
+              />
+              <Line
+                type="monotone"
+                dataKey="current"
+                name="This Month"
+                stroke="#3B82F6"
+                strokeWidth={3}
+                dot={false}
+              />
               <Legend />
             </ComposedChart>
           </ResponsiveContainer>
@@ -345,7 +431,9 @@ export function DashboardGraphs() {
         onTouchEnd={onTouchEnd}
         data-testid="graph-container"
       >
-        {activeGraph === "networth" ? renderNetWorthGraph() : renderSpendingGraph()}
+        {activeGraph === "networth"
+          ? renderNetWorthGraph()
+          : renderSpendingGraph()}
 
         <Button
           variant="ghost"
@@ -373,14 +461,18 @@ export function DashboardGraphs() {
         <button
           onClick={() => setActiveGraph("networth")}
           className={`h-2 w-8 rounded-full transition-all duration-200 ${
-            activeGraph === "networth" ? "bg-purple-600" : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400"
+            activeGraph === "networth"
+              ? "bg-purple-600"
+              : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400"
           }`}
           aria-label="Show net worth graph"
         />
         <button
           onClick={() => setActiveGraph("spending")}
           className={`h-2 w-8 rounded-full transition-all duration-200 ${
-            activeGraph === "spending" ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400"
+            activeGraph === "spending"
+              ? "bg-blue-600"
+              : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400"
           }`}
           aria-label="Show spending graph"
         />

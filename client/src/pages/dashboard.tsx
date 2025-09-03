@@ -26,38 +26,40 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 bg-background min-h-full">
-        {/* Subscription Banner for trial users */}
+      <div className="p-4 sm:p-6 space-y-6 bg-background min-h-full">
         <SubscriptionBanner />
-
-        {/* Overview Dashboard Section */}
         <OverviewDashboard />
 
-        {/* 1. Scrollable Graphs - Net Worth and Spending */}
-        <DashboardGraphs />
+        {/* === Two independent columns (no sticky, no sidebar scroll) === */}
+        <div className="xl:flex xl:items-start xl:gap-6">
+          {/* LEFT column: graphs + recent transactions (won't move when Accounts expands) */}
+          <div className="flex-1 min-w-0 space-y-6">
+            <DashboardGraphs />
+            <RecentTransactionsSection />
+          </div>
 
-        {/* 2. Accounts Section with expandable dropdowns */}
-        <AccountsSection />
+          {/* RIGHT column: accounts + other right-side widgets */}
+          <div className="w-full xl:w-[380px] shrink-0 mt-6 xl:mt-0 space-y-6">
+            <AccountsSection />
 
-        {/* 3. Savings and Investments */}
+            {/* Example: Category Review / any other right-side card */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-sm text-muted-foreground mb-3">
+                  <UpcomingBillsWidget />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Rest of the page */}
         <SavingsInvestmentsSection />
-
-        {/* 4. Complete Setup Section */}
         <CompleteSetupSection />
 
-        {/* 5. Upcoming Bills and Subscriptions */}
-        <UpcomingBillsWidget />
-
-        {/* 6. Recent Transactions and Category Review */}
-        <RecentTransactionsSection />
-
-        {/* 7. Budget Summary */}
         <BudgetSection />
-
-        {/* 8. Smart Recommendations (dismissible) */}
         <SmartRecommendations />
 
-        {/* Bank Account Connection - Show if no accounts connected */}
         {accounts.length === 0 && (
           <Card className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border border-green-200 dark:border-green-700">
             <CardContent className="p-6">
@@ -89,7 +91,6 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Financial Insights Sidebar - floating on the right */}
       <FinancialTipsSidebar />
     </>
   );
