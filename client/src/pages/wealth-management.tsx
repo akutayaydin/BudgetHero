@@ -377,12 +377,89 @@ export default function WealthManagement() {
   });
 
   const onAssetSubmit = (data: z.infer<typeof assetSchema>) => {
-    addAssetMutation.mutate(data);
+    if (editingAsset) {
+      updateAssetMutation.mutate({ id: editingAsset.id, data });
+    } else {
+      addAssetMutation.mutate(data);
+    }
+  };
+  
+  const handleEditAsset = (asset: Asset) => {
+    setEditingAsset(asset);
+    assetForm.reset({
+      name: asset.name,
+      type: asset.type as any,
+      subtype: asset.subtype,
+      currentValue: asset.currentValue,
+      description: asset.description || '',
+      includeInNetWorth: asset.includeInNetWorth ?? true
+    });
+    openModal('addAsset');
+  };
+  
+  const handleDeleteAsset = (assetId: string) => {
+    if (window.confirm('Are you sure you want to delete this asset? This action cannot be undone.')) {
+      deleteAssetMutation.mutate(assetId);
+    }
+  };
+  
+  const handleCloseAssetModal = () => {
+    closeModal('addAsset');
+    setEditingAsset(null);
+    assetForm.reset();
   };
 
   const onLiabilitySubmit = (data: z.infer<typeof liabilitySchema>) => {
     addLiabilityMutation.mutate(data);
   };
+
+  // Edit and Delete Asset mutations
+  const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
+  
+  const updateAssetMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: z.infer<typeof assetSchema> }) => {
+      return apiRequest(`/api/assets/${id}`, 'PUT', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/assets'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/net-worth'] });
+      closeModal('addAsset');
+      setEditingAsset(null);
+      assetForm.reset();
+      toast({
+        title: "Asset Updated",
+        description: "Your asset has been successfully updated.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update asset. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  const deleteAssetMutation = useMutation({
+    mutationFn: async (assetId: string) => {
+      return apiRequest(`/api/assets/${assetId}`, 'DELETE');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/assets'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/net-worth'] });
+      toast({
+        title: "Asset Deleted",
+        description: "Your asset has been successfully deleted.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete asset. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
 
   // Account management mutations
   const syncAccountMutation = useMutation({
@@ -617,10 +694,22 @@ export default function WealthManagement() {
                                       {showBalances ? formatCurrency(assetValue) : '••••'}
                                     </span>
                                     <div className="flex gap-1">
-                                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        className="h-8 w-8 p-0"
+                                        onClick={() => handleEditAsset(asset)}
+                                        data-testid={`edit-asset-${asset.id}`}
+                                      >
                                         <Edit2 className="h-4 w-4" />
                                       </Button>
-                                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                                        onClick={() => handleDeleteAsset(asset.id)}
+                                        data-testid={`delete-asset-${asset.id}`}
+                                      >
                                         <Trash2 className="h-4 w-4" />
                                       </Button>
                                     </div>
@@ -1031,12 +1120,15 @@ export default function WealthManagement() {
       </Tabs>
 
       {/* Add Asset Modal */}
-      <Dialog open={modals.addAsset} onOpenChange={(open) => !open && closeModal('addAsset')}>
+      <Dialog open={modals.addAsset} onOpenChange={(open) => !open && handleCloseAssetModal()}>
         <DialogContent className="sm:max-w-md" aria-describedby="add-asset-description">
           <DialogHeader>
-            <DialogTitle>Add New Asset</DialogTitle>
+            <DialogTitle>{editingAsset ? 'Edit Asset' : 'Add New Asset'}</DialogTitle>
             <DialogDescription id="add-asset-description">
-              Add an asset to track your total net worth. Assets include property, vehicles, investments, and cash.
+              {editingAsset 
+                ? 'Update your asset details to keep your net worth accurate.'
+                : 'Add an asset to track your total net worth. Assets include property, vehicles, investments, and cash.'
+              }
             </DialogDescription>
           </DialogHeader>
           
