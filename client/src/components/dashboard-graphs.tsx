@@ -35,7 +35,7 @@ interface NetWorthData {
 /* ---------- Helpers ---------- */
 
 const generateNetWorthData = (current: number, period: Period) => {
-  const points = { "1M": 4, "3M": 12, "6M": 24, "1Y": 12 }[period];
+  const days = { "1M": 30, "3M": 90, "6M": 180, "1Y": 365 }[period];
   const now = new Date();
   const growth = {
     "1Y": 0.08,
@@ -45,26 +45,28 @@ const generateNetWorthData = (current: number, period: Period) => {
   }[period];
   const start = current / (1 + growth);
 
-  return Array.from({ length: points }, (_, i) => {
-    const t = i / (points - 1);
-    let date: Date;
-    let label: string;
+  return Array.from({ length: days }, (_, i) => {
+    const t = i / (days - 1);
+    const date = new Date(now.getTime() - (days - 1 - i) * 24 * 60 * 60 * 1000);
     
-    if (period === "1Y") {
-      date = new Date(now.getFullYear(), now.getMonth() - (points - 1 - i), 1);
-      label = date.toLocaleDateString("en-US", { month: "short" });
-    } else if (period === "6M" || period === "3M") {
-      const weeksBack = period === "6M" ? (points - 1 - i) : (points - 1 - i) / 2;
-      date = new Date(now.getTime() - weeksBack * 7 * 24 * 60 * 60 * 1000);
-      label = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    } else {
-      date = new Date(now.getTime() - (points - 1 - i) * 7 * 24 * 60 * 60 * 1000);
+    // Create label based on period for internal use
+    let label: string;
+    if (period === "1M") {
       label = `${date.getMonth() + 1}/${date.getDate()}`;
+    } else {
+      label = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
     }
     
-    const variance = (Math.random() - 0.5) * 0.05 * start;
-    const netWorth = Math.round(start + (current - start) * t + variance);
-    return { label, netWorth };
+    // Add some realistic daily variance while maintaining overall growth trend
+    const dailyVariance = (Math.random() - 0.5) * 0.01 * start; // 1% daily variance
+    const baseValue = start + (current - start) * t;
+    const netWorth = Math.round(baseValue + dailyVariance);
+    
+    return { 
+      label, 
+      netWorth, 
+      date: new Date(date) // Keep full date for tooltip formatting
+    };
   });
 };
 
@@ -77,17 +79,9 @@ const formatCompactCurrency = (value: number): string => {
   return `$${value.toLocaleString()}`;
 };
 
-const formatTooltipDate = (label: string, period: Period): string => {
-  const now = new Date();
-  if (period === "1M") {
-    // For 1M, assume label is in format "M/D"
-    const [month, day] = label.split('/');
-    const date = new Date(now.getFullYear(), parseInt(month) - 1, parseInt(day));
-    return date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
-  } else {
-    // For other periods, the label should be more descriptive already
-    return label;
-  }
+const formatTooltipDate = (dataPoint: any): string => {
+  const date = dataPoint.date || new Date();
+  return date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
 };
 
 /* ---------- Component ---------- */
@@ -325,10 +319,11 @@ export function DashboardGraphs() {
                 }}
               />
               <Tooltip
-                content={({ active, payload, label }) => {
+                content={({ active, payload }) => {
                   if (active && payload && payload.length) {
+                    const dataPoint = payload[0].payload;
                     const value = payload[0].value as number;
-                    const formattedDate = formatTooltipDate(label, netWorthPeriod);
+                    const formattedDate = formatTooltipDate(dataPoint);
                     return (
                       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
