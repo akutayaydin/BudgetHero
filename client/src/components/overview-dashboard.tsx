@@ -16,7 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { AccountsPanel } from "@/components/accounts-panel";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -143,8 +142,6 @@ export default function OverviewDashboard() {
         </CardContent>
       </Card>
 
-      {/* Accounts Section */}
-      <AccountsPanel />
 
       {/* Recent Transactions */}
       <Card className="lg:col-span-2">
