@@ -7,10 +7,6 @@ import {
   Wallet,
   Clock,
   Calendar,
-  CreditCard,
-  Building2,
-  PiggyBank,
-  LineChart as LineChartIcon,
   Zap,
   ShoppingCart,
   Car,
@@ -20,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { AccountsPanel } from "@/components/accounts-panel";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -47,12 +44,6 @@ interface UpcomingCharge {
   date: string;
   amount: number;
   dueSoon?: boolean;
-}
-
-interface AccountSummary {
-  label: string;
-  amount: number;
-  icon: React.ElementType;
 }
 
 interface BudgetCategory {
@@ -93,14 +84,6 @@ const upcomingCharges: UpcomingCharge[] = [
   { id: 3, name: "Gym Membership", date: "Sep 12", amount: 45 },
 ];
 
-const accounts: AccountSummary[] = [
-  { label: "Checking", amount: 1520.45, icon: Building2 },
-  { label: "Credit Cards", amount: -830.25, icon: CreditCard },
-  { label: "Savings", amount: 8000, icon: PiggyBank },
-  { label: "Cash", amount: 120, icon: Wallet },
-  { label: "Investments", amount: 15000, icon: LineChartIcon },
-];
-
 const budgetCategories: BudgetCategory[] = [
   { label: "Groceries", amount: 320, pct: 64, trend: -5, icon: ShoppingCart },
   { label: "Utilities", amount: 150, pct: 50, trend: 2, icon: Zap },
@@ -110,8 +93,6 @@ const budgetCategories: BudgetCategory[] = [
 
 const PIE_COLORS = ["#6366f1", "#f97316", "#10b981", "#ef4444"];
 
-const totalSpent = budgetCategories.reduce((sum, cat) => sum + cat.amount, 0);
-
 const formatCurrency = (value: number) =>
   value.toLocaleString("en-US", { style: "currency", currency: "USD" });
 
@@ -120,20 +101,18 @@ export default function OverviewDashboard() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       {/* Net Cash Summary */}
       <Card className="lg:col-span-2">
-        <CardHeader>
+        <CardHeader className="pb-0">
           <div className="flex items-center justify-between">
             <CardTitle>Net Cash</CardTitle>
             <Wallet className="h-5 w-5 text-muted-foreground" />
           </div>
+          <div className="mt-2 text-4xl font-bold">$2,582</div>
+          <p className="text-sm text-muted-foreground">
+            You’ve spent $600 more than last month
+          </p>
         </CardHeader>
-        <CardContent className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div>
-            <div className="text-4xl font-bold">$2,582</div>
-            <p className="text-sm text-muted-foreground">
-              You’ve spent $600 more than last month
-            </p>
-          </div>
-          <div className="h-24 w-full sm:w-40">
+        <CardContent>
+          <div className="h-32">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={cashData} margin={{ left: 0, right: 0 }}>
                 <defs>
@@ -165,22 +144,7 @@ export default function OverviewDashboard() {
       </Card>
 
       {/* Accounts Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Accounts</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {accounts.map((acc) => (
-            <div key={acc.label} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <acc.icon className="h-5 w-5 text-muted-foreground" />
-                <span>{acc.label}</span>
-              </div>
-              <span className="font-medium">{formatCurrency(acc.amount)}</span>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+      <AccountsPanel />
 
       {/* Recent Transactions */}
       <Card className="lg:col-span-2">
@@ -258,32 +222,24 @@ export default function OverviewDashboard() {
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
           <div className="flex items-center justify-center">
-            <div className="relative h-48 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <RePieChart>
-                  <Pie
-                    data={budgetCategories}
-                    dataKey="amount"
-                    nameKey="label"
-                    innerRadius={60}
-                    outerRadius={80}
-                  >
-                    {budgetCategories.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={PIE_COLORS[index % PIE_COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                </RePieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <p className="text-sm text-muted-foreground">Spent</p>
-                <p className="text-2xl font-bold">
-                  {formatCurrency(totalSpent)}
-                </p>
-              </div>
-            </div>
+            <ResponsiveContainer width="100%" height={200}>
+              <RePieChart>
+                <Pie
+                  data={budgetCategories}
+                  dataKey="amount"
+                  nameKey="label"
+                  innerRadius={60}
+                  outerRadius={80}
+                >
+                  {budgetCategories.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={PIE_COLORS[index % PIE_COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+              </RePieChart>
+            </ResponsiveContainer>
           </div>
           <div className="space-y-4">
             <div>
