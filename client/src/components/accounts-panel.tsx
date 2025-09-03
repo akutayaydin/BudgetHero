@@ -118,19 +118,37 @@ export function AccountsPanel({ onAddAccount }: AccountsPanelProps) {
             {group.children!.map((child) => (
               <div
                 key={child.id}
-                className="flex items-center justify-between px-8 py-3"
+                className="flex items-center gap-3 px-8 py-3"
               >
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium">{child.name}</span>
-                  {child.subtitle && (
-                    <span className="text-xs text-muted-foreground">
-                      {child.subtitle}
+                {/* Institution Logo or Placeholder */}
+                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                  {child.institutionName ? (
+                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                      {child.institutionName.charAt(0).toUpperCase()}
+                    </span>
+                  ) : (
+                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                      {child.name.charAt(0).toUpperCase()}
                     </span>
                   )}
                 </div>
-                <span className="text-sm font-medium">
+
+                {/* Account Details */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {child.name}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {child.mask ? `••${child.mask}` : ''}
+                    {child.mask && child.officialName ? ' | ' : ''}
+                    {child.officialName || child.institutionName || ''}
+                  </div>
+                </div>
+
+                {/* Balance */}
+                <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
                   {formatCurrency(child.amount)}
-                </span>
+                </div>
               </div>
             ))}
           </div>

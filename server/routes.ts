@@ -1230,7 +1230,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             id: acc.id,
             name: acc.name,
             subtitle: acc.institutionName,
-            amount: parseFloat(acc.availableBalance || '0')
+            amount: parseFloat(acc.availableBalance || '0'),
+            mask: acc.mask,
+            officialName: acc.officialName,
+            institutionName: acc.institutionName
           })),
           tone: 'default'
         });
@@ -1249,7 +1252,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             id: acc.id,
             name: acc.name,
             subtitle: acc.institutionName,
-            amount: parseFloat(acc.availableBalance || '0')
+            amount: parseFloat(acc.availableBalance || '0'),
+            mask: acc.mask,
+            officialName: acc.officialName,
+            institutionName: acc.institutionName
           })),
           tone: 'positive'
         });
@@ -1266,7 +1272,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             id: acc.id,
             name: acc.name,
             subtitle: acc.institutionName,
-            amount: parseFloat(acc.currentBalance || '0')
+            amount: parseFloat(acc.currentBalance || '0'),
+            mask: acc.mask,
+            officialName: acc.officialName,
+            institutionName: acc.institutionName
           })),
           tone: 'negative'
         });
@@ -1283,7 +1292,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             id: acc.id,
             name: acc.name,
             subtitle: acc.institutionName,
-            amount: parseFloat(acc.currentBalance || '0')
+            amount: parseFloat(acc.currentBalance || '0'),
+            mask: acc.mask,
+            officialName: acc.officialName,
+            institutionName: acc.institutionName
           })),
           tone: 'positive'
         });

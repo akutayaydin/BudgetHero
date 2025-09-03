@@ -6,6 +6,9 @@ export interface AccountLeaf {
   subtitle?: string;
   amount: Money;
   icon?: string;
+  mask?: string;
+  officialName?: string;
+  institutionName?: string;
 }
 
 export interface AccountGroup {
