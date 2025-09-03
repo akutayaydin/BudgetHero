@@ -37,27 +37,32 @@ interface NetWorthData {
 const generateNetWorthData = (current: number, period: Period) => {
   const points = { "1M": 4, "3M": 12, "6M": 24, "1Y": 12 }[period];
   const now = new Date();
-  const growth =
-    period === "1Y"
-      ? 0.08
-      : period === "6M"
-        ? 0.06
-        : period === "3M"
-          ? 0.04
-          : 0.02;
+  const growth = {
+    "1Y": 0.08,
+    "6M": 0.06,
+    "3M": 0.04,
+    "1M": 0.02
+  }[period];
   const start = current / (1 + growth);
 
   return Array.from({ length: points }, (_, i) => {
     const t = i / (points - 1);
-    const date =
-      period === "1Y"
-        ? new Date(now.getFullYear(), now.getMonth() - (points - 1 - i), 1)
-        : new Date(now.getTime() - (points - 1 - i) * 7 * 24 * 60 * 60 * 1000);
-    const label =
-      period === "1Y"
-        ? date.toLocaleDateString("en-US", { month: "short" })
-        : `${date.getMonth() + 1}/${date.getDate()}`;
-    const variance = (Math.random() - 0.5) * 0.1 * start;
+    let date: Date;
+    let label: string;
+    
+    if (period === "1Y") {
+      date = new Date(now.getFullYear(), now.getMonth() - (points - 1 - i), 1);
+      label = date.toLocaleDateString("en-US", { month: "short" });
+    } else if (period === "6M" || period === "3M") {
+      const weeksBack = period === "6M" ? (points - 1 - i) : (points - 1 - i) / 2;
+      date = new Date(now.getTime() - weeksBack * 7 * 24 * 60 * 60 * 1000);
+      label = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    } else {
+      date = new Date(now.getTime() - (points - 1 - i) * 7 * 24 * 60 * 60 * 1000);
+      label = `${date.getMonth() + 1}/${date.getDate()}`;
+    }
+    
+    const variance = (Math.random() - 0.5) * 0.05 * start;
     const netWorth = Math.round(start + (current - start) * t + variance);
     return { label, netWorth };
   });
@@ -95,7 +100,19 @@ export function DashboardGraphs() {
   });
 
   const currentNetWorth = netWorthSummary?.totalNetWorth ?? 0;
-  const netWorthChange = 2500;
+  
+  // Calculate net worth change based on selected period
+  const netWorthChange = useMemo(() => {
+    const baseChange = currentNetWorth * 0.02; // 2% base change
+    const periodMultiplier = {
+      "1M": 1,
+      "3M": 2.5,
+      "6M": 4,
+      "1Y": 6
+    }[netWorthPeriod];
+    return Math.round(baseChange * periodMultiplier);
+  }, [currentNetWorth, netWorthPeriod]);
+  
   const previousNetWorth = currentNetWorth - netWorthChange;
 
   const netWorthComparisonData = useMemo(
@@ -257,7 +274,7 @@ export function DashboardGraphs() {
                 }`}
               >
                 {netWorthChange >= 0 ? "+" : "-"}$
-                {Math.abs(netWorthChange).toLocaleString()} vs last month
+                {Math.abs(netWorthChange).toLocaleString()} vs {netWorthPeriod === "1M" ? "last month" : netWorthPeriod === "3M" ? "previous 3 months" : netWorthPeriod === "6M" ? "previous 6 months" : "last year"}
               </span>
             </div>
           </div>
@@ -283,7 +300,7 @@ export function DashboardGraphs() {
 
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={netWorthComparisonData}>
+            <ComposedChart data={netWorthComparisonData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis
                 dataKey="label"
@@ -298,30 +315,46 @@ export function DashboardGraphs() {
                 tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
               />
               <Tooltip
-                formatter={(v: any, name: string) => [
-                  `$${v.toLocaleString()}`,
-                  name === "current" ? "This Month" : "Last Month",
-                ]}
+                formatter={(v: any, name: string) => {
+                  const periodLabels = {
+                    "1M": { current: "This Month", previous: "Last Month" },
+                    "3M": { current: "Last 3 Months", previous: "Previous 3 Months" },
+                    "6M": { current: "Last 6 Months", previous: "Previous 6 Months" },
+                    "1Y": { current: "This Year", previous: "Last Year" }
+                  };
+                  return [
+                    `$${v.toLocaleString()}`,
+                    name === "current" ? periodLabels[netWorthPeriod].current : periodLabels[netWorthPeriod].previous,
+                  ];
+                }}
                 labelStyle={{ color: "#374151" }}
               />
               <Area
                 type="monotone"
+                dataKey="current"
+                name={netWorthPeriod === "1M" ? "This Month" : netWorthPeriod === "3M" ? "Last 3 Months" : netWorthPeriod === "6M" ? "Last 6 Months" : "This Year"}
+                fill="#8B5CF6"
+                stroke="#8B5CF6"
+                fillOpacity={0.1}
+              />
+              <Area
+                type="monotone"
                 dataKey="previous"
-                name="Last Month"
-                fill="#EDE9FE"
-                stroke="#EDE9FE"
-                fillOpacity={0.5}
+                name={netWorthPeriod === "1M" ? "Last Month" : netWorthPeriod === "3M" ? "Previous 3 Months" : netWorthPeriod === "6M" ? "Previous 6 Months" : "Last Year"}
+                fill="#E5E7EB"
+                stroke="#E5E7EB"
+                fillOpacity={0.3}
               />
               <Line
                 type="monotone"
                 dataKey="current"
-                name="This Month"
+                name={netWorthPeriod === "1M" ? "This Month" : netWorthPeriod === "3M" ? "Last 3 Months" : netWorthPeriod === "6M" ? "Last 6 Months" : "This Year"}
                 stroke="#8B5CF6"
                 strokeWidth={3}
-                dot={{ r: 3 }}
+                dot={{ r: 3, fill: "#8B5CF6" }}
               />
               <Legend />
-            </LineChart>
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </CardContent>

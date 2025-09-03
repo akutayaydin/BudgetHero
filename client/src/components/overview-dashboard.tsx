@@ -28,6 +28,7 @@ import {
   PieChart as RePieChart,
   Pie,
   Cell,
+  CartesianGrid,
 } from "recharts";
 
 interface Transaction {
@@ -116,26 +117,48 @@ export default function OverviewDashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={cashData} margin={{ left: 0, right: 0 }}>
                 <defs>
-                  <linearGradient id="lastMonth" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#cbd5e1" stopOpacity={0.5} />
-                    <stop offset="95%" stopColor="#cbd5e1" stopOpacity={0} />
+                  <linearGradient id="currentFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient
+                    id="lastMonthFill"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
                   </linearGradient>
                 </defs>
+
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="date" hide />
                 <YAxis hide />
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.5rem",
+                  }}
+                />
+
                 <Area
                   type="monotone"
                   dataKey="previous"
-                  stroke="transparent"
-                  fill="url(#lastMonth)"
+                  stroke="#f43f5e"
+                  fill="url(#lastMonthFill)"
+                  fillOpacity={1}
                 />
                 <Line
                   type="monotone"
                   dataKey="current"
                   stroke="#6366f1"
                   strokeWidth={2}
-                  dot={false}
+                  dot={{ r: 3, fill: "#6366f1" }}
+                  isAnimationActive
+                  animationDuration={800}
                 />
               </AreaChart>
             </ResponsiveContainer>
