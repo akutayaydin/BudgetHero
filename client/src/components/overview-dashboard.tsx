@@ -231,7 +231,7 @@ export default function OverviewDashboard() {
                   innerRadius={60}
                   outerRadius={80}
                 >
-                  {budgetCategories.map((entry, index) => (
+                  {budgetCategories.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={PIE_COLORS[index % PIE_COLORS.length]}

@@ -1204,6 +1204,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Accounts overview endpoint - returns grouped account data
+  app.get("/api/accounts/overview", isAuthenticated, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "User ID not found" });
+      }
+      
+      const accounts = await storage.getAccounts(userId);
+      
+      // Group accounts by type and create overview structure
+      const groups = [];
+      
+      // Group checking accounts
+      const checkingAccounts = accounts.filter(acc => 
+        acc.type === 'depository' && acc.subtype === 'checking'
+      );
+      if (checkingAccounts.length > 0) {
+        groups.push({
+          id: 'checking',
+          label: 'Checking',
+          total: checkingAccounts.reduce((sum, acc) => sum + parseFloat(acc.availableBalance || '0'), 0),
+          children: checkingAccounts.map(acc => ({
+            id: acc.id,
+            name: acc.name,
+            subtitle: acc.institutionName,
+            amount: parseFloat(acc.availableBalance || '0')
+          })),
+          tone: 'default'
+        });
+      }
+
+      // Group savings accounts  
+      const savingsAccounts = accounts.filter(acc => 
+        acc.type === 'depository' && acc.subtype === 'savings'
+      );
+      if (savingsAccounts.length > 0) {
+        groups.push({
+          id: 'savings',
+          label: 'Savings',
+          total: savingsAccounts.reduce((sum, acc) => sum + parseFloat(acc.availableBalance || '0'), 0),
+          children: savingsAccounts.map(acc => ({
+            id: acc.id,
+            name: acc.name,
+            subtitle: acc.institutionName,
+            amount: parseFloat(acc.availableBalance || '0')
+          })),
+          tone: 'positive'
+        });
+      }
+
+      // Group credit cards
+      const creditCards = accounts.filter(acc => acc.type === 'credit');
+      if (creditCards.length > 0) {
+        groups.push({
+          id: 'creditCards',
+          label: 'Credit Cards',
+          total: creditCards.reduce((sum, acc) => sum + parseFloat(acc.currentBalance || '0'), 0),
+          children: creditCards.map(acc => ({
+            id: acc.id,
+            name: acc.name,
+            subtitle: acc.institutionName,
+            amount: parseFloat(acc.currentBalance || '0')
+          })),
+          tone: 'negative'
+        });
+      }
+
+      // Group investment accounts
+      const investmentAccounts = accounts.filter(acc => acc.type === 'investment');
+      if (investmentAccounts.length > 0) {
+        groups.push({
+          id: 'investments',
+          label: 'Investments',
+          total: investmentAccounts.reduce((sum, acc) => sum + parseFloat(acc.currentBalance || '0'), 0),
+          children: investmentAccounts.map(acc => ({
+            id: acc.id,
+            name: acc.name,
+            subtitle: acc.institutionName,
+            amount: parseFloat(acc.currentBalance || '0')
+          })),
+          tone: 'positive'
+        });
+      }
+
+      // Calculate net cash
+      const totalChecking = checkingAccounts.reduce((sum, acc) => sum + parseFloat(acc.availableBalance || '0'), 0);
+      const totalSavings = savingsAccounts.reduce((sum, acc) => sum + parseFloat(acc.availableBalance || '0'), 0);
+      const totalCredit = creditCards.reduce((sum, acc) => sum + parseFloat(acc.currentBalance || '0'), 0);
+      const netCash = totalChecking + totalSavings - Math.abs(totalCredit);
+
+      if (accounts.length > 0) {
+        groups.unshift({
+          id: 'netCash',
+          label: 'Net Cash',
+          total: netCash,
+          tone: netCash >= 0 ? 'positive' : 'negative'
+        });
+      }
+
+      res.json({ groups });
+    } catch (error) {
+      console.error("Error getting accounts overview:", error);
+      res.status(500).json({ message: "Failed to get accounts overview" });
+    }
+  });
+
   // Plaid Link Token endpoint
   app.post("/api/plaid/link_token", isAuthenticated, async (req, res) => {
     try {
