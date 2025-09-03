@@ -68,18 +68,26 @@ const generateNetWorthData = (current: number, period: Period) => {
   });
 };
 
-const generateNetWorthComparisonData = (
-  current: number,
-  previous: number,
-  period: Period,
-) => {
-  const cur = generateNetWorthData(current, period);
-  const prev = generateNetWorthData(previous, period);
-  return cur.map((d, i) => ({
-    label: d.label,
-    current: d.netWorth,
-    previous: prev[i]?.netWorth ?? prev[prev.length - 1]?.netWorth ?? 0,
-  }));
+const formatCompactCurrency = (value: number): string => {
+  if (value >= 1000000) {
+    return `$${(value / 1000000).toFixed(1)}M`;
+  } else if (value >= 1000) {
+    return `$${(value / 1000).toFixed(0)}k`;
+  }
+  return `$${value.toLocaleString()}`;
+};
+
+const formatTooltipDate = (label: string, period: Period): string => {
+  const now = new Date();
+  if (period === "1M") {
+    // For 1M, assume label is in format "M/D"
+    const [month, day] = label.split('/');
+    const date = new Date(now.getFullYear(), parseInt(month) - 1, parseInt(day));
+    return date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  } else {
+    // For other periods, the label should be more descriptive already
+    return label;
+  }
 };
 
 /* ---------- Component ---------- */
@@ -115,14 +123,9 @@ export function DashboardGraphs() {
   
   const previousNetWorth = currentNetWorth - netWorthChange;
 
-  const netWorthComparisonData = useMemo(
-    () =>
-      generateNetWorthComparisonData(
-        currentNetWorth,
-        previousNetWorth,
-        netWorthPeriod,
-      ),
-    [currentNetWorth, previousNetWorth, netWorthPeriod],
+  const netWorthData = useMemo(
+    () => generateNetWorthData(currentNetWorth, netWorthPeriod),
+    [currentNetWorth, netWorthPeriod],
   );
 
   const monthlySpendingComparison = useMemo(() => {
@@ -258,7 +261,7 @@ export function DashboardGraphs() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
-              ${currentNetWorth.toLocaleString()}
+              {formatCompactCurrency(currentNetWorth)}
             </p>
             <div className="flex items-center gap-2 mt-1">
               {netWorthChange >= 0 ? (
@@ -273,8 +276,7 @@ export function DashboardGraphs() {
                     : "text-red-600 dark:text-red-400"
                 }`}
               >
-                {netWorthChange >= 0 ? "+" : "-"}$
-                {Math.abs(netWorthChange).toLocaleString()} vs {netWorthPeriod === "1M" ? "last month" : netWorthPeriod === "3M" ? "previous 3 months" : netWorthPeriod === "6M" ? "previous 6 months" : "last year"}
+                {netWorthChange >= 0 ? "+" : "-"}{formatCompactCurrency(Math.abs(netWorthChange))} vs {netWorthPeriod === "1M" ? "last month" : netWorthPeriod === "3M" ? "previous 3 months" : netWorthPeriod === "6M" ? "previous 6 months" : "last year"}
               </span>
             </div>
           </div>
@@ -283,7 +285,7 @@ export function DashboardGraphs() {
             {(["1M", "3M", "6M", "1Y"] as const).map((p) => (
               <Button
                 key={p}
-                variant={netWorthPeriod === p ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setNetWorthPeriod(p)}
                 className={`px-3 py-1 text-xs font-medium transition-all duration-200 ${
@@ -300,60 +302,57 @@ export function DashboardGraphs() {
 
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={netWorthComparisonData}>
+            <ComposedChart data={netWorthData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis
                 dataKey="label"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#6B7280", fontSize: 12 }}
+                tick={false}
+                hide
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: "#6B7280", fontSize: 12 }}
-                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                tickFormatter={(v) => {
+                  if (v >= 1000000) {
+                    return `$${(v / 1000000).toFixed(0)}M`;
+                  } else if (v >= 1000) {
+                    return `$${(v / 1000).toFixed(0)}k`;
+                  }
+                  return `$${v}`;
+                }}
               />
               <Tooltip
-                formatter={(v: any, name: string) => {
-                  const periodLabels = {
-                    "1M": { current: "This Month", previous: "Last Month" },
-                    "3M": { current: "Last 3 Months", previous: "Previous 3 Months" },
-                    "6M": { current: "Last 6 Months", previous: "Previous 6 Months" },
-                    "1Y": { current: "This Year", previous: "Last Year" }
-                  };
-                  return [
-                    `$${v.toLocaleString()}`,
-                    name === "current" ? periodLabels[netWorthPeriod].current : periodLabels[netWorthPeriod].previous,
-                  ];
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    const value = payload[0].value as number;
+                    const formattedDate = formatTooltipDate(label, netWorthPeriod);
+                    return (
+                      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                          {formattedDate}
+                        </p>
+                        <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                          {formatCompactCurrency(value)}
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
                 }}
-                labelStyle={{ color: "#374151" }}
               />
               <Area
                 type="monotone"
-                dataKey="current"
-                name={netWorthPeriod === "1M" ? "This Month" : netWorthPeriod === "3M" ? "Last 3 Months" : netWorthPeriod === "6M" ? "Last 6 Months" : "This Year"}
+                dataKey="netWorth"
                 fill="#8B5CF6"
                 stroke="#8B5CF6"
                 fillOpacity={0.1}
-              />
-              <Area
-                type="monotone"
-                dataKey="previous"
-                name={netWorthPeriod === "1M" ? "Last Month" : netWorthPeriod === "3M" ? "Previous 3 Months" : netWorthPeriod === "6M" ? "Previous 6 Months" : "Last Year"}
-                fill="#E5E7EB"
-                stroke="#E5E7EB"
-                fillOpacity={0.3}
-              />
-              <Line
-                type="monotone"
-                dataKey="current"
-                name={netWorthPeriod === "1M" ? "This Month" : netWorthPeriod === "3M" ? "Last 3 Months" : netWorthPeriod === "6M" ? "Last 6 Months" : "This Year"}
-                stroke="#8B5CF6"
                 strokeWidth={3}
-                dot={{ r: 3, fill: "#8B5CF6" }}
+                dot={false}
+                activeDot={{ r: 4, fill: "#8B5CF6", stroke: "#fff", strokeWidth: 2 }}
               />
-              <Legend />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
