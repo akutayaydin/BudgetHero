@@ -9,7 +9,7 @@ interface Asset {
   id: string;
   name: string;
   type: string;
-  value: number;
+  currentValue: string;
   return?: number;
 }
 
@@ -21,8 +21,8 @@ export function SavingsInvestmentsSection() {
   const savingsAssets = assets.filter(asset => asset.type === 'savings');
   const investmentAssets = assets.filter(asset => asset.type === 'investment');
   
-  const totalSavings = savingsAssets.reduce((sum, asset) => sum + asset.value, 0);
-  const totalInvestments = investmentAssets.reduce((sum, asset) => sum + asset.value, 0);
+  const totalSavings = savingsAssets.reduce((sum, asset) => sum + parseFloat(asset.currentValue || '0'), 0);
+  const totalInvestments = investmentAssets.reduce((sum, asset) => sum + parseFloat(asset.currentValue || '0'), 0);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -63,7 +63,7 @@ export function SavingsInvestmentsSection() {
                     <span className="font-medium text-gray-900 dark:text-white">{asset.name}</span>
                   </div>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    ${asset.value.toLocaleString()}
+                    ${parseFloat(asset.currentValue || '0').toLocaleString()}
                   </span>
                 </div>
               ))}
@@ -129,7 +129,7 @@ export function SavingsInvestmentsSection() {
                     </div>
                   </div>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    ${asset.value.toLocaleString()}
+                    ${parseFloat(asset.currentValue || '0').toLocaleString()}
                   </span>
                 </div>
               ))}
