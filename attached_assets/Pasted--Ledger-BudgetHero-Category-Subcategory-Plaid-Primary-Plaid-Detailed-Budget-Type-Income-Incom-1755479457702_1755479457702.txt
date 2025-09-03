@@ -1,0 +1,548 @@
+
+Ledger 
+BudgetHero Category 
+Subcategory 
+Plaid Primary 
+Plaid Detailed 
+Budget Type 
+Income 
+Income 
+Paychecks 
+INCOME 
+INCOME_WAGES 
+Fixed 
+Income 
+Income 
+Interest 
+INCOME 
+INCOME_INTEREST_EARNED 
+Non-Monthly 
+Income 
+Income 
+Dividends 
+INCOME 
+INCOME_DIVIDENDS 
+Non-Monthly 
+Income 
+Income 
+Retirement Income 
+INCOME 
+INCOME_RETIREMENT_PENSION 
+Fixed 
+Income 
+Income 
+Tax Refund 
+INCOME 
+INCOME_TAX_REFUND 
+Non-Monthly 
+Income 
+Income 
+Unemployment 
+INCOME 
+INCOME_UNEMPLOYMENT 
+Non-Monthly 
+Income 
+Income 
+Other Income 
+INCOME 
+INCOME_OTHER_INCOME 
+Non-Monthly 
+Expenses 
+Transportation 
+Gas 
+TRANSPORTATION 
+TRANSPORTATION_GAS 
+Flexible 
+Expenses 
+Transportation 
+Public Transit 
+TRANSPORTATION 
+TRANSPORTATION_PUBLIC_TRANSIT 
+Flexible 
+Expenses 
+Transportation 
+Parking & Tolls 
+TRANSPORTATION 
+TRANSPORTATION_PARKING 
+Flexible 
+Expenses 
+Transportation 
+Parking & Tolls 
+TRANSPORTATION 
+TRANSPORTATION_TOLLS 
+Flexible 
+Expenses 
+Transportation 
+Taxi & Ride Shares 
+TRANSPORTATION 
+TRANSPORTATION_TAXIS_AND_RIDE_SHARES 
+Flexible 
+Expenses 
+Transportation 
+Bikes & Scooters 
+TRANSPORTATION 
+TRANSPORTATION_BIKES_AND_SCOOTERS 
+Flexible 
+Expenses 
+Transportation 
+Auto Payment / Maintenance 
+TRANSPORTATION 
+TRANSPORTATION_OTHER_TRANSPORTATION 
+Fixed 
+Expenses 
+Food & Drink 
+Groceries 
+FOOD_AND_DRINK 
+FOOD_AND_DRINK_GROCERIES 
+Flexible 
+Expenses 
+Food & Drink 
+Restaurants 
+FOOD_AND_DRINK 
+FOOD_AND_DRINK_RESTAURANT 
+Flexible 
+Expenses 
+Food & Drink 
+Coffee Shops 
+FOOD_AND_DRINK 
+FOOD_AND_DRINK_COFFEE 
+Flexible 
+Expenses 
+Food & Drink 
+Fast Food 
+FOOD_AND_DRINK 
+FOOD_AND_DRINK_FAST_FOOD 
+Flexible 
+Expenses 
+Food & Drink 
+Alcohol 
+FOOD_AND_DRINK 
+FOOD_AND_DRINK_BEER_WINE_AND_LIQUOR 
+Flexible 
+Expenses 
+Food & Drink 
+Vending Machines 
+FOOD_AND_DRINK 
+FOOD_AND_DRINK_VENDING_MACHINES 
+Flexible 
+Expenses 
+Rent & Utilities 
+Rent 
+RENT_AND_UTILITIES 
+RENT_AND_UTILITIES_RENT 
+Fixed 
+Expenses 
+Rent & Utilities 
+Mortgage 
+RENT_AND_UTILITIES 
+RENT_AND_UTILITIES_MORTGAGE 
+Fixed 
+Expenses 
+Rent & Utilities 
+Gas & Electric 
+RENT_AND_UTILITIES 
+RENT_AND_UTILITIES_GAS_AND_ELECTRICITY 
+Fixed 
+Expenses 
+Rent & Utilities 
+Internet & Cable 
+RENT_AND_UTILITIES 
+RENT_AND_UTILITIES_INTERNET_AND_CABLE 
+Fixed 
+Expenses 
+Rent & Utilities 
+Phone 
+RENT_AND_UTILITIES 
+RENT_AND_UTILITIES_TELEPHONE 
+Fixed 
+Expenses 
+Rent & Utilities 
+Water 
+RENT_AND_UTILITIES 
+RENT_AND_UTILITIES_WATER 
+Fixed 
+Expenses 
+Rent & Utilities 
+Garbage / Waste 
+RENT_AND_UTILITIES 
+RENT_AND_UTILITIES_SEWAGE_AND_WASTE_MANAGEMENT 
+Fixed 
+Expenses 
+General Merchandise 
+Clothing 
+GENERAL_MERCHANDISE 
+GENERAL_MERCHANDISE_CLOTHING_AND_ACCESSORIES 
+Flexible 
+Expenses 
+General Merchandise 
+Electronics 
+GENERAL_MERCHANDISE 
+GENERAL_MERCHANDISE_ELECTRONICS 
+Flexible 
+Expenses 
+General Merchandise 
+Furniture 
+GENERAL_MERCHANDISE 
+GENERAL_MERCHANDISE_FURNITURE_AND_HOUSEWARES 
+Flexible 
+Expenses 
+General Merchandise 
+Department Stores 
+GENERAL_MERCHANDISE 
+GENERAL_MERCHANDISE_DEPARTMENT_STORES 
+Flexible 
+Expenses 
+General Merchandise 
+Online Marketplaces 
+GENERAL_MERCHANDISE 
+GENERAL_MERCHANDISE_ONLINE_MARKETPLACES 
+Flexible 
+Expenses 
+General Merchandise 
+Superstores 
+GENERAL_MERCHANDISE 
+GENERAL_MERCHANDISE_SUPERSTORES 
+Flexible 
+Expenses 
+General Merchandise 
+Convenience Stores 
+GENERAL_MERCHANDISE 
+GENERAL_MERCHANDISE_CONVENIENCE_STORES 
+Flexible 
+Expenses 
+General Merchandise 
+Discount Stores 
+GENERAL_MERCHANDISE 
+GENERAL_MERCHANDISE_DISCOUNT_STORES 
+Flexible 
+Expenses 
+Medical & Healthcare 
+Medical 
+MEDICAL 
+MEDICAL_PRIMARY_CARE 
+Flexible 
+Expenses 
+Medical & Healthcare 
+Dentist 
+MEDICAL 
+MEDICAL_DENTAL_CARE 
+Flexible 
+Expenses 
+Medical & Healthcare 
+Pharmacy & Supplements 
+MEDICAL 
+MEDICAL_PHARMACIES_AND_SUPPLEMENTS 
+Flexible 
+Expenses 
+Medical & Healthcare 
+Eye Care 
+MEDICAL 
+MEDICAL_EYE_CARE 
+Flexible 
+Expenses 
+Medical & Healthcare 
+Nursing Care 
+MEDICAL 
+MEDICAL_NURSING_CARE 
+Flexible 
+Expenses 
+Medical & Healthcare 
+Pets / Veterinary 
+MEDICAL 
+MEDICAL_VETERINARY_SERVICES 
+Flexible 
+Expenses 
+Medical & Healthcare 
+Other Medical 
+MEDICAL 
+MEDICAL_OTHER_MEDICAL 
+Flexible 
+Expenses 
+Personal Care 
+Fitness / Gym 
+PERSONAL_CARE 
+PERSONAL_CARE_GYMS_AND_FITNESS_CENTERS 
+Flexible 
+Expenses 
+Bank Fees 
+ATM Fees 
+BANK_FEES 
+ATM_FEES 
+Non-Monthly 
+Expenses 
+Bank Fees 
+Overdraft Fees 
+BANK_FEES 
+OVERDRAFT_FEES 
+Non-Monthly 
+Expenses 
+Bank Fees 
+Foreign Transaction Fees 
+BANK_FEES 
+FOREIGN_TRANSACTION_FEES 
+Non-Monthly 
+Expenses 
+Bank Fees 
+Service Fees 
+BANK_FEES 
+SERVICE_FEES 
+Non-Monthly 
+Expenses 
+Bank Fees 
+Interest Charges 
+BANK_FEES 
+INTEREST_CHARGES 
+Non-Monthly 
+Expenses 
+Bank Fees 
+Other Fees 
+BANK_FEES 
+OTHER_FEES 
+Non-Monthly 
+Expenses 
+Entertainment 
+Casinos & Gambling 
+ENTERTAINMENT 
+CASINOS_AND_GAMBLING 
+Flexible 
+Expenses 
+Entertainment 
+Music & Audio 
+ENTERTAINMENT 
+MUSIC_AND_AUDIO 
+Flexible 
+Expenses 
+Entertainment 
+TV & Movies 
+ENTERTAINMENT 
+TV_AND_MOVIES 
+Flexible 
+Expenses 
+Entertainment 
+Video Games 
+ENTERTAINMENT 
+VIDEO_GAMES 
+Flexible 
+Expenses 
+Entertainment 
+Streaming 
+ENTERTAINMENT 
+STREAMING_SERVICES 
+Flexible 
+Expenses 
+Entertainment 
+Other Entertainment 
+ENTERTAINMENT 
+OTHER_ENTERTAINMENT 
+Flexible 
+Expenses 
+Home Improvement 
+Hardware Stores 
+HOME_IMPROVEMENT 
+HARDWARE_STORES 
+Flexible 
+Expenses 
+Home Improvement 
+Home Repair 
+HOME_IMPROVEMENT 
+HOME_REPAIRS 
+Flexible 
+Expenses 
+Home Improvement 
+Home Security 
+HOME_IMPROVEMENT 
+SECURITY_SERVICES 
+Flexible 
+Expenses 
+Home Improvement 
+Furniture & Decor 
+HOME_IMPROVEMENT 
+FURNITURE_AND_DECOR 
+Flexible 
+Expenses 
+Home Improvement 
+Landscaping / Outdoor 
+HOME_IMPROVEMENT 
+LANDSCAPING 
+Flexible 
+Expenses 
+General Services 
+Financial & Legal Services 
+GENERAL_SERVICES 
+FINANCIAL_AND_LEGAL_SERVICES 
+Flexible 
+Expenses 
+General Services 
+Insurance 
+GENERAL_SERVICES 
+INSURANCE 
+Fixed 
+Expenses 
+General Services 
+Education 
+GENERAL_SERVICES 
+EDUCATION 
+Flexible 
+Expenses 
+General Services 
+Childcare 
+GENERAL_SERVICES 
+CHILDCARE 
+Flexible 
+Expenses 
+General Services 
+Automotive Services 
+GENERAL_SERVICES 
+AUTOMOTIVE_SERVICES 
+Flexible 
+Expenses 
+General Services 
+Professional Services 
+GENERAL_SERVICES 
+PROFESSIONAL_SERVICES 
+Flexible 
+Expenses 
+General Services 
+Other Services 
+GENERAL_SERVICES 
+OTHER_SERVICES 
+Flexible 
+Expenses 
+Government & Non-Profit 
+Taxes 
+GOVERNMENT_AND_NON_PROFIT 
+TAXES 
+Fixed 
+Expenses 
+Government & Non-Profit 
+Donations 
+GOVERNMENT_AND_NON_PROFIT 
+DONATIONS 
+Non-Monthly 
+Expenses 
+Government & Non-Profit 
+Government Fees 
+GOVERNMENT_AND_NON_PROFIT 
+GOVERNMENT_FEES 
+Non-Monthly 
+Expenses 
+Government & Non-Profit 
+Other Non-Profit 
+GOVERNMENT_AND_NON_PROFIT 
+OTHER_NON_PROFIT 
+Non-Monthly 
+Expenses 
+Subscriptions 
+Streaming 
+SUBSCRIPTIONS 
+SUBSCRIPTIONS_STREAMING 
+Fixed 
+Expenses 
+Subscriptions 
+Software 
+SUBSCRIPTIONS 
+SUBSCRIPTIONS_SOFTWARE 
+Fixed 
+Expenses 
+Subscriptions 
+Media 
+SUBSCRIPTIONS 
+SUBSCRIPTIONS_MEDIA 
+Fixed 
+Expenses 
+Subscriptions 
+Other 
+SUBSCRIPTIONS 
+SUBSCRIPTIONS_OTHER 
+Fixed 
+Expenses 
+Travel 
+Airfare 
+TRAVEL 
+TRAVEL_AIRFARE 
+Non-Monthly 
+Expenses 
+Travel 
+Hotel 
+TRAVEL 
+TRAVEL_HOTEL 
+Non-Monthly 
+Expenses 
+Travel 
+Car Rental 
+TRAVEL 
+TRAVEL_CAR_RENTAL 
+Non-Monthly 
+Expenses 
+Travel 
+Other 
+TRAVEL 
+TRAVEL_OTHER 
+Non-Monthly 
+Transfers 
+Transfers 
+Transfer In 
+TRANSFER_IN 
+TRANSFER_IN_DIRECT_DEPOSIT 
+Flexible 
+Transfers 
+Transfers 
+Transfer In 
+TRANSFER_IN 
+TRANSFER_IN_OTHER 
+Flexible 
+Transfers 
+Transfers 
+Transfer Out 
+TRANSFER_OUT 
+TRANSFER_OUT_TO_BANK 
+Flexible 
+Transfers 
+Transfers 
+Transfer Out 
+TRANSFER_OUT 
+TRANSFER_OUT_OTHER 
+Flexible 
+Debt / Credit 
+Loan Payments 
+Mortgage 
+LOAN_PAYMENTS 
+LOAN_PAYMENT_MORTGAGE 
+Fixed 
+Debt / Credit 
+Loan Payments 
+Student 
+LOAN_PAYMENTS 
+LOAN_PAYMENT_STUDENT 
+Fixed 
+Debt / Credit 
+Loan Payments 
+Personal 
+LOAN_PAYMENTS 
+LOAN_PAYMENT_PERSONAL 
+Fixed 
+Debt / Credit 
+Loan Payments 
+Credit Card 
+LOAN_PAYMENTS 
+LOAN_PAYMENT_CREDIT_CARD 
+Fixed 
+Debt / Credit 
+Loan Payments 
+Auto 
+LOAN_PAYMENTS 
+LOAN_PAYMENT_AUTO 
+Fixed 
+Debt / Credit 
+Loan Payments 
+Other 
+LOAN_PAYMENTS 
+LOAN_PAYMENT_OTHER 
+Fixed 
+Expenses 
+Uncategorized 
+ 
+Uncategorized 
+N/A 
+N/A 
+Flexible  

@@ -1,0 +1,130 @@
+Auth state: 
+{user: undefined, isLoading: true, error: null}
+index-BI5XDnAn.js:553 Auth state: 
+{user: {…}, isLoading: false, error: null}
+index-BI5XDnAn.js:680 Dashboard data status: 
+{transactionsCount: 0, isLoading: true, error: undefined, hasData: false}
+index-BI5XDnAn.js:679 Review transactions data: 0 
+[]
+index-BI5XDnAn.js:680 Dashboard data status: 
+{transactionsCount: 25, isLoading: false, error: undefined, hasData: true}
+index-BI5XDnAn.js:679 Review transactions data: 0 
+[]
+index-BI5XDnAn.js:679 Review transactions data: 7 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+index-BI5XDnAn.js:680 Dashboard data status: 
+{transactionsCount: 25, isLoading: false, error: undefined, hasData: true}
+index-BI5XDnAn.js:679 Review transactions data: 7 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+index-BI5XDnAn.js:48 
+ POST https://budgetheroapp.com/api/plaid/link_token 400 (Bad Request)
+Nt	@	index-BI5XDnAn.js:48
+mutationFn	@	index-BI5XDnAn.js:680
+fn	@	index-BI5XDnAn.js:48
+g	@	index-BI5XDnAn.js:48
+start	@	index-BI5XDnAn.js:48
+execute	@	index-BI5XDnAn.js:48
+await in execute		
+mutate	@	index-BI5XDnAn.js:48
+(anonymous)	@	index-BI5XDnAn.js:48
+N	@	index-BI5XDnAn.js:680
+o	@	index-BI5XDnAn.js:680
+SX	@	index-BI5XDnAn.js:37
+CX	@	index-BI5XDnAn.js:37
+AX	@	index-BI5XDnAn.js:37
+YP	@	index-BI5XDnAn.js:37
+ZL	@	index-BI5XDnAn.js:37
+(anonymous)	@	index-BI5XDnAn.js:37
+rk	@	index-BI5XDnAn.js:40
+jL	@	index-BI5XDnAn.js:37
+tw	@	index-BI5XDnAn.js:37
+E2	@	index-BI5XDnAn.js:37
+UX	@	index-BI5XDnAn.js:37
+index-BI5XDnAn.js:680 Dashboard data status: 
+{transactionsCount: 25, isLoading: false, error: undefined, hasData: true}
+error
+: 
+undefined
+hasData
+: 
+true
+isLoading
+: 
+false
+transactionsCount
+: 
+25
+[[Prototype]]
+: 
+Object
+constructor
+: 
+ƒ Object()
+hasOwnProperty
+: 
+ƒ hasOwnProperty()
+isPrototypeOf
+: 
+ƒ isPrototypeOf()
+propertyIsEnumerable
+: 
+ƒ propertyIsEnumerable()
+toLocaleString
+: 
+ƒ toLocaleString()
+toString
+: 
+ƒ toString()
+valueOf
+: 
+ƒ valueOf()
+__defineGetter__
+: 
+ƒ __defineGetter__()
+__defineSetter__
+: 
+ƒ __defineSetter__()
+__lookupGetter__
+: 
+ƒ __lookupGetter__()
+__lookupSetter__
+: 
+ƒ __lookupSetter__()
+__proto__
+: 
+(...)
+get __proto__
+: 
+ƒ __proto__()
+set __proto__
+: 
+ƒ __proto__()
+index-BI5XDnAn.js:679 Review transactions data: 7 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+0
+: 
+{transaction: {…}, suggestedCategories: Array(1), meta: {…}, adminCategory: null}
+1
+: 
+{transaction: {…}, suggestedCategories: Array(1), meta: {…}, adminCategory: null}
+2
+: 
+{transaction: {…}, suggestedCategories: Array(1), meta: {…}, adminCategory: null}
+3
+: 
+{transaction: {…}, suggestedCategories: Array(1), meta: {…}, adminCategory: null}
+4
+: 
+{transaction: {…}, suggestedCategories: Array(1), meta: {…}, adminCategory: null}
+5
+: 
+{transaction: {…}, suggestedCategories: Array(1), meta: {…}, adminCategory: null}
+6
+: 
+{transaction: {…}, suggestedCategories: Array(1), meta: {…}, adminCategory: null}
+length
+: 
+7
+[[Prototype]]
+: 
+Array(0)

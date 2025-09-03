@@ -1,0 +1,70 @@
+queryClient.ts:32  GET https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/api/transactions/review 401 (Unauthorized)
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=f6308ca2:840
+run @ @tanstack_react-query.js?v=f6308ca2:494
+start @ @tanstack_react-query.js?v=f6308ca2:536
+fetch @ @tanstack_react-query.js?v=f6308ca2:926
+executeFetch_fn @ @tanstack_react-query.js?v=f6308ca2:2211
+onSubscribe @ @tanstack_react-query.js?v=f6308ca2:1898
+subscribe @ @tanstack_react-query.js?v=f6308ca2:24
+(anonymous) @ @tanstack_react-query.js?v=f6308ca2:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=f6308ca2:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=f6308ca2:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=f6308ca2:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=f6308ca2:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=f6308ca2:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=f6308ca2:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=f6308ca2:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=f6308ca2:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=f6308ca2:19416
+commitRoot @ chunk-RPCDYKBN.js?v=f6308ca2:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=f6308ca2:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=f6308ca2:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=f6308ca2:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=f6308ca2:555
+flush @ @tanstack_react-query.js?v=f6308ca2:569
+batch @ @tanstack_react-query.js?v=f6308ca2:587
+dispatch_fn @ @tanstack_react-query.js?v=f6308ca2:996
+setData @ @tanstack_react-query.js?v=f6308ca2:696
+onSuccess @ @tanstack_react-query.js?v=f6308ca2:897
+resolve @ @tanstack_react-query.js?v=f6308ca2:456
+Promise.then
+run @ @tanstack_react-query.js?v=f6308ca2:498
+start @ @tanstack_react-query.js?v=f6308ca2:536
+fetch @ @tanstack_react-query.js?v=f6308ca2:926
+executeFetch_fn @ @tanstack_react-query.js?v=f6308ca2:2211
+onSubscribe @ @tanstack_react-query.js?v=f6308ca2:1898
+subscribe @ @tanstack_react-query.js?v=f6308ca2:24
+(anonymous) @ @tanstack_react-query.js?v=f6308ca2:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=f6308ca2:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=f6308ca2:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=f6308ca2:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=f6308ca2:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=f6308ca2:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=f6308ca2:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=f6308ca2:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=f6308ca2:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=f6308ca2:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=f6308ca2:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=f6308ca2:19432
+commitRoot @ chunk-RPCDYKBN.js?v=f6308ca2:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=f6308ca2:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=f6308ca2:18718
+workLoop @ chunk-RPCDYKBN.js?v=f6308ca2:197
+flushWork @ chunk-RPCDYKBN.js?v=f6308ca2:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=f6308ca2:384Understand this error
+categorization-game-banner.tsx:32 Review transactions query error: Error: 401: {"error":"User not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:40:5
+categorization-game-banner.tsx:35 Review transactions data: 0 []
+dashboard.tsx:56 Dashboard data status: {transactionsCount: 0, isLoading: false, error: undefined, hasData: false}
+categorization-game-banner.tsx:32 Review transactions query error: Error: 401: {"error":"User not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:40:5
+categorization-game-banner.tsx:35 Review transactions data: 0 []
+dashboard.tsx:56 Dashboard data status: {transactionsCount: 0, isLoading: false, error: undefined, hasData: false}
+categorization-game-banner.tsx:32 Review transactions query error: Error: 401: {"error":"User not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:40:5
+categorization-game-banner.tsx:35 Review transactions data: 0 []

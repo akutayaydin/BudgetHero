@@ -1,0 +1,104 @@
+chunk-RPCDYKBN.js?v=1d1be191:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+useAuth.ts:23 Auth state: {user: undefined, isLoading: true, error: null}
+useAuth.ts:23 Auth state: {user: {…}, isLoading: false, error: null}
+chunk-QCHXOAYK.js?v=1d1be191:133 Uncaught TypeError: Cannot convert object to primitive value
+    at String (<anonymous>)
+    at chunk-QCHXOAYK.js?v=1d1be191:133:22
+    at Array.map (<anonymous>)
+    at printWarning (chunk-QCHXOAYK.js?v=1d1be191:132:39)
+    at error (chunk-QCHXOAYK.js?v=1d1be191:120:15)
+    at lazyInitializer (chunk-QCHXOAYK.js?v=1d1be191:898:17)
+    at mountLazyComponent (chunk-RPCDYKBN.js?v=1d1be191:14822:27)
+    at beginWork (chunk-RPCDYKBN.js?v=1d1be191:15918:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=1d1be191:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=1d1be191:3699:24)
+(anonymous) @ chunk-QCHXOAYK.js?v=1d1be191:133
+printWarning @ chunk-QCHXOAYK.js?v=1d1be191:132
+error @ chunk-QCHXOAYK.js?v=1d1be191:120
+lazyInitializer @ chunk-QCHXOAYK.js?v=1d1be191:898
+mountLazyComponent @ chunk-RPCDYKBN.js?v=1d1be191:14822
+beginWork @ chunk-RPCDYKBN.js?v=1d1be191:15918
+callCallback2 @ chunk-RPCDYKBN.js?v=1d1be191:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1d1be191:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1d1be191:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=1d1be191:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=1d1be191:19198
+workLoopConcurrent @ chunk-RPCDYKBN.js?v=1d1be191:19189
+renderRootConcurrent @ chunk-RPCDYKBN.js?v=1d1be191:19164
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1d1be191:18678
+workLoop @ chunk-RPCDYKBN.js?v=1d1be191:197
+flushWork @ chunk-RPCDYKBN.js?v=1d1be191:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1d1be191:384Understand this error
+chunk-QCHXOAYK.js?v=1d1be191:133 Uncaught TypeError: Cannot convert object to primitive value
+    at String (<anonymous>)
+    at chunk-QCHXOAYK.js?v=1d1be191:133:22
+    at Array.map (<anonymous>)
+    at printWarning (chunk-QCHXOAYK.js?v=1d1be191:132:39)
+    at error (chunk-QCHXOAYK.js?v=1d1be191:120:15)
+    at lazyInitializer (chunk-QCHXOAYK.js?v=1d1be191:898:17)
+    at mountLazyComponent (chunk-RPCDYKBN.js?v=1d1be191:14822:27)
+    at beginWork (chunk-RPCDYKBN.js?v=1d1be191:15918:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=1d1be191:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=1d1be191:3699:24)
+(anonymous) @ chunk-QCHXOAYK.js?v=1d1be191:133
+printWarning @ chunk-QCHXOAYK.js?v=1d1be191:132
+error @ chunk-QCHXOAYK.js?v=1d1be191:120
+lazyInitializer @ chunk-QCHXOAYK.js?v=1d1be191:898
+mountLazyComponent @ chunk-RPCDYKBN.js?v=1d1be191:14822
+beginWork @ chunk-RPCDYKBN.js?v=1d1be191:15918
+callCallback2 @ chunk-RPCDYKBN.js?v=1d1be191:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1d1be191:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1d1be191:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=1d1be191:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=1d1be191:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=1d1be191:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=1d1be191:19116
+recoverFromConcurrentError @ chunk-RPCDYKBN.js?v=1d1be191:18736
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1d1be191:18684
+workLoop @ chunk-RPCDYKBN.js?v=1d1be191:197
+flushWork @ chunk-RPCDYKBN.js?v=1d1be191:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1d1be191:384Understand this error
+chunk-RPCDYKBN.js?v=1d1be191:14032 The above error occurred in one of your React components:
+
+    at Lazy
+    at Suspense
+    at Route (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1d1be191:323:16)
+    at Switch (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1d1be191:379:17)
+    at div
+    at div
+    at div
+    at Router (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/App.tsx?v=HbOy38mIDKvJ0Zugyy-Ba:75:42)
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=1d1be191:38:15)
+    at TooltipProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=1d1be191:64:5)
+    at ThemeProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/contexts/ThemeContext.tsx:20:33)
+    at QueryClientProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=1d1be191:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-RPCDYKBN.js?v=1d1be191:14032
+update.callback @ chunk-RPCDYKBN.js?v=1d1be191:14052
+callCallback @ chunk-RPCDYKBN.js?v=1d1be191:11248
+commitUpdateQueue @ chunk-RPCDYKBN.js?v=1d1be191:11265
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=1d1be191:17093
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=1d1be191:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=1d1be191:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=1d1be191:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=1d1be191:19353
+commitRoot @ chunk-RPCDYKBN.js?v=1d1be191:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1d1be191:18760
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1d1be191:18718
+workLoop @ chunk-RPCDYKBN.js?v=1d1be191:197
+flushWork @ chunk-RPCDYKBN.js?v=1d1be191:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1d1be191:384Understand this error
+chunk-RPCDYKBN.js?v=1d1be191:19413 Uncaught TypeError: Cannot convert object to primitive value
+    at String (<anonymous>)
+    at chunk-QCHXOAYK.js?v=1d1be191:133:22
+    at Array.map (<anonymous>)
+    at printWarning (chunk-QCHXOAYK.js?v=1d1be191:132:39)
+    at error (chunk-QCHXOAYK.js?v=1d1be191:120:15)
+    at lazyInitializer (chunk-QCHXOAYK.js?v=1d1be191:898:17)
+    at mountLazyComponent (chunk-RPCDYKBN.js?v=1d1be191:14822:27)
+    at beginWork (chunk-RPCDYKBN.js?v=1d1be191:15918:22)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=1d1be191:19753:22)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=1d1be191:19198:20)

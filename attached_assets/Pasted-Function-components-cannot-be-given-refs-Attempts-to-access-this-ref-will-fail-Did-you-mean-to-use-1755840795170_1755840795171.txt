@@ -1,0 +1,254 @@
+Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?
+
+Check the render method of `Primitive.button.SlotClone`.
+    at MerchantDetailDialog (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/merchant-detail-dialog.tsx:25:40)
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:96:13
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:73:13
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:186:13
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:96:13
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:73:13
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:186:13
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:444:13
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:1104:13
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=b07fd156:38:15)
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=b07fd156:38:15)
+    at Popper (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:436:11)
+    at Tooltip (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:1012:5)
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=b07fd156:38:15)
+    at TooltipProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:968:5)
+    at MerchantHoverTooltip (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/merchant-hover-tooltip.tsx:22:40)
+    at div
+    at div
+    at div
+    at td
+    at tr
+    at tbody
+    at table
+    at div
+    at div
+    at _c9 (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/ui/card.tsx:20:11)
+    at TransactionsTable (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/transactions-table.tsx:40:45)
+    at div
+    at _c9 (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IWFJIMEQ.js?v=b07fd156:42:13
+    at Presence (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-FDH7FQDE.js?v=b07fd156:24:11)
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tabs.js?v=b07fd156:177:13
+    at _c5 (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/ui/tabs.tsx:72:12)
+    at div
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IWFJIMEQ.js?v=b07fd156:42:13
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=b07fd156:38:15)
+    at https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tabs.js?v=b07fd156:55:7
+    at div
+    at TransactionsPage (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/pages/transactions.tsx:30:37)
+    at Route (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=b07fd156:323:16)
+    at Switch (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=b07fd156:379:17)
+    at div
+    at div
+    at div
+    at Router (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/App.tsx?v=FaNpdmZOITBjnQYYYBBJL:75:42)
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=b07fd156:38:15)
+    at TooltipProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b07fd156:968:5)
+    at ThemeProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/contexts/ThemeContext.tsx:20:33)
+    at QueryClientProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b07fd156:2805:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=b07fd156:521
+error @ chunk-RPCDYKBN.js?v=b07fd156:505
+validateFunctionComponentInDev @ chunk-RPCDYKBN.js?v=b07fd156:15013
+mountIndeterminateComponent @ chunk-RPCDYKBN.js?v=b07fd156:14988
+beginWork @ chunk-RPCDYKBN.js?v=b07fd156:15914
+beginWork$1 @ chunk-RPCDYKBN.js?v=b07fd156:19753
+performUnitOfWork @ chunk-RPCDYKBN.js?v=b07fd156:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=b07fd156:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=b07fd156:19116
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=b07fd156:18874
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=b07fd156:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=b07fd156:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b07fd156:555
+flush @ @tanstack_react-query.js?v=b07fd156:569
+batch @ @tanstack_react-query.js?v=b07fd156:587
+dispatch_fn @ @tanstack_react-query.js?v=b07fd156:996
+setData @ @tanstack_react-query.js?v=b07fd156:696
+onSuccess @ @tanstack_react-query.js?v=b07fd156:897
+resolve @ @tanstack_react-query.js?v=b07fd156:456
+Promise.then
+run @ @tanstack_react-query.js?v=b07fd156:498
+start @ @tanstack_react-query.js?v=b07fd156:536
+fetch @ @tanstack_react-query.js?v=b07fd156:926
+executeFetch_fn @ @tanstack_react-query.js?v=b07fd156:2211
+onSubscribe @ @tanstack_react-query.js?v=b07fd156:1898
+subscribe @ @tanstack_react-query.js?v=b07fd156:24
+(anonymous) @ @tanstack_react-query.js?v=b07fd156:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=b07fd156:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=b07fd156:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=b07fd156:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=b07fd156:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=b07fd156:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=b07fd156:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=b07fd156:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=b07fd156:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=b07fd156:19416
+commitRoot @ chunk-RPCDYKBN.js?v=b07fd156:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=b07fd156:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=b07fd156:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=b07fd156:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b07fd156:555
+flush @ @tanstack_react-query.js?v=b07fd156:569
+batch @ @tanstack_react-query.js?v=b07fd156:587
+dispatch_fn @ @tanstack_react-query.js?v=b07fd156:996
+setData @ @tanstack_react-query.js?v=b07fd156:696
+onSuccess @ @tanstack_react-query.js?v=b07fd156:897
+resolve @ @tanstack_react-query.js?v=b07fd156:456
+Promise.then
+run @ @tanstack_react-query.js?v=b07fd156:498
+start @ @tanstack_react-query.js?v=b07fd156:536
+fetch @ @tanstack_react-query.js?v=b07fd156:926
+executeFetch_fn @ @tanstack_react-query.js?v=b07fd156:2211
+onSubscribe @ @tanstack_react-query.js?v=b07fd156:1898
+subscribe @ @tanstack_react-query.js?v=b07fd156:24
+(anonymous) @ @tanstack_react-query.js?v=b07fd156:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=b07fd156:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=b07fd156:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=b07fd156:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=b07fd156:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=b07fd156:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=b07fd156:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=b07fd156:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=b07fd156:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=b07fd156:19416
+commitRoot @ chunk-RPCDYKBN.js?v=b07fd156:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=b07fd156:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=b07fd156:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=b07fd156:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=b07fd156:555
+flush @ @tanstack_react-query.js?v=b07fd156:569
+batch @ @tanstack_react-query.js?v=b07fd156:587
+dispatch_fn @ @tanstack_react-query.js?v=b07fd156:996
+setData @ @tanstack_react-query.js?v=b07fd156:696
+onSuccess @ @tanstack_react-query.js?v=b07fd156:897
+resolve @ @tanstack_react-query.js?v=b07fd156:456
+Promise.then
+run @ @tanstack_react-query.js?v=b07fd156:498
+start @ @tanstack_react-query.js?v=b07fd156:536
+fetch @ @tanstack_react-query.js?v=b07fd156:926
+executeFetch_fn @ @tanstack_react-query.js?v=b07fd156:2211
+onSubscribe @ @tanstack_react-query.js?v=b07fd156:1898
+subscribe @ @tanstack_react-query.js?v=b07fd156:24
+(anonymous) @ @tanstack_react-query.js?v=b07fd156:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=b07fd156:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=b07fd156:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=b07fd156:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=b07fd156:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=b07fd156:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=b07fd156:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=b07fd156:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=b07fd156:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=b07fd156:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=b07fd156:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=b07fd156:19432
+commitRoot @ chunk-RPCDYKBN.js?v=b07fd156:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=b07fd156:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=b07fd156:18718
+workLoop @ chunk-RPCDYKBN.js?v=b07fd156:197
+flushWork @ chunk-RPCDYKBN.js?v=b07fd156:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=b07fd156:384Understand this error
+transactions-table.tsx:394 📝 Description change triggered: {transactionId: 'ea66d905-6c06-4624-b916-4a2c086d4827', oldDescription: 'Morning Coffee', newDescription: 'Morning Coffee Test'}
+3chunk-KLBNOWMX.js?v=b07fd156:341 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-KLBNOWMX.js?v=b07fd156:341
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=b07fd156:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=b07fd156:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=b07fd156:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=b07fd156:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=b07fd156:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=b07fd156:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=b07fd156:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=b07fd156:19416
+commitRoot @ chunk-RPCDYKBN.js?v=b07fd156:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=b07fd156:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=b07fd156:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=b07fd156:18627Understand this warning
+transactions-table.tsx:228 TransactionsTable data: {responseStatus: 200, dataLength: 10, sampleData: Array(2), search: '', categoryFilter: '', …}
+transactions-table.tsx:228 TransactionsTable data: {responseStatus: 200, dataLength: 10, sampleData: Array(2), search: '', categoryFilter: '', …}
+transactions-table.tsx:394 📝 Description change triggered: {transactionId: 'ea66d905-6c06-4624-b916-4a2c086d4827', oldDescription: 'Morning Coffee', newDescription: 'Morning Coffee Test'}
+3chunk-KLBNOWMX.js?v=b07fd156:341 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-KLBNOWMX.js?v=b07fd156:341
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=b07fd156:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=b07fd156:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=b07fd156:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=b07fd156:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=b07fd156:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=b07fd156:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=b07fd156:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=b07fd156:19416
+commitRoot @ chunk-RPCDYKBN.js?v=b07fd156:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=b07fd156:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=b07fd156:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=b07fd156:18627Understand this warning
+transactions-table.tsx:228 TransactionsTable data: {responseStatus: 200, dataLength: 10, sampleData: Array(2), search: '', categoryFilter: '', …}
+transactions-table.tsx:228 TransactionsTable data: {responseStatus: 200, dataLength: 10, sampleData: Array(2), search: '', categoryFilter: '', …}
+transactions-table.tsx:394 📝 Description change triggered: {transactionId: 'ea66d905-6c06-4624-b916-4a2c086d4827', oldDescription: 'Morning Coffee', newDescription: 'Morning Coffee Test'}
+chunk-KLBNOWMX.js?v=b07fd156:341 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-KLBNOWMX.js?v=b07fd156:341
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=b07fd156:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=b07fd156:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=b07fd156:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=b07fd156:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=b07fd156:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=b07fd156:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=b07fd156:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=b07fd156:19416
+commitRoot @ chunk-RPCDYKBN.js?v=b07fd156:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=b07fd156:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=b07fd156:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=b07fd156:18627Understand this warning
+transactions-table.tsx:438 🔄 Updating transaction: {id: 'ea66d905-6c06-4624-b916-4a2c086d4827', updateData: {…}, originalDescription: 'Morning Coffee', newDescription: 'Morning Coffee Test'}
+transactions-table.tsx:446 ✅ Update response: Response {type: 'basic', url: 'https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1b…transactions/ea66d905-6c06-4624-b916-4a2c086d4827', redirected: false, status: 200, ok: true, …}
+transactions-table.tsx:447 📝 Response type: object Response data: {}
+transactions-table.tsx:228 TransactionsTable data: {responseStatus: 200, dataLength: 10, sampleData: Array(2), search: '', categoryFilter: '', …}
+transactions-table.tsx:394 📝 Description change triggered: {transactionId: 'ea66d905-6c06-4624-b916-4a2c086d4827', oldDescription: 'Morning Coffee Test', newDescription: 'Morning Coffee Tes'}
+3chunk-KLBNOWMX.js?v=b07fd156:341 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-KLBNOWMX.js?v=b07fd156:341
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=b07fd156:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=b07fd156:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=b07fd156:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=b07fd156:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=b07fd156:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=b07fd156:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=b07fd156:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=b07fd156:19416
+commitRoot @ chunk-RPCDYKBN.js?v=b07fd156:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=b07fd156:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=b07fd156:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=b07fd156:18627Understand this warning
+create-rule-modal.tsx:900 🗑️ User clicked Delete Existing Rule button
+create-rule-modal.tsx:901 🔍 Current state: {conflictingRule: 'e502ba49-e2f0-4a44-a89a-a715e2af291d', pendingRuleData: true, showConflictModal: true}
+create-rule-modal.tsx:202 ✅ Rule deleted successfully, closing modals...
+create-rule-modal.tsx:214 🚪 Rule deleted, closing all modals and returning to main interface...
+create-rule-modal.tsx:222 🔚 Force closing main modal after rule deletion
+transactions-table.tsx:228 TransactionsTable data: {responseStatus: 200, dataLength: 10, sampleData: Array(2), search: '', categoryFilter: '', …}
+transactions-table.tsx:228 TransactionsTable data: {responseStatus: 200, dataLength: 10, sampleData: Array(2), search: '', categoryFilter: '', …}
+transactions-table.tsx:394 📝 Description change triggered: {transactionId: 'ea66d905-6c06-4624-b916-4a2c086d4827', oldDescription: 'Morning Coffee Test', newDescription: 'Morning Coffee Tes'}
+2chunk-KLBNOWMX.js?v=b07fd156:341 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-KLBNOWMX.js?v=b07fd156:341
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=b07fd156:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=b07fd156:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=b07fd156:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=b07fd156:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=b07fd156:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=b07fd156:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=b07fd156:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=b07fd156:19416
+commitRoot @ chunk-RPCDYKBN.js?v=b07fd156:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=b07fd156:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=b07fd156:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=b07fd156:18627Understand this warning
+transactions-table.tsx:228 TransactionsTable data: {responseStatus: 200, dataLength: 10, sampleData: Array(2), search: '', categoryFilter: '', …}
+transactions-table.tsx:228 TransactionsTable data: {responseStatus: 200, dataLength: 10, sampleData: Array(2), search: '', categoryFilter: '', …}
+chunk-KLBNOWMX.js?v=b07fd156:341 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.

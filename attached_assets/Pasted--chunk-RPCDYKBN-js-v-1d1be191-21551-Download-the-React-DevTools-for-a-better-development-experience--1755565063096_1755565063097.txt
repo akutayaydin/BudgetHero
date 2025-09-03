@@ -1,0 +1,31 @@
+
+chunk-RPCDYKBN.js?v=1d1be191:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+useAuth.ts:23 Auth state: 
+{user: undefined, isLoading: true, error: null}
+useAuth.ts:23 Auth state: 
+{user: {…}, isLoading: false, error: null}
+recurring.tsx:241 Uncaught ReferenceError: user is not defined
+    at RecurringPage (recurring.tsx:241:16)
+useAuth.ts:23 Auth state: 
+{user: {…}, isLoading: false, error: null}
+recurring.tsx:241 Uncaught ReferenceError: user is not defined
+    at RecurringPage (recurring.tsx:241:16)
+chunk-RPCDYKBN.js?v=1d1be191:14032 The above error occurred in the <RecurringPage> component:
+
+    at RecurringPage (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/pages/recurring.tsx:38:37)
+    at Route (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1d1be191:323:16)
+    at Switch (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1d1be191:379:17)
+    at div
+    at div
+    at div
+    at Router (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/App.tsx?v=wM_9l1qWK8RD9cd3AvMsU:73:42)
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…unner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=1d1be191:38:15)
+    at TooltipProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…rkspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=1d1be191:64:5)
+    at ThemeProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/contexts/ThemeContext.tsx:20:33)
+    at QueryClientProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=1d1be191:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+chunk-RPCDYKBN.js?v=1d1be191:9129 Uncaught ReferenceError: user is not defined
+    at RecurringPage (recurring.tsx:241:16)

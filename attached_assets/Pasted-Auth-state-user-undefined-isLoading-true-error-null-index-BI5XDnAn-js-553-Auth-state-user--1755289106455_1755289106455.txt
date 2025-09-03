@@ -1,0 +1,434 @@
+Auth state: {user: undefined, isLoading: true, error: null}
+index-BI5XDnAn.js:553 Auth state: {user: {…}, isLoading: false, error: null}
+index-BI5XDnAn.js:680 Dashboard data status: {transactionsCount: 0, isLoading: true, error: undefined, hasData: false}
+index-BI5XDnAn.js:679 Review transactions data: 0 []
+index-BI5XDnAn.js:48  GET https://budgetheroapp.com/api/financial-health 401 (Unauthorized)
+(anonymous) @ index-BI5XDnAn.js:48
+s @ index-BI5XDnAn.js:48
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+(anonymous) @ index-BI5XDnAn.js:40
+setTimeout
+a @ index-BI5XDnAn.js:48
+o @ index-BI5XDnAn.js:48
+batch @ index-BI5XDnAn.js:48
+hs @ index-BI5XDnAn.js:48
+setData @ index-BI5XDnAn.js:48
+onSuccess @ index-BI5XDnAn.js:48
+f @ index-BI5XDnAn.js:48
+Promise.then
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+HF @ index-BI5XDnAn.js:40
+j @ index-BI5XDnAn.js:25
+E @ index-BI5XDnAn.js:25Understand this error
+index-BI5XDnAn.js:48  GET https://budgetheroapp.com/api/accounts 401 (Unauthorized)
+(anonymous) @ index-BI5XDnAn.js:48
+s @ index-BI5XDnAn.js:48
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+(anonymous) @ index-BI5XDnAn.js:40
+setTimeout
+a @ index-BI5XDnAn.js:48
+o @ index-BI5XDnAn.js:48
+batch @ index-BI5XDnAn.js:48
+hs @ index-BI5XDnAn.js:48
+setData @ index-BI5XDnAn.js:48
+onSuccess @ index-BI5XDnAn.js:48
+f @ index-BI5XDnAn.js:48
+Promise.then
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+HF @ index-BI5XDnAn.js:40
+j @ index-BI5XDnAn.js:25
+E @ index-BI5XDnAn.js:25Understand this error
+index-BI5XDnAn.js:48  GET https://budgetheroapp.com/api/budgets 401 (Unauthorized)
+(anonymous) @ index-BI5XDnAn.js:48
+s @ index-BI5XDnAn.js:48
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+(anonymous) @ index-BI5XDnAn.js:40
+setTimeout
+a @ index-BI5XDnAn.js:48
+o @ index-BI5XDnAn.js:48
+batch @ index-BI5XDnAn.js:48
+hs @ index-BI5XDnAn.js:48
+setData @ index-BI5XDnAn.js:48
+onSuccess @ index-BI5XDnAn.js:48
+f @ index-BI5XDnAn.js:48
+Promise.then
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+HF @ index-BI5XDnAn.js:40
+j @ index-BI5XDnAn.js:25
+E @ index-BI5XDnAn.js:25Understand this error
+index-BI5XDnAn.js:48  GET https://budgetheroapp.com/api/transactions 401 (Unauthorized)
+(anonymous) @ index-BI5XDnAn.js:48
+s @ index-BI5XDnAn.js:48
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+(anonymous) @ index-BI5XDnAn.js:40
+setTimeout
+a @ index-BI5XDnAn.js:48
+o @ index-BI5XDnAn.js:48
+batch @ index-BI5XDnAn.js:48
+hs @ index-BI5XDnAn.js:48
+setData @ index-BI5XDnAn.js:48
+onSuccess @ index-BI5XDnAn.js:48
+f @ index-BI5XDnAn.js:48
+Promise.then
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+HF @ index-BI5XDnAn.js:40
+j @ index-BI5XDnAn.js:25
+E @ index-BI5XDnAn.js:25Understand this error
+index-BI5XDnAn.js:680 Dashboard data status: {transactionsCount: 0, isLoading: false, error: '401: {"message":"Unauthorized"}', hasData: false}
+index-BI5XDnAn.js:679 Review transactions data: 0 []
+index-BI5XDnAn.js:48  GET https://budgetheroapp.com/api/net-worth 401 (Unauthorized)
+(anonymous) @ index-BI5XDnAn.js:48
+s @ index-BI5XDnAn.js:48
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+(anonymous) @ index-BI5XDnAn.js:40
+setTimeout
+a @ index-BI5XDnAn.js:48
+o @ index-BI5XDnAn.js:48
+batch @ index-BI5XDnAn.js:48
+hs @ index-BI5XDnAn.js:48
+setData @ index-BI5XDnAn.js:48
+onSuccess @ index-BI5XDnAn.js:48
+f @ index-BI5XDnAn.js:48
+Promise.then
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+HF @ index-BI5XDnAn.js:40
+j @ index-BI5XDnAn.js:25
+E @ index-BI5XDnAn.js:25Understand this error
+index-BI5XDnAn.js:48  GET https://budgetheroapp.com/api/assets 401 (Unauthorized)
+(anonymous) @ index-BI5XDnAn.js:48
+s @ index-BI5XDnAn.js:48
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+(anonymous) @ index-BI5XDnAn.js:40
+setTimeout
+a @ index-BI5XDnAn.js:48
+o @ index-BI5XDnAn.js:48
+batch @ index-BI5XDnAn.js:48
+hs @ index-BI5XDnAn.js:48
+setData @ index-BI5XDnAn.js:48
+onSuccess @ index-BI5XDnAn.js:48
+f @ index-BI5XDnAn.js:48
+Promise.then
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+HF @ index-BI5XDnAn.js:40
+j @ index-BI5XDnAn.js:25
+E @ index-BI5XDnAn.js:25Understand this error
+index-BI5XDnAn.js:48  GET https://budgetheroapp.com/api/liabilities 401 (Unauthorized)
+(anonymous) @ index-BI5XDnAn.js:48
+s @ index-BI5XDnAn.js:48
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+(anonymous) @ index-BI5XDnAn.js:40
+setTimeout
+a @ index-BI5XDnAn.js:48
+o @ index-BI5XDnAn.js:48
+batch @ index-BI5XDnAn.js:48
+hs @ index-BI5XDnAn.js:48
+setData @ index-BI5XDnAn.js:48
+onSuccess @ index-BI5XDnAn.js:48
+f @ index-BI5XDnAn.js:48
+Promise.then
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+HF @ index-BI5XDnAn.js:40
+j @ index-BI5XDnAn.js:25
+E @ index-BI5XDnAn.js:25Understand this error
+index-BI5XDnAn.js:48  GET https://budgetheroapp.com/api/transactions/review 401 (Unauthorized)
+(anonymous) @ index-BI5XDnAn.js:48
+s @ index-BI5XDnAn.js:48
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+(anonymous) @ index-BI5XDnAn.js:40
+setTimeout
+a @ index-BI5XDnAn.js:48
+o @ index-BI5XDnAn.js:48
+batch @ index-BI5XDnAn.js:48
+hs @ index-BI5XDnAn.js:48
+setData @ index-BI5XDnAn.js:48
+onSuccess @ index-BI5XDnAn.js:48
+f @ index-BI5XDnAn.js:48
+Promise.then
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+HF @ index-BI5XDnAn.js:40
+j @ index-BI5XDnAn.js:25
+E @ index-BI5XDnAn.js:25Understand this error
+index-BI5XDnAn.js:679 Review transactions query error: Error: 401: {"message":"Unauthorized"}
+    at E6 (index-BI5XDnAn.js:48:42800)
+    at async index-BI5XDnAn.js:48:43162
+index-BI5XDnAn.js:679 Review transactions data: 0 []
+index-BI5XDnAn.js:48  GET https://budgetheroapp.com/api/financial-tips 401 (Unauthorized)
+(anonymous) @ index-BI5XDnAn.js:48
+s @ index-BI5XDnAn.js:48
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+(anonymous) @ index-BI5XDnAn.js:40
+setTimeout
+a @ index-BI5XDnAn.js:48
+o @ index-BI5XDnAn.js:48
+batch @ index-BI5XDnAn.js:48
+hs @ index-BI5XDnAn.js:48
+setData @ index-BI5XDnAn.js:48
+onSuccess @ index-BI5XDnAn.js:48
+f @ index-BI5XDnAn.js:48
+Promise.then
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+fetch @ index-BI5XDnAn.js:48
+fp @ index-BI5XDnAn.js:48
+onSubscribe @ index-BI5XDnAn.js:48
+subscribe @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+hF @ index-BI5XDnAn.js:38
+e0 @ index-BI5XDnAn.js:40
+Fu @ index-BI5XDnAn.js:40
+kT @ index-BI5XDnAn.js:40
+fl @ index-BI5XDnAn.js:38
+iZ @ index-BI5XDnAn.js:40
+_l @ index-BI5XDnAn.js:40
+HF @ index-BI5XDnAn.js:40
+j @ index-BI5XDnAn.js:25
+E @ index-BI5XDnAn.js:25Understand this error
+index-BI5XDnAn.js:48  POST https://budgetheroapp.com/api/plaid/link_token 401 (Unauthorized)
+Nt @ index-BI5XDnAn.js:48
+mutationFn @ index-BI5XDnAn.js:680
+fn @ index-BI5XDnAn.js:48
+g @ index-BI5XDnAn.js:48
+start @ index-BI5XDnAn.js:48
+execute @ index-BI5XDnAn.js:48
+await in execute
+mutate @ index-BI5XDnAn.js:48
+(anonymous) @ index-BI5XDnAn.js:48
+N @ index-BI5XDnAn.js:680
+o @ index-BI5XDnAn.js:680
+SX @ index-BI5XDnAn.js:37
+CX @ index-BI5XDnAn.js:37
+AX @ index-BI5XDnAn.js:37
+YP @ index-BI5XDnAn.js:37
+ZL @ index-BI5XDnAn.js:37
+(anonymous) @ index-BI5XDnAn.js:37
+rk @ index-BI5XDnAn.js:40
+jL @ index-BI5XDnAn.js:37
+tw @ index-BI5XDnAn.js:37
+E2 @ index-BI5XDnAn.js:37
+UX @ index-BI5XDnAn.js:37Understand this error
+index-BI5XDnAn.js:680 Dashboard data status: {transactionsCount: 0, isLoading: false, error: '401: {"message":"Unauthorized"}', hasData: false}
+index-BI5XDnAn.js:679 Review transactions query error: Error: 401: {"message":"Unauthorized"}
+    at E6 (index-BI5XDnAn.js:48:42800)
+    at async index-BI5XDnAn.js:48:43162
+index-BI5XDnAn.js:679 Review transactions data: 0 []

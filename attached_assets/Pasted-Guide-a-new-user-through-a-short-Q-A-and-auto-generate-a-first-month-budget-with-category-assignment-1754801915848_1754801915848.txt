@@ -1,0 +1,144 @@
+Guide a new user through a short Q&A and auto-generate a first-month budget with category assignments and explanations. The template adapts to household type, location, income, housing cost, and transportation.
+Inputs (wizard questions)
+Household
+Relationship: Single | Couple | Family/Other
+Dependents: No kids | Kids: 0–5 | Kids: 6–12 | Teens 13–17
+Adults working: 1 or 2 (affects living-wage reference) 
+Living Wage Calculator
++2
+Living Wage Calculator
++2
+Location
+ZIP or city/state (to pull local living-wage basket and sanity-check rent vs area) 
+Living Wage Calculator
+Income
+Net monthly income (preferred) or gross + pay frequency (derive net with simple table; user can edit)
+Housing
+Rent or mortgage + average monthly utilities (option to enter just rent; we estimate utilities if blank)
+Affordability check: flag if housing > 30% of income (HUD “cost-burdened”), >50% “severe”
+HUD User
+Census.gov
+Transportation
+Primary: Car | Public Transit | Mixed
+If Car: typical monthly miles (default 800–1,000); estimate with AAA cost/mile and show editable line items (fuel, insurance, maintenance, registration) 
+AAA Newsroom
++1
+If Transit: monthly pass cost (defaults by city if known; else ask user)
+Childcare (if kids)
+Care type: None | Family/Friend | Family Childcare | Center
+Hours: part-time/full-time → preload average state prices as a starting point (user can override)
+Child Care Aware® of America
+Child Care Aware
+Starter Savings & Debt
+Emergency-fund target months: 1–6 (default 3)
+Debt: monthly minimums for credit cards/loans (or “none”)
+Subscriptions & Misc
+Quick toggles (streaming, phone, internet, gym) + amounts
+Data & Defaults (how we fill gaps)
+Baseline allocation starts from the 50/30/20 framework (needs/wants/saving), then adjusts for local costs & family profile. 
+Investopedia
+United Nations Federal Credit Union
+JohnHancock
+Needs share uses BLS Consumer Expenditure shares (housing, food, transport, healthcare) as guardrails to avoid unrealistic splits. 
+Bureau of Labor Statistics
++1
+Local living costs (food, childcare, medical, housing assumptions) reference MIT Living Wage for the user’s metro/family type; we do not copy their dollar values, we benchmark ranges and surface warnings if the user’s plan is far below typical. 
+Living Wage Calculator
++1
+Rent reasonableness check against HUD’s 30% rule; show a warning banner if cost-burdened.
+HUD User
+Utilities estimate (if blank): use EIA national/state averages; show “regional typical” note with kWh price context. 
+U.S. Energy Information Administration
++1
+Transportation (car): prefill with AAA Your Driving Costs (fuel ¢/mile, insurance, maintenance); compute miles × cost/mile, user can override each subline. 
+AAA Newsroom
++1
+Childcare: preload state average annual → monthly. 
+Child Care Aware® of America
+Child Care Aware
+(Optional) Local rent context: if user didn’t enter rent, suggest a rent range using public indices like ZORI (if we have a backend cache). 
+Zillow
++1
+Output (what the step creates)
+Budget Template (Month 1)
+Category list with Assigned amounts and rationale.
+“Needs vs Wants vs Saving” summary with percentages and color bands.
+Alerts: Housing cost-burdened, Underfunded emergency fund, High transport vs local norms.
+Explainer Panel
+For each category: “Why this amount?” → shows which inputs/rules/sources influenced the number (e.g., “Based on AAA $0.149/mi × 900 mi”). 
+AAA Newsroom
+One-click Tweaks
+Buttons: “Reduce Wants 10%”, “Boost Savings to 20%”, “Rebalance to 50/30/20”, “Match Living-Wage Basket”.
+Category Schema (seed)
+Income: Salary, Tips/Gig
+Housing (Needs): Rent/Mortgage, Renter/Home Insurance, Electricity, Gas, Water/Sewer, Internet, Phone
+Food (Needs): Groceries, Work/School Lunch
+Transport (Needs): Fuel/Charging, Insurance, Maintenance, Registration/Parking, Transit Pass
+Childcare/Education (Needs): Childcare, After-School, Tuition/Books
+Health (Needs): Health Insurance, Medical/Dental/Prescriptions
+Debt: Credit Card Minimums (needs), Loan Interest (expense), Loan Principal (debt principal)
+Savings/Investing: Emergency Fund, Retirement/Investing
+Wants: Dining, Entertainment, Shopping, Travel, Subscriptions, Gym
+(ledger types set per earlier spec so P/L is clean)
+Allocation Logic (algorithm)
+Start with 50/30/20 targets on net income. 
+Investopedia
+Pin user-entered hard costs first: Rent/Mortgage, Debt minimums, known Subscriptions.
+Fill mandatory needs using guardrails:
+Utilities = user value else EIA state avg baseline (editable). 
+U.S. Energy Information Administration
+Transport (car) = miles × AAA ¢/mi with sublines; Transit = entered pass. 
+AAA Newsroom
+Childcare = state average if selected care type, editable. 
+Child Care Aware® of America
+Groceries = start from MIT basket for household type × local adjustment (informational benchmark), then round to fit budget. 
+Living Wage Calculator
+Check housing burden: if Housing >30% → show warning + auto-rebalance suggestion (reduce Wants first, then non-essential Needs; never reduce minimum debt or essential utilities/childcare).
+HUD User
+Savings: ensure at least 10% if 20% not feasible; if user set emergency-fund months, compute target and propose auto-transfer.
+Wants get the remainder; cap negative categories at zero and flag conflicts.
+Sanity pass vs BLS shares (housing/food/transport/health): if any >2× typical share, raise a soft warning. 
+Bureau of Labor Statistics
+UX Flow (wizard)
+Household & Location → 2) Income → 3) Housing → 4) Transport → 5) Childcare → 6) Debts & Savings → 7) Subscriptions → Review & Create Budget
+Progress bar; inline calculators; defaults prefilled but editable; “Skip” always available.
+Acceptance Criteria
+A1: Given only net income, ZIP, and rent, the system produces a balanced budget using defaults and flags housing burden if >30%. 
+HUD User
+A2: If user picks Car and enters 900 miles, Transport shows AAA-based estimate with line items the user can edit. 
+AAA Newsroom
+A3: With 1 child, center-based care, childcare initializes to the state monthly average (editable).
+Child Care Aware® of America
+A4: “Why this amount?” explains the calculation and cites which input or benchmark influenced it (e.g., EIA avg bill for the state). 
+U.S. Energy Information Administration
+A5: One-click “Rebalance to 50/30/20” adjusts categories while preserving pinned hard costs.
+Investopedia
+A6: Budget writes Assigned amounts for all categories and is saved as the user’s Month 1 plan.
+Technical Notes
+Service calls (read-only benchmarks):
+MIT Living Wage endpoint (or cached tables by metro/family) for food/childcare benchmarks.
+Living Wage Calculator
+EIA state electricity averages (cache monthly). 
+U.S. Energy Information Administration
+AAA cost-per-mile (static table by vehicle class if available; else national avg). 
+AAA Newsroom
+Child Care Aware state averages (yearly → monthly). 
+Child Care Aware® of America
+Computation runs locally; external data used as hints, not prescriptions.
+Explainability: store calc_evidence per category so the UI can show reasoning.
+Internationalization: keep a switch for non-US (skip HUD/MIT/EIA-specific checks).
+Example Output (abbrev)
+Income (Net): $6,000
+50/30/20 targets: Needs $3,000 | Wants $1,800 | Savings $1,200 
+Investopedia
+Housing: Rent $2,200 (37% → warning per HUD); Utilities $150 (EIA avg); Internet $70; Phone $40.
+HUD User
+U.S. Energy Information Administration
+Food: Groceries $650 (MIT metro benchmark range note). 
+Living Wage Calculator
+Transport (car, 900 mi): $134 fuel/energy + $143 insurance + $84 maintenance ≈ $361 (AAA basis).
+AAA Newsroom
+Childcare: $1,050/month (state center-based avg). 
+Child Care Aware® of America
+Savings: $400 (reduced from 1,200 due to housing/kids; prompt to improve)
+Wants: remainder auto-spread across Dining/Entertainment/Shopping/Subscriptions.

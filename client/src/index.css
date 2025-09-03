@@ -1,0 +1,364 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(210 25% 7.8431%);
+  --card: hsl(180 6.6667% 97.0588%);
+  --card-foreground: hsl(210 25% 7.8431%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(210 25% 7.8431%);
+  --primary: hsl(213.3 93.9% 67.8%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(210 25% 7.8431%);
+  --secondary-foreground: hsl(0 0% 100%);
+  --muted: hsl(240 1.9608% 90%);
+  --muted-foreground: hsl(210 25% 7.8431%);
+  --accent: hsl(211.5789 51.3514% 92.7451%);
+  --accent-foreground: hsl(213.3 93.9% 67.8%);
+  --destructive: hsl(356.3033 90.5579% 54.3137%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(201.4286 30.4348% 90.9804%);
+  --input: hsl(200 23.0769% 97.4510%);
+  --ring: hsl(213.3 93.9% 67.8%);
+  --chart-1: hsl(213.3 93.9% 67.8%);
+  --chart-2: hsl(159.7826 100% 36.0784%);
+  --chart-3: hsl(42.0290 92.8251% 56.2745%);
+  --chart-4: hsl(147.1429 78.5047% 41.9608%);
+  --chart-5: hsl(341.4894 75.2000% 50.9804%);
+  --sidebar: hsl(180 6.6667% 97.0588%);
+  --sidebar-foreground: hsl(210 25% 7.8431%);
+  --sidebar-primary: hsl(213.3 93.9% 67.8%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(211.5789 51.3514% 92.7451%);
+  --sidebar-accent-foreground: hsl(213.3 93.9% 67.8%);
+  --sidebar-border: hsl(205.0000 25.0000% 90.5882%);
+  --sidebar-ring: hsl(213.3 93.9% 67.8%);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: 'JetBrains Mono', Menlo, monospace;
+  --radius: 0.75rem;
+  --financial-primary: hsl(213.3 93.9% 67.8%);
+  --financial-income: hsl(142.1 76.2% 36.3%);
+  --financial-expense: hsl(0 84.2% 60.2%);
+  --financial-secondary: hsl(215.4 16.3% 46.9%);
+}
+
+.dark {
+  --background: hsl(240 10% 3.9%);
+  --foreground: hsl(0 0% 98%);
+  --card: hsl(240 10% 3.9%);
+  --card-foreground: hsl(0 0% 98%);
+  --popover: hsl(240 10% 3.9%);
+  --popover-foreground: hsl(0 0% 98%);
+  --primary: hsl(263 70% 50%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(240 4.8% 95.9%);
+  --secondary-foreground: hsl(240 5.9% 10%);
+  --muted: hsl(240 3.7% 15.9%);
+  --muted-foreground: hsl(240 5% 64.9%);
+  --accent: hsl(240 3.7% 15.9%);
+  --accent-foreground: hsl(0 0% 98%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(240 3.7% 15.9%);
+  --input: hsl(240 3.7% 15.9%);
+  --ring: hsl(263 70% 50%);
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(263 70% 50%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(263 70% 50%);
+  --financial-primary: hsl(263 70% 50%);
+  --financial-income: hsl(142.1 76.2% 36.3%);
+  --financial-expense: hsl(0 84.2% 60.2%);
+  --financial-secondary: hsl(240 5% 64.9%);
+}
+
+/* Gen Alpha Dark Mode Enhancements */
+.dark {
+  background: linear-gradient(135deg, hsl(240 10% 3.9%) 0%, hsl(260 10% 5%) 100%) !important;
+}
+
+.dark .glass-effect {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .neon-glow {
+  box-shadow: 0 0 20px hsl(263 70% 50% / 0.3), 0 0 40px hsl(263 70% 50% / 0.1);
+}
+
+.dark .card-glow {
+  background: linear-gradient(145deg, hsl(240 10% 3.9%), hsl(240 8% 6%));
+  border: 1px solid rgba(147, 51, 234, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Modern scrollbars for dark mode */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: hsl(240 5.9% 10%);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, hsl(263 70% 50%), hsl(283 70% 55%));
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, hsl(263 70% 55%), hsl(283 70% 60%));
+}
+
+/* Smooth transitions */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .text-financial-primary {
+    color: var(--financial-primary);
+  }
+  
+  .text-financial-income {
+    color: var(--financial-income);
+  }
+  
+  .text-financial-expense {
+    color: var(--financial-expense);
+  }
+  
+  .text-financial-secondary {
+    color: var(--financial-secondary);
+  }
+  
+  .bg-financial-primary {
+    background-color: var(--financial-primary);
+  }
+  
+  .bg-financial-income {
+    background-color: var(--financial-income);
+  }
+  
+  .bg-financial-expense {
+    background-color: var(--financial-expense);
+  }
+  
+  .bg-financial-secondary {
+    background-color: var(--financial-secondary);
+  }
+  
+  /* Custom Mobile Transaction Animations */
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
+    }
+  }
+
+  @keyframes floatIn {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+    }
+    50% {
+      transform: translateY(-5px) scale(1.02);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .mobile-card-enter {
+    animation: floatIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .recurring-glow {
+    animation: pulseGlow 3s ease-in-out infinite;
+  }
+  
+  .border-financial-primary {
+    border-color: var(--financial-primary);
+  }
+  
+  /* Ultra compact mobile text */
+  .text-2xs {
+    font-size: 0.625rem;
+    line-height: 0.75rem;
+  }
+}
+
+/* Gen Alpha Avatar Animation Effects */
+@keyframes avatar-glow {
+  0%, 100% { 
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.4), 0 0 30px rgba(168, 85, 247, 0.2);
+  }
+  50% { 
+    box-shadow: 0 0 25px rgba(236, 72, 153, 0.6), 0 0 50px rgba(236, 72, 153, 0.3);
+  }
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+  25% { transform: scale(1.1) rotate(90deg); opacity: 1; }
+  50% { transform: scale(1.2) rotate(180deg); opacity: 0.9; }
+  75% { transform: scale(1.1) rotate(270deg); opacity: 1; }
+}
+
+@keyframes rainbow-border {
+  0% { border-color: rgba(59, 130, 246, 0.6); }
+  20% { border-color: rgba(168, 85, 247, 0.6); }
+  40% { border-color: rgba(236, 72, 153, 0.6); }
+  60% { border-color: rgba(249, 115, 22, 0.6); }
+  80% { border-color: rgba(34, 197, 94, 0.6); }
+  100% { border-color: rgba(59, 130, 246, 0.6); }
+}
+
+.avatar-special-glow {
+  animation: avatar-glow 3s ease-in-out infinite;
+}
+
+.sparkle-animate {
+  animation: sparkle-pulse 2s ease-in-out infinite;
+}
+
+.rainbow-border-animate {
+  animation: rainbow-border 4s linear infinite;
+}
+
+.gen-alpha-gradient {
+  background: linear-gradient(45deg, 
+    #3b82f6, #8b5cf6, #ec4899, #f59e0b, #10b981
+  );
+  background-size: 300% 300%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.floating-avatar-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 50;
+  background: linear-gradient(45deg, #8b5cf6, #ec4899);
+  border-radius: 50%;
+  padding: 12px;
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.3);
+  animation: float-bounce 2s ease-in-out infinite;
+}
+
+@keyframes float-bounce {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
+}
+
+/* Simple tab styling with center alignment */
+@layer components {
+  .mobile-tabs button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  
+  @media (max-width: 640px) {
+    .mobile-tabs button {
+      font-size: 0.75rem;
+      padding: 8px 4px;
+    }
+  }
+  
+  /* Text wrapping utilities for long content */
+  .text-wrap-anywhere {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+  
+  .text-truncate-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .description-cell {
+    word-break: break-word;
+    white-space: normal;
+    line-height: 1.4;
+    max-width: 300px;
+    min-width: 200px;
+  }
+  
+  @media (max-width: 640px) {
+    .description-cell {
+      max-width: 180px;
+      min-width: 120px;
+    }
+  }
+}
+
+/* Mobile Landing Page Fixes for Black Text Issues */
+@media (max-width: 768px) {
+  /* Button outline fix */
+  .landing-button-outline {
+    background: white !important;
+    color: rgb(17 24 39) !important;
+    border: 2px solid rgb(107 114 128) !important;
+    font-weight: 700 !important;
+  }
+  
+  /* Card text fixes */
+  .mobile-text-dark {
+    color: rgb(17 24 39) !important;
+    font-weight: 700 !important;
+  }
+  
+  .mobile-subtitle-dark {
+    color: rgb(55 65 81) !important;
+    font-weight: 600 !important;
+  }
+}

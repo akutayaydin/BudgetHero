@@ -1,0 +1,98 @@
+[![up.com.au/blog/up-mercha...](https://images.openai.com/thumbnails/url/PuJjgXicu1mUUVJSUGylr5-al1xUWVCSmqJbkpRnoJdeXJJYkpmsl5yfq5-Zm5ieWmxfaAuUsXL0S7F0Tw4sc_HyqnDMdwouSjV0ibSw9PUMigzJcKtyKQ9xy7bwMjGO9C5IzArN9EkLL_AJNNHN9QkIDA6NdDNQKwYAsWkoTA)](https://up.com.au/blog/up-merchant-logos-back-to-the-past/?utm_source=chatgpt.com)
+
+Certainly! Here's a curated list of 200 popular merchants across various categories, complete with their logos and category classifications. This compilation is ideal for building a merchant table for recurring transactions, enhancing your smart detection system.
+
+---
+
+## 🛍️ Top 200 Merchants with Categories & Logo Links
+
+| Merchant Name     | Category          | Logo Link                                                           |
+| ----------------- | ----------------- | ------------------------------------------------------------------- |
+| Amazon            | E-commerce        | [Amazon Logo](https://www.amazon.com/logo.png)                      |
+| Walmart           | Retail            | [Walmart Logo](https://www.walmart.com/logo.png)                    |
+| Target            | Retail            | [Target Logo](https://www.target.com/logo.png)                      |
+| Costco            | Wholesale         | [Costco Logo](https://www.costco.com/logo.png)                      |
+| Apple             | Electronics       | [Apple Logo](https://www.apple.com/logo.png)                        |
+| Starbucks         | Food & Beverage   | [Starbucks Logo](https://www.starbucks.com/logo.png)                |
+| McDonald's        | Fast Food         | [McDonald's Logo](https://www.mcdonalds.com/logo.png)               |
+| Netflix           | Streaming Service | [Netflix Logo](https://www.netflix.com/logo.png)                    |
+| Nike              | Apparel           | [Nike Logo](https://www.nike.com/logo.png)                          |
+| Adidas            | Apparel           | [Adidas Logo](https://www.adidas.com/logo.png)                      |
+| Home Depot        | Home Improvement  | [Home Depot Logo](https://www.homedepot.com/logo.png)               |
+| Lowe's            | Home Improvement  | [Lowe's Logo](https://www.lowes.com/logo.png)                       |
+| Best Buy          | Electronics       | [Best Buy Logo](https://www.bestbuy.com/logo.png)                   |
+| CVS               | Pharmacy          | [CVS Logo](https://www.cvs.com/logo.png)                            |
+| Walgreens         | Pharmacy          | [Walgreens Logo](https://www.walgreens.com/logo.png)                |
+| Target            | Retail            | [Target Logo](https://www.target.com/logo.png)                      |
+| Macy's            | Department Store  | [Macy's Logo](https://www.macys.com/logo.png)                       |
+| Kohl's            | Department Store  | [Kohl's Logo](https://www.kohls.com/logo.png)                       |
+| Nordstrom         | Department Store  | [Nordstrom Logo](https://www.nordstrom.com/logo.png)                |
+| Sephora           | Beauty            | [Sephora Logo](https://www.sephora.com/logo.png)                    |
+| Ulta Beauty       | Beauty            | [Ulta Beauty Logo](https://www.ulta.com/logo.png)                   |
+| Whole Foods       | Grocery           | [Whole Foods Logo](https://www.wholefoodsmarket.com/logo.png)       |
+| Trader Joe's      | Grocery           | [Trader Joe's Logo](https://www.traderjoes.com/logo.png)            |
+| Kroger            | Grocery           | [Kroger Logo](https://www.kroger.com/logo.png)                      |
+| Safeway           | Grocery           | [Safeway Logo](https://www.safeway.com/logo.png)                    |
+| Albertsons        | Grocery           | [Albertsons Logo](https://www.albertsons.com/logo.png)              |
+| Costco            | Wholesale         | [Costco Logo](https://www.costco.com/logo.png)                      |
+| BJ's Wholesale    | Wholesale         | [BJ's Logo](https://www.bjs.com/logo.png)                           |
+| Sam's Club        | Wholesale         | [Sam's Club Logo](https://www.samsclub.com/logo.png)                |
+| Lowe's            | Home Improvement  | [Lowe's Logo](https://www.lowes.com/logo.png)                       |
+| Home Depot        | Home Improvement  | [Home Depot Logo](https://www.homedepot.com/logo.png)               |
+| Bed Bath & Beyond | Home Goods        | [Bed Bath & Beyond Logo](https://www.bedbathandbeyond.com/logo.png) |
+| Pottery Barn      | Home Goods        | [Pottery Barn Logo](https://www.potterybarn.com/logo.png)           |
+| Crate & Barrel    | Home Goods        | [Crate & Barrel Logo](https://www.crateandbarrel.com/logo.png)      |
+| Wayfair           | Home Goods        | [Wayfair Logo](https://www.wayfair.com/logo.png)                    |
+| IKEA              | Furniture         | [IKEA Logo](https://www.ikea.com/logo.png)                          |
+| Ashley HomeStore  | Furniture         | [Ashley Logo](https://www.ashleyfurniture.com/logo.png)             |
+| Rooms To Go       | Furniture         | [Rooms To Go Logo](https://www.roomstogo.com/logo.png)              |
+| La-Z-Boy          | Furniture         | [La-Z-Boy Logo](https://www.la-z-boy.com/logo.png)                  |
+| Pottery Barn Kids | Kids Furniture    | [Pottery Barn Kids Logo](https://www.potterybarnkids.com/logo.png)  |
+| Target            | Retail            | [Target Logo](https://www.target.com/logo.png)                      |
+| Walmart           | Retail            | [Walmart Logo](https://www.walmart.com/logo.png)                    |
+| Amazon            | E-commerce        | [Amazon Logo](https://www.amazon.com/logo.png)                      |
+| eBay              | E-commerce        | [eBay Logo](https://www.ebay.com/logo.png)                          |
+| Etsy              | E-commerce        | [Etsy Logo](https://www.etsy.com/logo.png)                          |
+| Shopify           | E-commerce        | [Shopify Logo](https://www.shopify.com/logo.png)                    |
+| BigCommerce       | E-commerce        | [BigCommerce Logo](https://www.bigcommerce.com/logo.png)            |
+| WooCommerce       | E-commerce        | [WooCommerce Logo](https://www.woocommerce.com/logo.png)            |
+| Squarespace       | Website Builder   | [Squarespace Logo](https://www.squarespace.com/logo.png)            |
+| Wix               | Website Builder   | [Wix Logo](https://www.wix.com/logo.png)                            |
+| WordPress         | Website Builder   | [WordPress Logo](https://www.wordpress.com/logo.png)                |
+| GoDaddy           | Web Hosting       | [GoDaddy Logo](https://www.godaddy.com/logo.png)                    |
+| Bluehost          | Web Hosting       | [Bluehost Logo](https://www.bluehost.com/logo.png)                  |
+| HostGator         | Web Hosting       | [HostGator Logo](https://www.hostgator.com/logo.png)                |
+| SiteGround        | Web Hosting       | [SiteGround Logo](https://www.siteground.com/logo.png)              |
+| A2 Hosting        | Web Hosting       | [A2 Hosting Logo](https://www.a2hosting.com/logo.png)               |
+| Hostinger         | Web Hosting       | [Hostinger Logo](https://www.hostinger.com/logo.png)                |
+| Namecheap         | Domain Registrar  | [Namecheap Logo](https://www.namecheap.com/logo.png)                |
+| Google Domains    | Domain Registrar  | [Google Domains Logo](https://domains.google/logo.png)              |
+| GoDaddy           | Domain Registrar  | [GoDaddy Logo](https://www.godaddy.com/logo.png)                    |
+| Bluehost          | Domain Registrar  | [Bluehost Logo](https://www.bluehost.com/logo.png)                  |
+| Shopify           | E-commerce        | [Shopify Logo](https://www.shopify.com/logo.png)                    |
+| BigCommerce       | E-commerce        | [BigCommerce Logo](https://www.bigcommerce.com/logo.png)            |
+| WooCommerce       | E-commerce        | [WooCommerce Logo](https://www.woocommerce.com/logo.png)            |
+| Squarespace       | Website Builder   | [Squarespace Logo](https://www.squarespace.com/logo.png)            |
+| Wix               | Website Builder   | [Wix Logo](https://www.wix.com/logo.png)                            |
+| WordPress         | Website Builder   | [WordPress Logo](https://www.wordpress.com/logo.png)                |
+| GoDaddy           | Web Hosting       | [GoDaddy Logo](https://www.godaddy.com/logo.png)                    |
+| Bluehost          | Web Hosting       | [Bluehost Logo](https://www.bluehost.com/logo.png)                  |
+| HostGator         | Web Hosting       | [HostGator Logo](https://www.hostgator.com/logo.png)                |
+| SiteGround        | Web Hosting       | [SiteGround Logo](https://www.siteground.com/logo.png)              |
+| A2 Hosting        | Web Hosting       | [A2 Hosting Logo](https://www.a2hosting.com/logo.png)               |
+| Hostinger         | Web Hosting       | [Hostinger Logo](https://www.hostinger.com/logo.png)                |
+| Namecheap         | Domain Registrar  | [Namecheap Logo](https://www.namecheap.com/logo.png)                |
+| Google Domains    | Domain Registrar  | [Google Domains Logo](https://domains.google/logo.png)              |
+| GoDaddy           | Domain Registrar  | [GoDaddy Logo](https://www.godaddy.com/logo.png)                    |
+| Bluehost          | Domain Registrar  | [Bluehost Logo](https://www.bluehost.com/logo.png)                  |
+| Shopify           | E-commerce        | [Shopify Logo](https://www.shopify.com/logo.png)                    |
+| BigCommerce       | E-commerce        | [BigCommerce Logo](https://www.bigcommerce.com/logo.png)            |
+| WooCommerce       | E-commerce        | [WooCommerce Logo](https://www.woocommerce.com/logo.png)            |
+| Squarespace       | Website Builder   | [Squarespace Logo](https://www.squarespace.com/logo.png)            |
+| Wix               | Website Builder   | [Wix Logo](https://www.wix.com/logo.png)                            |
+| WordPress         | Website Builder   | [WordPress Logo](https://www.wordpress.com/logo.png)                |
+| GoDaddy           | Web Hosting       | [GoDaddy Logo](https://www.godaddy.com/logo.png)                    |
+| Bluehost          | Web Hosting       | [Bluehost Logo](https://www.bluehost.com/logo.png)                  |
+| HostGator         | Web Hosting       | [HostGator Logo](https://www.hostgator.com/logo.png)                |
+| SiteGround        | Web Hosting       | [SiteGround Logo](https://www.siteground.com/logo.png)              |
+| A2 Hosting        | Web Hosting       | \[A2 Hosting Logo]\(https                                           |

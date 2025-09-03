@@ -1,0 +1,60 @@
+Perfect! I can generate the **full merchant admin table** in the format you want, with placeholders for logos and aliases/regex for all your cleaned merchants. Here’s a full **sample of the first 50 merchants**, structured for CSV import. After that, we can scale it to all \~150+ merchants.
+
+---
+
+| Merchant                           | Category                   | Type         | Frequency  | Status | Confidence | Aliases/Regex                       | Logo        |
+| ---------------------------------- | -------------------------- | ------------ | ---------- | ------ | ---------- | ----------------------------------- | ----------- |
+| 1st Floor Laboratory               | Medical                    | Expense      | Recurring  | Active | High       | 1st Floor Lab, 1st Floor Laboratory | \[Logo URL] |
+| CVS                                | Medical                    | Expense      | Recurring  | Active | High       | CVS, CVS Pharmacy                   | \[Logo URL] |
+| Walgreens                          | Medical                    | Expense      | Recurring  | Active | High       | Walgreens, Walgreen                 | \[Logo URL] |
+| Adventureland                      | Entertainment & Recreation | Expense      | Seasonal   | Active | Medium     | Adventureland                       | \[Logo URL] |
+| Disney                             | Entertainment & Recreation | Expense      | Recurring  | Active | High       | Disney, Disneyland                  | \[Logo URL] |
+| Hulu                               | Entertainment & Recreation | Subscription | Monthly    | Active | High       | Hulu                                | \[Logo URL] |
+| Loop Neighborhood                  | Entertainment & Recreation | Expense      | Occasional | Active | Medium     | Loop Neighborhood                   | \[Logo URL] |
+| Netflix                            | Entertainment & Recreation | Subscription | Monthly    | Active | High       | Netflix                             | \[Logo URL] |
+| Prime Video                        | Entertainment & Recreation | Subscription | Monthly    | Active | High       | Amazon Prime Video, Prime Video     | \[Logo URL] |
+| San Francisco Zoo                  | Charity                    | Expense      | Annual     | Active | Medium     | SF Zoo, San Francisco Zoo           | \[Logo URL] |
+| Small Change Arcade                | Entertainment & Recreation | Expense      | Occasional | Active | Medium     | Small Change Arcade                 | \[Logo URL] |
+| Air Canada                         | Travel & Vacation          | Expense      | Recurring  | Active | High       | Air Canada                          | \[Logo URL] |
+| Chase Travel                       | Travel & Vacation          | Expense      | Recurring  | Active | High       | Chase Travel                        | \[Logo URL] |
+| Wyndham Hotels & Resorts           | Travel & Vacation          | Expense      | Recurring  | Active | High       | Wyndham Hotels, Wyndham Resorts     | \[Logo URL] |
+| Amazon                             | Shopping                   | Expense      | Recurring  | Active | High       | Amazon, Amazon.com                  | \[Logo URL] |
+| Amazon Cefmk Ma Payments Jiyl Z Fo | Shopping                   | Expense      | Recurring  | Active | Medium     | Amazon, Cefmk Ma Payments           | \[Logo URL] |
+| Elias & Co                         | Shopping                   | Expense      | Occasional | Active | Medium     | Elias & Co                          | \[Logo URL] |
+| Marshalls                          | Shopping                   | Expense      | Recurring  | Active | High       | Marshalls                           | \[Logo URL] |
+| Ross Dress for Less                | Clothing                   | Expense      | Recurring  | Active | High       | Ross Dress, Ross Dress for Less     | \[Logo URL] |
+| Target                             | Shopping                   | Expense      | Recurring  | Active | High       | Target                              | \[Logo URL] |
+| Walmart                            | Shopping                   | Expense      | Recurring  | Active | High       | Walmart                             | \[Logo URL] |
+| World Market                       | Coffee Shops               | Expense      | Occasional | Active | Medium     | World Market                        | \[Logo URL] |
+| Apple                              | Credit Card Payment        | Payment      | Recurring  | Active | High       | Apple, Apple Inc                    | \[Logo URL] |
+| Chase                              | Credit Card Payment        | Payment      | Recurring  | Active | High       | Chase Bank, Chase                   | \[Logo URL] |
+| Payment                            | Credit Card Payment        | Payment      | Recurring  | Active | Medium     | Payment                             | \[Logo URL] |
+| Apple Pay                          | Transfer                   | Transfer     | Recurring  | Active | High       | Apple Pay                           | \[Logo URL] |
+| Apple Savings Transfer Web         | Transfer                   | Transfer     | Recurring  | Active | High       | Apple Savings Transfer              | \[Logo URL] |
+| Citi                               | Transfer                   | Transfer     | Recurring  | Active | High       | Citi, Citibank                      | \[Logo URL] |
+| Coinbase                           | Transfer                   | Transfer     | Recurring  | Active | High       | Coinbase                            | \[Logo URL] |
+| Exponent Member                    | Transfer                   | Transfer     | Monthly    | Active | Medium     | Exponent Member                     | \[Logo URL] |
+| Npa Web (Uncategorized)            | Transfer                   | Transfer     | Occasional | Active | Medium     | Npa Web                             | \[Logo URL] |
+| Real Time Payment Credit           | Transfer                   | Transfer     | Recurring  | Active | Medium     | Real Time Payment, RTP Credit       | \[Logo URL] |
+| Robinhood                          | Transfer                   | Transfer     | Recurring  | Active | High       | Robinhood                           | \[Logo URL] |
+| Stripe                             | Transfer                   | Transfer     | Recurring  | Active | High       | Stripe                              | \[Logo URL] |
+| Wealthfront                        | Transfer                   | Transfer     | Recurring  | Active | High       | Wealthfront                         | \[Logo URL] |
+| Zelle                              | Transfer                   | Transfer     | Recurring  | Active | High       | Zelle                               | \[Logo URL] |
+| Applebee's                         | Restaurants & Bars         | Expense      | Recurring  | Active | High       | Applebee, Applebee's                | \[Logo URL] |
+| Auntie Anne's                      | Restaurants & Bars         | Expense      | Recurring  | Active | High       | Auntie Anne, Auntie Anne's          | \[Logo URL] |
+| Bakeries                           | Restaurants & Bars         | Expense      | Occasional | Active | Medium     | Bakery, Bakeries                    | \[Logo URL] |
+| Cafe Daisy                         | Restaurants & Bars         | Expense      | Recurring  | Active | Medium     | Cafe Daisy                          | \[Logo URL] |
+| California Pizza Kitchen           | Restaurants & Bars         | Expense      | Recurring  | Active | High       | California Pizza Kitchen, CPK       | \[Logo URL] |
+| Carl's Jr.                         | Restaurants & Bars         | Expense      | Recurring  | Active | High       | Carl's Jr, Carls Jr.                | \[Logo URL] |
+| Chipotle                           | Restaurants & Bars         | Expense      | Recurring  | Active | High       | Chipotle, Chipotle Mexican Grill    | \[Logo URL] |
+| Cilantro SF Taqueria               | Restaurants & Bars         | Expense      | Recurring  | Active | Medium     | Cilantro, Cilantro SF               | \[Logo URL] |
+| City Kebabs & Gyros Inc            | Restaurants & Bars         | Expense      | Recurring  | Active | Medium     | City Kebabs, Gyros Inc              | \[Logo URL] |
+| Denny's                            | Restaurants & Bars         | Expense      | Recurring  | Active | High       | Denny's                             | \[Logo URL] |
+| DoorDash                           | Restaurants & Bars         | Expense      | Recurring  | Active | High       | DoorDash                            | \[Logo URL] |
+| Earl of Sandwich                   | Restaurants & Bars         | Expense      | Recurring  | Active | Medium     | Earl of Sandwich                    | \[Logo URL] |
+
+---
+
+I can **complete the remaining \~100 merchants** in this same format and provide a **ready-to-import CSV file**, with proper placeholders for logos and regex aliases for admin detection.
+
+Do you want me to generate the **full CSV version next**?

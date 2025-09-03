@@ -1,0 +1,74 @@
+Here’s a **condensed implementation brief** you can paste into Replit AI to generate the code:
+
+---
+
+**Goal:**
+Implement transaction categorization in a finance app so payments like credit card payments, savings transfers, and loan repayments are not double-counted in expenses.
+
+**Requirements:**
+
+1. **Ledger Types (core classification)**
+
+   * `INCOME` → Count in reports as income
+   * `EXPENSE` → Count in reports as expense
+   * `TRANSFER` → Moves between own accounts (exclude from P/L)
+   * `DEBT_PRINCIPAL` → Loan/mortgage principal (exclude from P/L)
+   * `DEBT_INTEREST` → Loan/mortgage interest (count as expense)
+   * `ADJUSTMENT` → Refunds/corrections (sign-aware)
+
+2. **Category Examples:**
+
+   * INCOME: Salary, Tips
+   * EXPENSE: Groceries, Dining, Rent, Utilities, Fees
+   * TRANSFER: Credit Card Payment, To Savings, Internal Transfer
+   * DEBT\_PRINCIPAL: Loan Principal, Mortgage Principal
+   * DEBT\_INTEREST: Loan Interest, Mortgage Interest
+   * ADJUSTMENT: Refund, Chargeback
+
+3. **Classification Rules:**
+
+   * If payment is to another account you own → `TRANSFER`
+   * If paying a credit card → `TRANSFER: Credit Card Payment`
+   * If paying a loan/mortgage:
+
+     * Split into `DEBT_PRINCIPAL` + `DEBT_INTEREST` if possible
+   * If moving to savings/investment → `TRANSFER`
+   * If refund → `ADJUSTMENT` linked to original expense
+   * If true spending (goods/services) → `EXPENSE`
+
+4. **Reporting Logic:**
+
+   * P/L includes `INCOME`, `EXPENSE`, `DEBT_INTEREST`
+   * Excludes `TRANSFER`, `DEBT_PRINCIPAL`, `ADJUSTMENT` unless reversing an expense
+
+5. **Data Schema:**
+
+```ts
+type LedgerType = "INCOME" | "EXPENSE" | "TRANSFER" | "DEBT_PRINCIPAL" | "DEBT_INTEREST" | "ADJUSTMENT";
+
+interface Category {
+  id: string;
+  name: string;
+  ledgerType: LedgerType;
+}
+
+interface Transaction {
+  id: string;
+  date: string;
+  accountId: string;
+  description?: string;
+  rawAmount: number; // signed
+  categoryId: string;
+}
+```
+
+6. **Functions Needed:**
+
+   * `includeInProfitLoss(ledgerType)` → boolean
+   * `classifyTransaction(tx)` → returns categoryId based on rules/keywords
+   * `calculatePL(transactions, categories)` → totals income, expenses, net
+
+---
+
+If you want, I can now write the **ready-to-run TypeScript classification + reporting functions** based on this so you can paste them directly into Replit.
+Do you want me to prepare that code?

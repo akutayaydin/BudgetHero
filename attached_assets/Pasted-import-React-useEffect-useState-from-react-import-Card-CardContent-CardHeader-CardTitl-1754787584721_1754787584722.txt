@@ -1,0 +1,803 @@
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Wallet, PieChart, Receipt, Download, History as HistoryIcon } from "lucide-react";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
+
+const currency = (n:number) => n.toLocaleString(undefined, { style: "currency", currency: "USD" })
+const ROUND_TO = 10
+
+type Tx = {id:number;date:string;merchant:string;category:string;amount:number}
+type Budget = {id:string;name:string;spent:number;limit:number}
+type Goal = {id:string;name:string;target:number;saved:number}
+type Hist = {month:string;income:number;spend:number}
+
+const initialTx: Tx[] = []
+const initialBudgets: Budget[] = []
+const initialGoals: Goal[] = []
+const initialHistory: Hist[] = []
+
+function monthLabel(iso:string){
+  const [y,m] = iso.split("-")
+  return new Date(parseInt(y), parseInt(m)-1, 1).toLocaleString(undefined,{ month:"short", year:"numeric"})
+}
+
+export default function BudgetAppMockups() {
+  const [activeTab, setActiveTab] = useState("dashboard")
+  const [monthIncome, setMonthIncome] = useState(0)
+  const [tx, setTx] = useState<Tx[]>(initialTx)
+  const [budgets, setBudgets] = useState<Budget[]>(initialBudgets)
+  const [goals, setGoals] = useState<Goal[]>(initialGoals)
+  const [history, setHistory] = useState<Hist[]>(initialHistory)
+
+  const expensesFromTx = tx.reduce((a,t)=> a + (t.amount<0 ? Math.abs(t.amount) : 0), 0)
+  const monthSpend = (budgets.length>0) ? budgets.reduce((a,b)=>a+b.spent,0) : expensesFromTx
+  const savingsRate = Math.max(0, (monthIncome - monthSpend) / Math.max(1, monthIncome))
+
+    // Helpers to compute month and overall stats
+    const nowISO = (() => {
+    const n = new Date()
+    return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`})()
+
+    function yymm(dateStr: string) {
+    const d = new Date(dateStr)
+    if (Number.isNaN(d.getTime())) return null
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+    }
+
+    // Optional: current-month figures purely from transactions (if you want to use them)
+    const monthTxIncome = tx.reduce((a,t)=> a + ((t.amount>0 && yymm(t.date)===nowISO)? t.amount:0), 0)
+    const monthTxSpend  = tx.reduce((a,t)=> a + ((t.amount<0 && yymm(t.date)===nowISO)? Math.abs(t.amount):0), 0)
+
+    // Overall (all-time) figures from transactions
+    const overallIncome = tx.reduce((a,t)=> a + (t.amount>0 ?  t.amount : 0), 0)
+    const overallSpend  = tx.reduce((a,t)=> a + (t.amount<0 ? -t.amount : 0), 0)
+    const overallLeft   = overallIncome - overallSpend
+    const overallRate   = Math.max(0, overallLeft / Math.max(1, overallIncome))
+
+
+  const [newIncome, setNewIncome] = useState("")
+  const [newTx, setNewTx] = useState({ date:"", merchant:"", category:"", amount:"" })
+  const [newBudget, setNewBudget] = useState({ name:"", limit:"" })
+  const [adjustSpent, setAdjustSpent] = useState<{[id:string]: string}>({})
+  const [goalContrib, setGoalContrib] = useState<{[id:string]: string}>({})
+  const [newHist, setNewHist] = useState({ month:"", income:"", spend:"" })
+  const [qBudgetName, setQBudgetName] = useState("")
+  const [qBudgetLimit, setQBudgetLimit] = useState("")
+
+  const applyIncome = () => {
+    const val = parseFloat(newIncome)
+    if (!isNaN(val)) setMonthIncome(val)
+    setNewIncome("")
+  }
+
+  const addTransaction = () => {
+    const amt = parseFloat(newTx.amount)
+    if (!newTx.date || !newTx.merchant || !newTx.category || isNaN(amt)) return
+    const entry = { id: Date.now(), date:newTx.date, merchant:newTx.merchant, category:newTx.category, amount: amt }
+    setTx(prev => {
+      const next = [entry, ...prev]
+      upsertCurrentMonth(next)
+      return next
+    })
+    if (amt < 0) {
+      setBudgets(prev => prev.map(b => b.name === newTx.category ? { ...b, spent: Math.max(0, b.spent + Math.abs(amt)) } : b))
+    }
+    if (amt > 0) {
+      setMonthIncome(prev => prev + amt)
+    }
+    setNewTx({ date:"", merchant:"", category:"", amount:"" })
+  }
+
+  const addBudget = () => {
+    const lim = parseFloat(newBudget.limit)
+    if (!newBudget.name || isNaN(lim)) return
+    const id = newBudget.name.toLowerCase().replace(/\s+/g,"-")
+    setBudgets([...budgets, { id, name:newBudget.name, spent:0, limit: lim }])
+    setNewBudget({ name:"", limit:"" })
+  }
+
+  const bumpSpent = (id:string) => {
+    const inc = parseFloat(adjustSpent[id]||"0")
+    if (isNaN(inc) || inc===0) return
+    setBudgets(prev => prev.map(b => b.id===id ? { ...b, spent: Math.max(0, b.spent + inc) } : b))
+    setAdjustSpent({ ...adjustSpent, [id]: "" })
+  }
+
+  const contributeGoal = (id:string) => {
+    const inc = parseFloat(goalContrib[id]||"0")
+    if (isNaN(inc) || inc===0) return
+    setGoals(prev => prev.map(g => g.id===id ? { ...g, saved: Math.max(0, g.saved + inc) } : g))
+    setGoalContrib({ ...goalContrib, [id]: "" })
+  }
+
+  const addHistoryRow = () => {
+    const inc = parseFloat(newHist.income)
+    const sp = parseFloat(newHist.spend)
+    if (!newHist.month || isNaN(inc) || isNaN(sp)) return
+    if (history.some(h=>h.month===newHist.month)) return
+    setHistory(prev => [...prev, { month:newHist.month, income:inc, spend:sp }].sort((a,b)=> a.month.localeCompare(b.month)))
+    setNewHist({ month:"", income:"", spend:"" })
+  }
+
+  const rollCurrentIntoHistory = () => {
+    const now = new Date()
+    const iso = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`
+    if (history.some(h=>h.month===iso)) return
+    setHistory(prev => [...prev, { month: iso, income: monthIncome, spend: monthSpend }].sort((a,b)=> a.month.localeCompare(b.month)))
+  }
+
+  const chartData = history.map(h => ({
+    month: monthLabel(h.month),
+    Income: h.income,
+    Spending: h.spend,
+    Savings: Math.max(0, h.income - h.spend),
+    Rate: Math.round(Math.max(0, (h.income - h.spend)/Math.max(1,h.income))*100)
+  }))
+
+  const [pasteText, setPasteText] = useState("")
+  const [pasteAccountType, setPasteAccountType] = useState<'credit'|'checking'>("credit")
+  const [parsedPreview, setParsedPreview] = useState<any[]>([])
+  const [keywordMap, setKeywordMap] = useState<Record<string,string>>({
+    'SAFEWAY':'Groceries','TRADER JOE':'Groceries','WHOLE FOODS':'Groceries','COSTCO':'Groceries',
+    'SHELL':'Gas','CHEVRON':'Gas',' 76 ':'Gas','ARCO':'Gas','EXXON':'Gas',
+    'UBER':'Transport','LYFT':'Transport','MUNI':'Transport','BART':'Transport','MTA':'Transport',
+    'PG&E':'Utilities','XFINITY':'Utilities','COMCAST':'Utilities','AT&T':'Utilities','T-MOBILE':'Utilities',
+    'NETFLIX':'Subscriptions','HULU':'Subscriptions','SPOTIFY':'Subscriptions','AMAZON':'Shopping',
+    'TARGET':'Shopping','WALMART':'Shopping','GEICO':'Insurance','TOYOTA AUTO INSURANCE':'Insurance',
+  })
+  const [newKeyword, setNewKeyword] = useState({ pattern: '', category: '' })
+
+  function guessCategory(desc:string){
+    const up = desc.toUpperCase()
+    for (const k of Object.keys(keywordMap)) { if (up.includes(k)) return keywordMap[k] }
+    return 'Other'
+  }
+
+  function parseCsvText(text:string){
+    const firstLineEnd = text.indexOf('\n') === -1 ? text.length : text.indexOf('\n')
+    const headerLine = text.slice(0, firstLineEnd).trim()
+    const delimiter = headerLine.includes('\t') ? '\t' : ','
+
+    const rows:string[][] = []
+    let field = ''
+    let row:string[] = []
+    let inQuotes = false
+    for (let i=0;i<text.length;i++){
+      const ch = text[i]
+      const next = text[i+1]
+      if (ch === '"'){
+        if (inQuotes && next === '"'){ field += '"'; i++; continue }
+        inQuotes = !inQuotes; continue
+      }
+      if (!inQuotes && (ch === delimiter)) { row.push(field); field=''; continue }
+      if (!inQuotes && (ch === '\n')){ row.push(field); rows.push(row); row=[]; field=''; continue }
+      if (!inQuotes && (ch === '\r')){ continue }
+      field += ch
+    }
+    if (field.length>0 || row.length>0){ row.push(field); rows.push(row) }
+
+    const header = (rows[0]||[]).map(s=>s.trim().replace(/\uFEFF/g,'')).filter(h=>h!=='')
+    const lower = header.map(h=>h.toLowerCase())
+
+    const isChaseChecking = lower.includes('posting date') && lower.includes('details') && lower.includes('description') && lower.includes('amount')
+    const isChaseCredit = (lower.includes('transaction date') || lower.includes('trans date')) && lower.includes('post date') && lower.includes('description') && lower.includes('amount')
+
+    const di = isChaseChecking ? lower.indexOf('posting date') : (isChaseCredit ? lower.indexOf('post date') : lower.indexOf('date'))
+    const dd = lower.indexOf('description')
+    const da = lower.indexOf('amount')
+    const ddetails = isChaseChecking ? lower.indexOf('details') : (isChaseCredit ? lower.indexOf('type') : -1)
+    const dcat = isChaseChecking ? -1 : (isChaseCredit ? lower.indexOf('category') : lower.indexOf('category'))
+
+    if (di===-1 || dd===-1 || da===-1){
+      console.warn('Unsupported CSV header. Got:', header)
+      return []
+    }
+
+    const out = rows.slice(1)
+      .filter(r=>r.some(c=>String(c||'').trim().length>0))
+      .map(cols=>{
+        const date = (cols[di]||'').trim()
+        const desc = (cols[dd]||'').trim()
+        const detailRaw = (ddetails>-1? String(cols[ddetails]||'').trim() : '')
+        const details = detailRaw.toUpperCase()
+        const typeLower = detailRaw.toLowerCase()
+        const rawAmt0 = String(cols[da]||'0').trim()
+        const isParen = /^\(.*\)$/.test(rawAmt0)
+        const cleaned = rawAmt0.replace(/[()$,]/g,'')
+        let amt = parseFloat(cleaned || '0')
+        if (isNaN(amt)) amt = 0
+        if (isParen) amt = -Math.abs(amt)
+
+        if (isChaseChecking){
+          if (details === 'DEBIT' && amt>0) amt = -amt
+          if (details === 'CREDIT' && amt<0) amt = Math.abs(amt)
+        } else if (isChaseCredit) {
+          const isPayment = /(payment|credit|adjustment|return|refund)/i.test(typeLower) || /payment|credit/i.test(desc)
+          const isPurchase = /(sale|purchase|charge|fee)/i.test(typeLower)
+          if (isPayment && amt<0) amt = Math.abs(amt)
+          if (isPurchase && amt>0) amt = -Math.abs(amt)
+          if (!isPayment && !isPurchase) {
+            if (amt>0) amt = -amt
+          }
+        }
+
+        const catFromFile = (dcat>-1 && cols[dcat])? String(cols[dcat]).trim() : ''
+        const category = catFromFile || guessCategory(desc)
+        return { date, merchant: desc, amount: amt, category }
+      })
+      .filter(r=>r.date && r.merchant)
+
+    return out
+  }
+
+  function handleCsv(e:any){
+    const file = e.target.files?.[0]; if(!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      try{
+        const text = String(reader.result||'')
+        const rows = parseCsvText(text)
+        setParsedPreview(rows)
+      }catch(err){ console.error(err) }
+    }
+    reader.readAsText(file)
+  }
+
+  function parsePasted(){
+    setParsedPreview([])
+  }
+
+  function commitParsed(){
+    if (parsedPreview.length===0) return
+    const stamped = parsedPreview.map(r=> ({ id: Date.now()+Math.random(), ...r }))
+
+    setTx(prev=> {
+      const next = [...stamped, ...prev]
+      upsertCurrentMonth(next)
+      return next
+    })
+
+    const depositSum = stamped.reduce((a,r)=> a + (Number(r.amount)>0? Number(r.amount):0), 0)
+    if (depositSum > 0) setMonthIncome(prev => prev + depositSum)
+
+    const expByCat: Record<string, number> = {}
+    for (const r of stamped){
+      const amt = Number(r.amount)
+      if (!isNaN(amt) && amt < 0){
+        const k=String(r.category||'Other')
+        expByCat[k]=(expByCat[k]||0)+Math.abs(amt)
+      }
+    }
+
+    setBudgets(prev=>{
+      let next = prev.map(b => {
+        const inc = expByCat[b.name] || 0
+        return inc ? { ...b, spent: Math.max(0, b.spent + inc) } : b
+      })
+      for (const [name,total] of Object.entries(expByCat)){
+        if (!next.some(b=>b.name===name)){
+          const id = name.toLowerCase().replace(/\s+/g,'-')
+          const limit = Math.ceil(total/ROUND_TO)*ROUND_TO
+          next = [{ id, name, spent: total, limit }, ...next]
+        }
+      }
+      return next
+    })
+
+    setParsedPreview([]); setPasteText('')
+  }
+
+  function getCurrentMonthISO(){
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`
+  }
+  function computeMonthSpendFrom(nextTx = tx){
+    const spendTx = nextTx.reduce((a,t)=> a + (t.amount<0? Math.abs(t.amount):0), 0)
+    return (budgets.length>0) ? budgets.reduce((a,b)=>a+b.spent,0) : spendTx
+  }
+  function upsertCurrentMonth(nextTx = tx){
+    const iso = getCurrentMonthISO()
+    const spend = computeMonthSpendFrom(nextTx)
+    setHistory(prev => {
+      const row = { month: iso, income: monthIncome, spend }
+      const i = prev.findIndex(h=>h.month===iso)
+      if (i === -1) return [...prev, row].sort((a,b)=> a.month.localeCompare(b.month))
+      const copy = prev.slice(); copy[i] = row; return copy
+    })
+  }
+  function recalcBudgetSpentFromTx(){
+  const totals: Record<string, number> = {}
+  for (const t of tx){
+    if (t.amount < 0){
+      const k = t.category || 'Other'
+      totals[k] = (totals[k] || 0) + Math.abs(t.amount)
+    }
+  }
+
+  let changed = false
+  let next = budgets.map(b => {
+    const newSpent = totals[b.name] || 0
+    if (Math.abs(newSpent - b.spent) > 0.009) changed = true
+    return { ...b, spent: newSpent }
+  })
+
+  // Add budgets that don't exist yet for newly seen categories
+  for (const [name, total] of Object.entries(totals)){
+    if (!next.some(b => b.name === name)){
+      const id = name.toLowerCase().replace(/\s+/g, '-')
+      const limit = Math.ceil((total || 0)/ROUND_TO)*ROUND_TO
+      next = [...next, { id, name, spent: total, limit }]
+      changed = true
+    }
+  }
+
+  if (changed) setBudgets(next)
+}
+
+  useEffect(()=>{ recalcBudgetSpentFromTx(); upsertCurrentMonth(); }, [tx, budgets.length, monthIncome])
+  function recategorizeWithKeywords(){ setTx(prev => prev.map(t => ({...t, category: guessCategory(t.merchant||'')}))) }
+  useEffect(()=>{ recategorizeWithKeywords() }, [JSON.stringify(keywordMap)])
+  function __calcBudgetLimit(total:number, roundTo:number=ROUND_TO){ return Math.ceil((total||0)/roundTo)*roundTo }
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try{
+      const csvLF = "\uFEFFdate,description,amount,category\n08/01,Test A,12.34,Other\n08/02,Test B,-5.00,\n"
+      const csvCRLF = "date,description,amount\r\n08/01,CRLF A,10.00\r\n08/02,CRLF B,-2.50\r\n"
+      const csvBlank = "date,description,amount\n\n\n"
+      const r1 = parseCsvText(csvLF)
+      const r2 = parseCsvText(csvCRLF)
+      const r3 = parseCsvText(csvBlank)
+      console.assert(r1.length === 2, "CSV LF rows parsed")
+      console.assert(r2.length === 2, "CSV CRLF rows parsed")
+      console.assert(r3.length === 0, "CSV blank lines ignored")
+      console.assert(r1[1].category === 'Other', "Category guessed when blank")
+
+      const tricky = 'date,description,amount\n08/03,"Multi-line,\nhello",12.00\n'
+      const rt = parseCsvText(tricky)
+      console.assert(rt.length === 1 && /Multi-line/.test(rt[0].merchant) && rt[0].amount === 12, "Handles quoted newlines + commas")
+
+      const paren = 'date,description,amount\n08/04,Paren Example,(1,200.35)\n'
+      const rp = parseCsvText(paren)
+      console.assert(rp.length === 1 && rp[0].amount === -1200.35, "Parens amounts parsed negative")
+
+      const ccHeader = "Transaction Date,Post Date,Description,Category,Type,Amount\n"
+      const ccRows = ccHeader +
+        '07/12/2025,07/13/2025,"STARBUCKS, STORE 123",Food & Drink,Sale,5.45\n' +
+        '07/15/2025,07/15/2025,ONLINE PAYMENT,Payments and Credits,Payment,-120.00\n'
+      const r5 = parseCsvText(ccRows)
+      console.assert(r5.length === 2, "Chase credit CSV rows parsed")
+      console.assert(r5[0].amount < 0, "Credit card Sale treated as negative expense")
+      console.assert(r5[1].amount > 0, "Credit card Payment treated as positive inflow")
+
+      const chaseHeader = "Details\tPosting Date\tDescription\tAmount\tType\tBalance\tCheck or Slip #\n"
+      const chaseRows = chaseHeader +
+        "CREDIT\t08/05/2025\tBRANCH MESSENGER P2P        Ali AYDIN       WEB ID: 1472085849\t650.00\tMISC_CREDIT\t2564.54\t\n"+
+        "DEBIT\t08/04/2025\tPayment to Chase card ending in 6070 08/04\t1626.95\tLOAN_PMT\t1914.54\t\n"
+      const r4 = parseCsvText(chaseRows)
+      console.assert(r4.length === 2, "Chase TSV rows parsed")
+      console.assert(r4[0].amount > 0 && r4[1].amount < 0, "Chase CREDIT positive, DEBIT negative")
+
+      const ccUnknown = "Transaction Date,Post Date,Description,Category,Type,Amount\n07/20/2025,07/21/2025,UNKNOWN CHARGE,Other,Unknown,15.00\n"
+      const r6 = parseCsvText(ccUnknown)
+      console.assert(r6[0].amount < 0, "Unknown type defaults to expense (negative)")
+
+      console.assert(__calcBudgetLimit(101, 10) === 110, "Rounded budget limit (nearest $10)")
+      console.assert(__calcBudgetLimit(199, 50) === 200, "Rounded budget limit (nearest $50)")
+    }catch(err){ }
+  }, [])
+
+  function updateTransactionCategory(index: number, category: string) {
+    setTx(prev => {
+      const next = prev.slice()
+      next[index] = { ...next[index], category }
+      return next
+    }) 
+  }
+  function deleteTransaction(index: number) {
+    setTx(prev => {
+      const next = prev.filter((_, i) => i !== index)
+      upsertCurrentMonth(next)
+      return next
+    })
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 p-4 md:p-8">
+      <div className="mx-auto max-w-6xl">
+        <header className="mb-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Budget – Product Mockups</h1>
+            <p className="text-muted-foreground">Interactive wireframes with manual data entry + history</p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" className="rounded-2xl"><Download className="mr-2 h-4 w-4"/>Export CSV</Button>
+          </div>
+        </header>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-6 rounded-2xl">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="budgets">Budgets</TabsTrigger>
+            <TabsTrigger value="transactions">Transactions</TabsTrigger>
+            <TabsTrigger value="goals">Goals</TabsTrigger>
+            <TabsTrigger value="history">History</TabsTrigger>
+            <TabsTrigger value="import">Import</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="dashboard" className="mt-4">
+            <div className="grid gap-4 md:grid-cols-12">
+              <Card className="md:col-span-4 rounded-2xl">
+                <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2"><Wallet className="h-4 w-4"/>This Month</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm"><span>Income</span><span className="font-medium">{currency(monthIncome)}</span></div>
+                    <div className="flex items-center justify-between text-sm"><span>Spent</span><span className="font-medium">{currency(monthSpend)}</span></div>
+                    <div className="flex items-center justify-between text-sm"><span>Left</span><span className="font-medium">{currency(monthIncome - monthSpend)}</span></div>
+                    <div>
+                      <div className="flex items-center justify-between text-xs mb-1"><span>Savings rate</span><span>{Math.round(savingsRate*100)}%</span></div>
+                      <Progress value={savingsRate*100} className="h-2"/>
+                    </div>
+                    <div className="pt-2 flex gap-2">
+                      <Input placeholder="Set monthly income (e.g., 7500)" value={newIncome} onChange={e=>setNewIncome(e.target.value)} className="rounded-2xl" />
+                      <Button onClick={applyIncome} className="rounded-2xl">Apply</Button>
+                    </div>
+                    <div className="pt-2">
+                      <Button variant="outline" onClick={rollCurrentIntoHistory} className="rounded-2xl w-full">Add current month to history</Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="md:col-span-4 rounded-2xl">
+                <CardHeader className="pb-2">
+                    <CardTitle className="flex items-center gap-2">
+                    <Wallet className="h-4 w-4"/>Overall
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                        <span>Total income</span><span className="font-medium">{currency(overallIncome)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                        <span>Total spent</span><span className="font-medium">{currency(overallSpend)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                        <span>Net</span><span className="font-medium">{currency(overallLeft)}</span>
+                    </div>
+                    <div>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                        <span>Overall savings rate</span><span>{Math.round(overallRate*100)}%</span>
+                        </div>
+                        <Progress value={overallRate*100} className="h-2"/>
+                    </div>
+                    </div>
+                </CardContent>
+                </Card>
+
+              <Card className="md:col-span-4 rounded-2xl">
+                <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2"><PieChart className="h-4 w-4"/>Spending by category</CardTitle></CardHeader>
+                <CardContent>
+                  {budgets.length === 0 ? (
+                    <div className="p-4 rounded-xl border text-sm">
+                      <div className="mb-2 text-muted-foreground">No budgets yet. Set up at least one to track spending against limits.</div>
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-2 items-center">
+                        <Input placeholder="Budget name (e.g., Groceries)" value={qBudgetName} onChange={e=>setQBudgetName(e.target.value)} className="rounded-xl md:col-span-2"/>
+                        <Input placeholder="Monthly limit" value={qBudgetLimit} onChange={e=>setQBudgetLimit(e.target.value)} className="rounded-xl md:col-span-2"/>
+                        <Button onClick={()=>{ setNewBudget({ name: qBudgetName, limit: qBudgetLimit }); addBudget(); setQBudgetName(""); setQBudgetLimit(""); }} className="rounded-xl md:col-span-1"><Plus className="mr-2 h-4 w-4"/>Add Budget</Button>
+                      </div>
+                      <div className="mt-2 text-xs text-muted-foreground">You can manage more budgets in the <span className="font-medium">Budgets</span> tab.</div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                      {budgets.map(b => {
+                        const pct = Math.min(100, (b.spent / b.limit) * 100)
+                        return (
+                          <div key={b.id} className="p-3 rounded-xl border">
+                            <div className="text-sm font-medium">{b.name}</div>
+                            <div className="text-xs text-muted-foreground mb-1">{currency(b.spent)} / {currency(b.limit)}</div>
+                            <Progress value={pct} className="h-2" />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="md:col-span-12 rounded-2xl">
+                <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2"><Receipt className="h-4 w-4"/>Recent transactions</CardTitle></CardHeader>
+                <CardContent>
+                  {tx.length === 0 ? (
+                    <div className="p-4 rounded-xl border text-sm text-muted-foreground">No transactions yet. Use <span className="font-medium">Import</span> or add one in <span className="font-medium">Transactions</span>.</div>
+                  ) : (
+                    <div className="divide-y text-sm">
+                      {tx.map(t => (
+                        <div key={t.id} className="py-2 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Badge variant="secondary" className="rounded-xl">{t.category}</Badge>
+                            <div className="font-medium">{t.merchant}</div>
+                            <div className="text-muted-foreground">· {t.date}</div>
+                          </div>
+                          <div className={"font-medium "+(t.amount<0?"text-destructive":"text-emerald-600")}>{t.amount<0?"-":"+"}{currency(Math.abs(t.amount))}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="goals" className="mt-4">
+            <div className="grid gap-4 md:grid-cols-3">
+              {goals.length === 0 ? (
+                <div className="md:col-span-3 p-4 rounded-xl border text-sm text-muted-foreground">No goals yet. Create your first savings goal.</div>
+              ) : (
+                goals.map(g => {
+                  const pct = Math.min(100, (g.saved/g.target)*100)
+                  const left = g.target - g.saved
+                  return (
+                    <Card key={g.id} className="rounded-2xl">
+                      <CardHeader className="pb-2"><CardTitle>{g.name}</CardTitle></CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="text-sm text-muted-foreground">Target {currency(g.target)}</div>
+                        <Progress value={pct} className="h-2"/>
+                        <div className="flex items-center justify-between text-sm">
+                          <span>Saved</span><span className="font-medium">{currency(g.saved)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span>Left</span><span className="font-medium">{currency(left)}</span>
+                        </div>
+                        <div className="flex gap-2 pt-2">
+                          <Input placeholder="Contribute" value={goalContrib[g.id]||""} onChange={e=>setGoalContrib({...goalContrib, [g.id]: e.target.value})} className="rounded-xl"/>
+                          <Button size="sm" onClick={()=>contributeGoal(g.id)} className="rounded-xl">Apply</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="history" className="mt-4">
+            <div className="grid gap-4 md:grid-cols-12">
+              <Card className="md:col-span-8 rounded-2xl">
+                <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2"><HistoryIcon className="h-4 w-4"/>Income vs. Spending</CardTitle></CardHeader>
+                <CardContent>
+                  {chartData.length === 0 ? (
+                    <div className="h-64 grid place-items-center text-sm text-muted-foreground border rounded-xl">No history yet. Add the current month from the Dashboard.</div>
+                  ) : (
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={chartData} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="month" />
+                          <YAxis />
+                          <Tooltip formatter={(v:any)=> currency(Number(v))} />
+                          <Legend />
+                          <Line type="monotone" dataKey="Income" dot={false} strokeWidth={2} />
+                          <Line type="monotone" dataKey="Spending" dot={false} strokeWidth={2} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="md:col-span-4 rounded-2xl">
+                <CardHeader className="pb-2"><CardTitle>Add / Roll Month</CardTitle></CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <div className="grid grid-cols-3 gap-2 mb-2">
+                    <Input placeholder="YYYY-MM" value={newHist.month} onChange={e=>setNewHist(v=>({ ...v, month:e.target.value }))} className="rounded-2xl"/>
+                    <Input placeholder="Income" value={newHist.income} onChange={e=>setNewHist(v=>({ ...v, income:e.target.value }))} className="rounded-2xl"/>
+                    <Input placeholder="Spending" value={newHist.spend} onChange={e=>setNewHist(v=>({ ...v, spend:e.target.value }))} className="rounded-2xl"/>
+                  </div>
+                  <Button className="rounded-2xl w-full mb-2" onClick={addHistoryRow}><Plus className="mr-2 h-4 w-4"/>Add Month</Button>
+                  <Button variant="outline" className="rounded-2xl w-full" onClick={rollCurrentIntoHistory}>Use current month figures</Button>
+                </CardContent>
+              </Card>
+
+              <Card className="md:col-span-12 rounded-2xl">
+                <CardHeader className="pb-2"><CardTitle>Monthly Table</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-5 gap-0 text-sm font-medium text-muted-foreground p-3 border-b rounded-t-2xl">
+                    <div>Month</div><div>Income</div><div>Spending</div><div>Savings</div><div>Rate</div>
+                  </div>
+                  {history.length === 0 ? (
+                    <div className="p-3 text-sm text-muted-foreground">No monthly history yet.</div>
+                  ) : (
+                    history.sort((a,b)=>a.month.localeCompare(b.month)).map(h => {
+                      const savings = Math.max(0, h.income - h.spend)
+                      const rate = Math.max(0, (savings/Math.max(1,h.income))*100)
+                      return (
+                        <div key={h.month} className="grid grid-cols-5 items-center p-3 border-b last:border-0 text-sm">
+                          <div>{monthLabel(h.month)}</div>
+                          <div className="font-medium">{currency(h.income)}</div>
+                          <div className="font-medium">{currency(h.spend)}</div>
+                          <div className="font-medium">{currency(savings)}</div>
+                          <div className="font-medium">{Math.round(rate)}%</div>
+                        </div>
+                      )
+                    })
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="import" className="mt-4">
+            <div className="grid gap-4 md:grid-cols-12">
+              <Card className="md:col-span-7 rounded-2xl">
+                <CardHeader className="pb-2"><CardTitle>Import from CSV</CardTitle></CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <input type="file" accept=".csv,.CSV,.tsv,.TSV,.txt,.TXT" onChange={(e:any)=>handleCsv(e)} className="block w-full text-sm" />
+                  <div className="text-muted-foreground">Expected headers: <code>date,description,amount,category</code> (category optional) <em>or</em> Chase CHECKING <code>Details, Posting Date, Description, Amount, Type, Balance, Check or Slip #</code> <em>or</em> Chase CREDIT <code>Transaction Date, Post Date, Description, Category, Type, Amount[, Memo]</code>. Amount: negative for expenses (or <code>Details=DEBIT</code> in Chase), positive for income (<code>Details=CREDIT</code>).</div>
+                </CardContent>
+              </Card>
+
+              <Card className="md:col-span-5 rounded-2xl">
+                <CardHeader className="pb-2"><CardTitle>Paste statement text (beta)</CardTitle></CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <div className="grid grid-cols-1 gap-2">
+                    <select value={pasteAccountType} onChange={e=>setPasteAccountType(e.target.value as any)} className="border rounded-xl p-2">
+                      <option value="credit">Credit Card</option>
+                      <option value="checking">Checking</option>
+                    </select>
+                    <textarea value={pasteText} onChange={e=>setPasteText(e.target.value)} placeholder="Paste lines like: 07/22 PG&E/EZ-PAY 800-743-5000 CA 76.88" className="border rounded-xl p-2 h-40"/>
+                    <div className="flex gap-2">
+                      <Button className="rounded-2xl" onClick={parsePasted}>Parse</Button>
+                      <Button variant="outline" className="rounded-2xl" onClick={()=>{setPasteText('');setParsedPreview([])}}>Clear</Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {parsedPreview.length>0 && (
+                <Card className="md:col-span-12 rounded-2xl">
+                  <CardHeader className="pb-2"><CardTitle>Import preview ({parsedPreview.length})</CardTitle></CardHeader>
+                  <CardContent>
+                    <div className="border rounded-xl divide-y">
+                      {parsedPreview.slice(0,10).map((r:any,i:number)=> (
+                        <div key={i} className="p-2 text-xs grid grid-cols-6 gap-2 items-center">
+                          <div className="col-span-1 font-medium">{r.date}</div>
+                          <div className="col-span-3 truncate">{r.merchant || r.description}</div>
+                          <div className="col-span-1"><Badge variant="secondary" className="rounded-xl">{r.category||'Other'}</Badge></div>
+                          <div className={"col-span-1 text-right font-medium "+(Number(r.amount)<0?"text-destructive":"text-emerald-600")}>{Number(r.amount)<0?"-":"+"}{currency(Math.abs(Number(r.amount)||0))}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <Button className="rounded-2xl" onClick={commitParsed}>Add to Transactions</Button>
+                      <Button variant="outline" className="rounded-2xl" onClick={()=>setParsedPreview([])}>Clear Preview</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              <Card className="md:col-span-12 rounded-2xl">
+                <CardHeader><CardTitle>Categories & Keyword Rules</CardTitle></CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <Input
+                      placeholder="Keyword (e.g., STARBUCKS, SHELL)"
+                      value={newKeyword.pattern}
+                      onChange={e => setNewKeyword(v => ({ ...v, pattern: e.target.value.toUpperCase() }))}
+                    />
+                    <div className="flex items-center gap-2">
+                      <Input
+                        list="cat-options"
+                        placeholder="Category (e.g., Dining)"
+                        value={newKeyword.category}
+                        onChange={e => setNewKeyword(v => ({ ...v, category: e.target.value }))}
+                      />
+                      <datalist id="cat-options">
+                        {Array.from(new Set([
+                          ...budgets.map(b => b.name),
+                          ...tx.map(t => t.category).filter(Boolean)
+                        ])).map(opt => <option value={opt} key={opt} />)}
+                      </datalist>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={() => {
+                        if (!newKeyword.pattern || !newKeyword.category) return;
+                        setKeywordMap(m => ({ ...m, [newKeyword.pattern]: newKeyword.category }));
+                        setNewKeyword({ pattern: '', category: '' });
+                      }}>Add/Update</Button>
+                      <Button variant="outline" onClick={() => {
+                        if (!newKeyword.pattern) return;
+                        setKeywordMap(m => {
+                          const copy = { ...m } as Record<string,string>;
+                          delete copy[newKeyword.pattern];
+                          return copy;
+                        });
+                      }}>Remove</Button>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={recategorizeWithKeywords}>Re-apply to all transactions</Button>
+                  </div>
+
+                  <div className="max-h-64 overflow-auto border rounded divide-y">
+                    {Object.entries(keywordMap).map(([k, v]) => {
+                      const matches = tx.filter(t => String(t.merchant || '').toUpperCase().includes(k)).length;
+                      return (
+                        <div key={k} className="p-2 flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="truncate font-mono text-[11px]">{k}</span>
+                            <Badge variant="secondary">{v}</Badge>
+                            <span className="text-muted-foreground">· {matches} match{matches === 1 ? '' : 'es'}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button size="sm" variant="outline" onClick={() => setNewKeyword({ pattern: k, category: v })}>Edit</Button>
+                            <Button size="sm" variant="outline" onClick={() => setKeywordMap(m => {
+                              const copy = { ...m } as Record<string,string>;
+                              delete copy[k];
+                              return copy;
+                            })}>Delete</Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="md:col-span-12 rounded-2xl mt-6">
+                <CardHeader><CardTitle>Transactions</CardTitle></CardHeader>
+                <CardContent>
+                  {tx.length === 0 ? (
+                    <div className="p-3 text-sm text-muted-foreground border rounded-xl">No transactions yet.</div>
+                  ) : (
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left p-2">Date</th>
+                          <th className="text-left p-2">Description</th>
+                          <th className="text-left p-2">Category</th>
+                          <th className="text-right p-2">Amount</th>
+                          <th className="text-right p-2">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tx.map((t, idx) => (
+                          <tr key={t.id} className="border-b">
+                            <td className="p-2 whitespace-nowrap">{t.date}</td>
+                            <td className="p-2">{t.merchant}</td>
+                            <td className="p-2">
+                              <Input
+                                value={t.category || ""}
+                                onChange={e => updateTransactionCategory(idx, e.target.value)}
+                              />
+                            </td>
+                            <td className="p-2 text-right">{t.amount.toFixed(2)}</td>
+                            <td className="p-2 text-right">
+                              <Button size="sm" variant="outline" onClick={() => deleteTransaction(idx)}>Delete</Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </CardContent>
+              </Card>
+
+            </div>
+          </TabsContent>
+
+        </Tabs>
+
+        <footer className="mt-6 text-xs text-muted-foreground">
+          <div>v1.3.11 mockups · Removed Subscriptions & Insights, stripped comments, simplified header.</div>
+        </footer>
+      </div>
+    </div>
+  )
+}

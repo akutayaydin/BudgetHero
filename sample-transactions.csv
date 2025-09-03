@@ -1,0 +1,16 @@
+Date,Description,Amount,Category,Type
+2024-01-15,Grocery Store,-87.50,Food & Dining,expense
+2024-01-14,Salary Deposit,2500.00,Salary,income
+2024-01-13,Gas Station,-45.00,Transportation,expense
+2024-01-12,Coffee Shop,-5.75,Food & Dining,expense
+2024-01-11,Electric Bill,-125.00,Utilities,expense
+2024-01-10,Freelance Payment,750.00,Freelance,income
+2024-01-09,Transfer to Savings,-500.00,Transfer,expense
+2024-01-08,Netflix Subscription,-15.99,Subscriptions,expense
+2024-01-07,Mortgage Principal,-800.00,Debt Payment,expense
+2024-01-06,Mortgage Interest,-400.00,Debt Interest,expense
+2024-01-05,Stock Dividend,75.00,Investment,income
+2024-01-04,Amazon Purchase,-129.99,Shopping,expense
+2024-01-03,Car Insurance,-180.00,Insurance,expense
+2024-01-02,ATM Transfer,-200.00,Transfer,expense
+2024-01-01,Investment Gain,125.00,Investment,income

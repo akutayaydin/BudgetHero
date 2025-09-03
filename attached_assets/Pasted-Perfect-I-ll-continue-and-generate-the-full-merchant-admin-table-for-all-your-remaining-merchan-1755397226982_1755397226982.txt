@@ -1,0 +1,106 @@
+Perfect! I’ll continue and generate the **full merchant admin table** for all your remaining merchants in the same format, ready for CSV import. I’ll use placeholders for logos (`[Logo URL]`) and example aliases/regex where appropriate.
+
+Here’s the continuation from the last entry (starting with Fior D’ Italia):
+
+---
+
+| Merchant                              | Category                   | Type       | Frequency  | Status | Confidence | Aliases/Regex                              | Logo        |
+| ------------------------------------- | -------------------------- | ---------- | ---------- | ------ | ---------- | ------------------------------------------ | ----------- |
+| Fior D' Italia                        | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Fior D' Italia, Fior D Italia              | \[Logo URL] |
+| Flour & Water Pizze                   | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Flour & Water, Flour & Water Pizza         | \[Logo URL] |
+| Ghirardelli                           | Restaurants & Bars         | Expense    | Recurring  | Active | High       | Ghirardelli, Ghirardelli Chocolate         | \[Logo URL] |
+| Hayes Valley                          | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Hayes Valley                               | \[Logo URL] |
+| Hole In The Wall                      | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Hole In The Wall                           | \[Logo URL] |
+| Ice Cream Cart                        | Restaurants & Bars         | Expense    | Occasional | Active | Medium     | Ice Cream Cart                             | \[Logo URL] |
+| IHOP                                  | Restaurants & Bars         | Expense    | Recurring  | Active | High       | IHOP                                       | \[Logo URL] |
+| In-N-Out Burger                       | Restaurants & Bars         | Expense    | Recurring  | Active | High       | In-N-Out, In-N-Out Burger                  | \[Logo URL] |
+| It'sugar Jefferson                    | Restaurants & Bars         | Expense    | Occasional | Active | Medium     | It'sugar, Itsugar Jefferson                | \[Logo URL] |
+| Joe's Ice Cream                       | Restaurants & Bars         | Expense    | Occasional | Active | Medium     | Joe's Ice Cream, Joes Ice Cream            | \[Logo URL] |
+| Lush Gelato                           | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Lush Gelato                                | \[Logo URL] |
+| Mediterranean Pizza                   | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Mediterranean Pizza                        | \[Logo URL] |
+| Mod Pizza                             | Restaurants & Bars         | Expense    | Recurring  | Active | High       | Mod Pizza                                  | \[Logo URL] |
+| Norman's Ice Cream &                  | Restaurants & Bars         | Expense    | Occasional | Active | Medium     | Norman's Ice Cream, Normans Ice Cream      | \[Logo URL] |
+| Pieology Pizzeria                     | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Pieology Pizzeria                          | \[Logo URL] |
+| Pizza Local Venice                    | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Pizza Local Venice                         | \[Logo URL] |
+| Players Sports Grill                  | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Players Sports Grill                       | \[Logo URL] |
+| Stella Pastry                         | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Stella Pastry                              | \[Logo URL] |
+| Subway                                | Restaurants & Bars         | Expense    | Recurring  | Active | High       | Subway                                     | \[Logo URL] |
+| The Cheesecake Factory                | Restaurants & Bars         | Expense    | Recurring  | Active | High       | Cheesecake Factory, The Cheesecake Factory | \[Logo URL] |
+| The Waffle Cone                       | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | Waffle Cone, The Waffle Cone               | \[Logo URL] |
+| TOGO'S Sandwiches                     | Restaurants & Bars         | Expense    | Recurring  | Active | Medium     | TOGO'S, Togos Sandwiches                   | \[Logo URL] |
+| TST\* SUPER DUPER - METREO            | Restaurants & Bars         | Expense    | Occasional | Active | Medium     | TST SUPER DUPER, TST Super Duper Metreo    | \[Logo URL] |
+| Biscoff Coffee Corner                 | Coffee Shops               | Expense    | Recurring  | Active | Medium     | Biscoff Coffee, Biscoff Coffee Corner      | \[Logo URL] |
+| Delah Coffee Sanso                    | Coffee Shops               | Expense    | Recurring  | Active | Medium     | Delah Coffee, Delah Coffee Sanso           | \[Logo URL] |
+| Equator Coffees Fo                    | Coffee Shops               | Expense    | Recurring  | Active | Medium     | Equator Coffees                            | \[Logo URL] |
+| Peet's Coffee                         | Coffee Shops               | Expense    | Recurring  | Active | High       | Peet's Coffee, Peets Coffee                | \[Logo URL] |
+| Philz Coffee                          | Coffee Shops               | Expense    | Recurring  | Active | High       | Philz Coffee                               | \[Logo URL] |
+| Starbucks                             | Coffee Shops               | Expense    | Recurring  | Active | High       | Starbucks                                  | \[Logo URL] |
+| BMW                                   | Auto Payment               | Payment    | Recurring  | Active | High       | BMW                                        | \[Logo URL] |
+| Toyota                                | Auto Payment               | Payment    | Recurring  | Active | High       | Toyota                                     | \[Logo URL] |
+| Toyota Auto Insurance                 | Insurance                  | Payment    | Recurring  | Active | High       | Toyota Auto Insurance                      | \[Logo URL] |
+| California DMV                        | Auto Maintenance           | Expense    | Recurring  | Active | High       | DMV, California DMV                        | \[Logo URL] |
+| Conservice                            | Auto Maintenance           | Expense    | Recurring  | Active | Medium     | Conservice                                 | \[Logo URL] |
+| Jiffy Lube                            | Auto Maintenance           | Expense    | Recurring  | Active | High       | Jiffy Lube                                 | \[Logo URL] |
+| O'Reilly Auto Parts                   | Auto Maintenance           | Expense    | Recurring  | Active | High       | O'Reilly, O'Reilly Auto Parts              | \[Logo URL] |
+| Spot Free Car Wash                    | Auto Maintenance           | Expense    | Recurring  | Active | Medium     | Spot Free Car Wash                         | \[Logo URL] |
+| Geico                                 | Insurance                  | Payment    | Recurring  | Active | High       | Geico                                      | \[Logo URL] |
+| Toggle Insurance                      | Insurance                  | Payment    | Recurring  | Active | Medium     | Toggle Insurance                           | \[Logo URL] |
+| Bank of Nova Scotia                   | Gifts                      | Expense    | Occasional | Active | Medium     | Bank of Nova Scotia                        | \[Logo URL] |
+| Beverly Hills Ca                      | Parking & Tolls            | Expense    | Occasional | Active | Medium     | Beverly Hills Parking                      | \[Logo URL] |
+| City of Burlingame                    | Parking & Tolls            | Expense    | Occasional | Active | Medium     | City of Burlingame Parking                 | \[Logo URL] |
+| FasTrak                               | Parking & Tolls            | Expense    | Recurring  | Active | High       | FasTrak                                    | \[Logo URL] |
+| LADOT Parking                         | Parking & Tolls            | Expense    | Recurring  | Active | Medium     | LADOT Parking                              | \[Logo URL] |
+| LAZ Parking                           | Parking & Tolls            | Expense    | Recurring  | Active | Medium     | LAZ Parking                                | \[Logo URL] |
+| Metropolitan Transportation Authority | Parking & Tolls            | Expense    | Recurring  | Active | Medium     | MTA, Metropolitan Transportation Authority | \[Logo URL] |
+| Mta Meter                             | Parking & Tolls            | Expense    | Recurring  | Active | Medium     | MTA Meter                                  | \[Logo URL] |
+| Park SFO                              | Parking & Tolls            | Expense    | Recurring  | Active | Medium     | Park SFO                                   | \[Logo URL] |
+| Parksmart Lettuce                     | Parking & Tolls            | Expense    | Occasional | Active | Low        | Parksmart Lettuce                          | \[Logo URL] |
+| Presidio Trust Parking                | Parking & Tolls            | Expense    | Recurring  | Active | Medium     | Presidio Trust Parking                     | \[Logo URL] |
+| Reef Parking                          | Parking & Tolls            | Expense    | Recurring  | Active | Medium     | Reef Parking                               | \[Logo URL] |
+| ATM Withdrawal                        | Cash & ATM                 | Withdrawal | Occasional | Active | High       | ATM Withdrawal                             | \[Logo URL] |
+| Withdrawal                            | Cash & ATM                 | Withdrawal | Occasional | Active | Medium     | Cash Withdrawal                            | \[Logo URL] |
+| ATM Check Deposit                     | Other Income               | Deposit    | Occasional | Active | High       | ATM Deposit, ATM Check Deposit             | \[Logo URL] |
+| Branch                                | Other Income               | Deposit    | Occasional | Active | Medium     | Branch Deposit                             | \[Logo URL] |
+| California Franchise Tax Board        | Other Income               | Payment    | Annual     | Active | High       | California FTB, Franchise Tax Board        | \[Logo URL] |
+| Cash Deposit                          | Other Income               | Deposit    | Occasional | Active | Medium     | Cash Deposit                               | \[Logo URL] |
+| Cash Redemption                       | Other Income               | Deposit    | Occasional | Active | Medium     | Cash Redemption                            | \[Logo URL] |
+| Deposit #688248                       | Other Income               | Deposit    | Occasional | Active | Medium     | Deposit 688248                             | \[Logo URL] |
+| Internal Revenue Service              | Other Income               | Payment    | Annual     | Active | High       | IRS, Internal Revenue Service              | \[Logo URL] |
+| Online Deposit                        | Other Income               | Deposit    | Recurring  | Active | Medium     | Online Deposit                             | \[Logo URL] |
+| PayPal                                | Other Income               | Transfer   | Recurring  | Active | High       | PayPal                                     | \[Logo URL] |
+| Stripe                                | Other Income               | Transfer   | Recurring  | Active | High       | Stripe                                     | \[Logo URL] |
+| Columbia                              | Gas & Electric             | Expense    | Recurring  | Active | High       | Columbia Energy, Columbia Utility          | \[Logo URL] |
+| Pacific Gas & Electric                | Gas & Electric             | Expense    | Recurring  | Active | High       | PG\&E, Pacific Gas & Electric              | \[Logo URL] |
+| Comcast                               | Internet & Cable           | Expense    | Recurring  | Active | High       | Comcast                                    | \[Logo URL] |
+| T-Mobile                              | Phone                      | Expense    | Recurring  | Active | High       | T-Mobile                                   | \[Logo URL] |
+| Xfinity                               | Internet & Cable           | Expense    | Recurring  | Active | High       | Xfinity                                    | \[Logo URL] |
+| Costco                                | Groceries                  | Expense    | Recurring  | Active | High       | Costco                                     | \[Logo URL] |
+| Istanbul Market                       | Groceries                  | Expense    | Recurring  | Active | Medium     | Istanbul Market                            | \[Logo URL] |
+| Safeway                               | Groceries                  | Expense    | Recurring  | Active | High       | Safeway                                    | \[Logo URL] |
+| Trader Joe's                          | Groceries                  | Expense    | Recurring  | Active | High       | Trader Joe's                               | \[Logo URL] |
+| Crocs                                 | Clothing                   | Expense    | Occasional | Active | Medium     | Crocs                                      | \[Logo URL] |
+| Dadson Laundry Mobile                 | Clothing                   | Expense    | Recurring  | Active | Medium     | Dadson Laundry                             | \[Logo URL] |
+| H\&M                                  | Clothing                   | Expense    | Recurring  | Active | High       | H\&M                                       | \[Logo URL] |
+| Ikea                                  | Furniture & Housewares     | Expense    | Recurring  | Active | High       | Ikea                                       | \[Logo URL] |
+| Mattress Firm                         | Furniture & Housewares     | Expense    | Recurring  | Active | High       | Mattress Firm                              | \[Logo URL] |
+| PostalAnnex                           | Postage & Shipping         | Expense    | Recurring  | Active | Medium     | PostalAnnex                                | \[Logo URL] |
+| UPS                                   | Postage & Shipping         | Expense    | Recurring  | Active | High       | UPS                                        | \[Logo URL] |
+| Project Institute                     | Education                  | Expense    | Occasional | Active | Medium     | Project Institute                          | \[Logo URL] |
+| the YMCA                              | Charity                    | Expense    | Recurring  | Active | Medium     | YMCA, the YMCA                             | \[Logo URL] |
+| Lyft                                  | Taxi & Ride Shares         | Expense    | Recurring  | Active | High       | Lyft                                       | \[Logo URL] |
+| Uber                                  | Taxi & Ride Shares         | Expense    | Recurring  | Active | High       | Uber                                       | \[Logo URL] |
+| The Home Depot                        | Home Improvement           | Expense    | Recurring  | Active | High       | Home Depot, The Home Depot                 | \[Logo URL] |
+| Vistaprint                            | Office Supplies & Expenses | Expense    | Recurring  | Active | High       | Vistaprint                                 | \[Logo URL] |
+| Npa Web (Office Rent)                 | Rent                       | Payment    | Monthly    | Active | High       | Npa Web Rent                               | \[Logo URL] |
+| Van Der Hout                          | Financial & Legal Services | Expense    | Occasional | Active | Medium     | Van Der Hout                               | \[Logo URL] |
+| Wire Fee                              | Financial Fees             | Expense    | Recurring  | Active | High       | Wire Fee                                   | \[Logo URL] |
+| OpenAI                                | Miscellaneous              | Expense    | Occasional | Active | Medium     | OpenAI                                     | \[Logo URL] |
+| Seekingalpha.com                      | Miscellaneous              | Expense    | Occasional | Active | Medium     | Seeking Alpha, Seekingalpha.com            | \[Logo URL] |
+
+---
+
+This **now covers all merchants** from your cleaned list. ✅
+
+If you want, I can **generate a CSV file directly** with all of these rows, ready for import into your admin panel.
+
+Do you want me to create that CSV?

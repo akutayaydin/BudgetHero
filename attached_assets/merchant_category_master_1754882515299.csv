@@ -1,0 +1,143 @@
+Merchant,Category
+PG&E,Bills & Utilities
+Con Edison,Bills & Utilities
+SDG&E,Bills & Utilities
+LADWP,Bills & Utilities
+National Grid,Bills & Utilities
+Xfinity,Bills & Utilities
+Comcast,Bills & Utilities
+Spectrum,Bills & Utilities
+AT&T Internet,Bills & Utilities
+Verizon Fios,Bills & Utilities
+Google Fiber,Bills & Utilities
+Verizon Wireless,Bills & Utilities
+T-Mobile,Bills & Utilities
+Visible,Bills & Utilities
+Mint Mobile,Bills & Utilities
+Google Fi,Bills & Utilities
+GEICO,Bills & Insurance
+Progressive,Bills & Insurance
+State Farm,Bills & Insurance
+Allstate,Bills & Insurance
+USAA,Bills & Insurance
+Farmers Insurance,Bills & Insurance
+Liberty Mutual,Bills & Insurance
+Nationwide,Bills & Insurance
+Travelers,Bills & Insurance
+IRS,Bills & Government
+California FTB,Bills & Government
+DMV,Bills & Government
+FasTrak,Bills & Government
+E-ZPass,Bills & Government
+SunPass,Bills & Government
+Netflix,Subscriptions
+Hulu,Subscriptions
+Disney+,Subscriptions
+Max,Subscriptions
+Apple TV+,Subscriptions
+Amazon Prime Video,Subscriptions
+Peacock,Subscriptions
+Paramount+,Subscriptions
+Spotify,Subscriptions
+Apple Music,Subscriptions
+YouTube Premium,Subscriptions
+iCloud,Subscriptions
+Google One,Subscriptions
+Microsoft 365,Subscriptions
+Adobe,Subscriptions
+Dropbox,Subscriptions
+GitHub,Subscriptions
+Replit,Subscriptions
+OpenAI,Subscriptions
+Walmart,Groceries
+Costco,Groceries
+Sam's Club,Groceries
+Kroger,Groceries
+Ralphs,Groceries
+Fred Meyer,Groceries
+Fry’s,Groceries
+Safeway,Groceries
+Albertsons,Groceries
+Trader Joe’s,Groceries
+Whole Foods,Groceries
+H-E-B,Groceries
+Starbucks,Dining & Coffee
+McDonald’s,Dining & Coffee
+Chipotle,Dining & Coffee
+Subway,Dining & Coffee
+Chick-fil-A,Dining & Coffee
+Dunkin’,Dining & Coffee
+Panera,Dining & Coffee
+Taco Bell,Dining & Coffee
+Domino’s,Dining & Coffee
+Pizza Hut,Dining & Coffee
+Uber,Transportation
+Lyft,Transportation
+BART,Transportation
+MTA,Transportation
+Caltrain,Transportation
+Shell,Transportation
+Chevron,Transportation
+Exxon,Transportation
+BP,Transportation
+ARCO,Transportation
+Valero,Transportation
+Tesla Supercharger,Transportation
+Electrify America,Transportation
+ChargePoint,Transportation
+EVgo,Transportation
+ParkMobile,Transportation
+PayByPhone,Transportation
+United Airlines,Travel
+American Airlines,Travel
+Delta Airlines,Travel
+Southwest Airlines,Travel
+Alaska Airlines,Travel
+Marriott,Travel
+Hilton,Travel
+Hyatt,Travel
+IHG,Travel
+Airbnb,Travel
+Booking.com,Travel
+Expedia,Travel
+Priceline,Travel
+Amazon,Shopping & Retail
+Target,Shopping & Retail
+Best Buy,Shopping & Retail
+Apple Store,Shopping & Retail
+Home Depot,Shopping & Retail
+Lowe’s,Shopping & Retail
+IKEA,Shopping & Retail
+eBay,Shopping & Retail
+TJ Maxx,Shopping & Retail
+Marshalls,Shopping & Retail
+Nike,Shopping & Retail
+Adidas,Shopping & Retail
+CVS,Pharmacy & Health
+Walgreens,Pharmacy & Health
+Rite Aid,Pharmacy & Health
+Kaiser Permanente,Pharmacy & Health
+One Medical,Pharmacy & Health
+PayPal,Finance & Payments
+Venmo,Finance & Payments
+Cash App,Finance & Payments
+Stripe,Finance & Payments
+Square,Finance & Payments
+Robinhood,Finance & Payments
+Coinbase,Finance & Payments
+Planet Fitness,Fitness
+24 Hour Fitness,Fitness
+Equinox,Fitness
+ClassPass,Fitness
+Peloton,Fitness
+Udemy,Education & Learning
+Coursera,Education & Learning
+LinkedIn Learning,Education & Learning
+Chegg,Education & Learning
+AWS,Hosting/DevOps
+Azure,Hosting/DevOps
+Google Cloud,Hosting/DevOps
+DigitalOcean,Hosting/DevOps
+Vercel,Hosting/DevOps
+Netlify,Hosting/DevOps
+Heroku,Hosting/DevOps

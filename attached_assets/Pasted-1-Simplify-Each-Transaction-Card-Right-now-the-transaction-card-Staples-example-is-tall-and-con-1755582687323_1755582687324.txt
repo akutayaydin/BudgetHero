@@ -1,0 +1,63 @@
+1. Simplify Each Transaction Card
+
+Right now, the transaction card (Staples example) is tall and contains too much info (merchant name, duplicate labels, category, ID, etc.).
+
+Mobile users expect at-a-glance clarity.
+✅ Suggestion:
+
+Show: Merchant, Date, Amount, Category.
+
+Hide or collapse details like transaction ID behind a dropdown/expand button.
+
+2. Consistent Amount Formatting
+
+Amount is large and red, which is good for visibility.
+
+But it’s dominating the card → reduce font size slightly and balance with other info.
+
+3. Action Buttons
+
+The eye, edit, delete buttons are visible on each card. On mobile, this makes the card look cluttered.
+✅ Suggestion: move these into a “swipe action” (like Apple Mail or banking apps). Example: swipe left = delete, swipe right = edit.
+
+4. Improve Spacing & Density
+
+Current cards waste vertical space.
+✅ Suggestion: make transaction cards shorter and denser, allowing 5–6 transactions per scroll instead of 2–3.
+
+5. Filter & Search Placement
+
+On mobile, “Search” and “Advanced Filters” take up a lot of top space.
+✅ Suggestion:
+
+Collapse them into a floating action button (FAB) or a bottom sheet filter drawer.
+
+6. Trend Graphs on Mobile
+
+The sparklines from the web version are missing on mobile.
+✅ Suggestion: add a tiny line or bar indicator (like ↑↓ arrows or small colored dots) instead of full sparklines. Keep it simple for mobile.
+
+💡 Additional Improvement Ideas (Web + Mobile)
+
+Category Colors / Icons
+
+Use small category icons (🍔 for Dining, 🛒 for Groceries, 🚗 for Transport). Faster recognition than text.
+
+Group by Date / Week
+
+Instead of just listing, group transactions under “Today,” “This Week,” “Last Week.” Makes scrolling easier.
+
+Quick Budget Insights
+
+On mobile, show how much you spent in this category this month when you tap on a transaction. Example: Tap “Dining” → “You’ve spent $215 on Dining this month.”
+
+Improved Page Summary (Mobile)
+
+On web, you have Income / Expenses / Net.
+
+On mobile, this summary is missing.
+✅ Add it as a sticky footer so users always see their balance summary while scrolling.
+
+Better Empty State
+
+When no transactions, show a friendly illustration + “No transactions yet, add your first one!”

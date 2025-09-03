@@ -1,0 +1,36 @@
+BudgetHero – Data Retention & Deletion Policy 
+
+Last updated: August 15, 2025 
+
+ 
+
+1. Purpose 
+
+This policy outlines how BudgetHero handles the retention and deletion of user data, including sensitive financial data received through the Plaid API, in compliance with applicable data privacy laws such as the GDPR, CCPA, and other relevant regulations. 
+
+2. Data Retention 
+
+BudgetHero retains user financial data only as long as necessary to provide the service. 
+Data retrieved through Plaid (e.g., transactions, balances) is kept only while the user actively uses BudgetHero and may be refreshed as per user consent. 
+Retention periods are reviewed periodically to ensure they remain aligned with legal and operational requirements. 
+Sensitive keys and tokens (e.g., Plaid access tokens) are stored using Replit’s encrypted secrets manager and are not exposed in plaintext. 
+3. User-Initiated Deletion 
+
+Users can request deletion of their data at any time by contacting support@budgetheroapp.com 
+Upon request, all associated personal and financial data will be permanently deleted from our systems within 30 days, unless a longer retention period is required by law. 
+4. Automatic Data Deletion 
+
+If a user becomes inactive (e.g., does not log in or use the app for 12+ months), their data may be flagged for deletion. 
+Prior to deletion, BudgetHero may attempt to notify the user via their registered email (if applicable). 
+5. Backups & Logs 
+
+Any logs or backups containing personal data are protected using encryption and are automatically purged according to defined lifecycle policies. 
+Logs are only used for operational debugging and are never used for analytics or marketing. 
+6. Review and Compliance 
+
+This policy is reviewed annually or upon any significant changes to data handling processes. 
+BudgetHero commits to staying up to date with current data privacy laws and implementing necessary adjustments. 
+7. Contact 
+
+For any questions or deletion requests, contact: 
+support@budgetheroapp.com 
