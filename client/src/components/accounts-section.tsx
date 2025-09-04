@@ -188,7 +188,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
 
                   {/* Balance */}
                   <div className="text-sm font-semibold text-red-600 dark:text-red-400 text-right">
-                    ${Math.abs(account.currentBalance).toLocaleString()}
+                    ${Math.abs((typeof account.currentBalance === 'string' ? parseFloat(account.currentBalance) : account.currentBalance) || 0).toLocaleString()}
                   </div>
                 </div>
               ))}

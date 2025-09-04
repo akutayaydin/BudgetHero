@@ -305,7 +305,7 @@ export function DashboardGraphs() {
                 tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
               />
               <Tooltip 
-                formatter={(value: any) => [`$${value.toLocaleString()}`, 'Net Worth']}
+                formatter={(value: any) => [`$${(typeof value === 'number' ? value : parseFloat(value) || 0).toLocaleString()}`, 'Net Worth']}
                 labelStyle={{ color: '#374151' }}
               />
               <Line 
@@ -400,7 +400,7 @@ export function DashboardGraphs() {
                 tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
               />
               <Tooltip 
-                formatter={(value: any) => [`$${value.toLocaleString()}`, 'Spending']}
+                formatter={(value: any) => [`$${(typeof value === 'number' ? value : parseFloat(value) || 0).toLocaleString()}`, 'Spending']}
                 labelStyle={{ color: '#374151' }}
               />
               <Line 

@@ -404,7 +404,7 @@ export default function SpendingPage() {
                     tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
                   />
                   <Tooltip 
-                    formatter={(value: any, name: string) => [`$${value.toLocaleString()}`, name === 'income' ? 'Income' : 'Total Spend']}
+                    formatter={(value: any, name: string) => [`$${(typeof value === 'number' ? value : parseFloat(value) || 0).toLocaleString()}`, name === 'income' ? 'Income' : 'Total Spend']}
                     labelStyle={{ color: '#374151' }}
                     contentStyle={{ 
                       backgroundColor: 'white',
@@ -466,7 +466,7 @@ export default function SpendingPage() {
                         ))}
                       </Pie>
                       <Tooltip 
-                        formatter={(value: any) => [`$${value.toLocaleString()}`, 'Amount']}
+                        formatter={(value: any) => [`$${(typeof value === 'number' ? value : parseFloat(value) || 0).toLocaleString()}`, 'Amount']}
                         labelStyle={{ color: '#374151' }}
                       />
                     </RechartsPieChart>

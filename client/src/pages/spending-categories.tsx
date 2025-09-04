@@ -116,7 +116,7 @@ export default function SpendingCategoriesPage() {
                         ))}
                       </Pie>
                       <Tooltip 
-                        formatter={(value: any) => [`$${value.toLocaleString()}`, 'Amount']}
+                        formatter={(value: any) => [`$${(typeof value === 'number' ? value : parseFloat(value) || 0).toLocaleString()}`, 'Amount']}
                         labelStyle={{ color: '#374151' }}
                       />
                     </RechartsPieChart>
