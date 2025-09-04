@@ -314,7 +314,7 @@ export default function SpendingPage() {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                ${financialData.incomeTotal.toLocaleString()}
+                ${(financialData.incomeTotal || 0).toLocaleString()}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {getPeriodLabel(activeTab)}
@@ -336,7 +336,7 @@ export default function SpendingPage() {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                ${financialData.spendTotal.toLocaleString()}
+                ${(financialData.spendTotal || 0).toLocaleString()}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {getPeriodLabel(activeTab)}
@@ -359,7 +359,7 @@ export default function SpendingPage() {
                   ? 'text-green-600 dark:text-green-400' 
                   : 'text-red-600 dark:text-red-400'
               }`}>
-                {financialData.netIncome >= 0 ? '+' : ''}${financialData.netIncome.toLocaleString()}
+                {(financialData.netIncome || 0) >= 0 ? '+' : ''}${(financialData.netIncome || 0).toLocaleString()}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {getPeriodLabel(activeTab)}

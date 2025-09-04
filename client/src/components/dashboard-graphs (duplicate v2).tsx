@@ -282,7 +282,7 @@ export function DashboardGraphs() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
-              ${currentNetWorth.toLocaleString()}
+              ${(currentNetWorth || 0).toLocaleString()}
             </p>
             <div className="flex items-center gap-2 mt-1">
               {netWorthChange >= 0 ? (
@@ -298,7 +298,7 @@ export function DashboardGraphs() {
                 }`}
               >
                 {netWorthChange >= 0 ? "+" : ""}$
-                {Math.abs(netWorthChange).toLocaleString()} this month
+                {Math.abs(netWorthChange || 0).toLocaleString()} this month
               </span>
             </div>
           </div>
@@ -393,7 +393,7 @@ export function DashboardGraphs() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
-              ${totalSpending.toLocaleString()}
+              ${(totalSpending || 0).toLocaleString()}
             </p>
             <div className="flex items-center gap-2 mt-1">
               {spendingChange >= 0 ? (
@@ -409,7 +409,7 @@ export function DashboardGraphs() {
                 }`}
               >
                 {spendingChange >= 0 ? "+" : ""}$
-                {Math.abs(spendingChange).toLocaleString()} vs last month
+                {Math.abs(spendingChange || 0).toLocaleString()} vs last month
               </span>
             </div>
           </div>

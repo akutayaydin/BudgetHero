@@ -82,19 +82,19 @@ export function BudgetSection() {
                 <div className="text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400">Budgeted</p>
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                    ${totalBudgeted.toLocaleString()}
+                    ${(totalBudgeted || 0).toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400">Spent</p>
                   <p className="text-lg font-semibold text-red-600 dark:text-red-400">
-                    ${totalSpent.toLocaleString()}
+                    ${(totalSpent || 0).toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400">Remaining</p>
                   <p className={`text-lg font-semibold ${totalRemaining >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                    ${Math.abs(totalRemaining).toLocaleString()}
+                    ${Math.abs(totalRemaining || 0).toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
@@ -141,10 +141,10 @@ export function BudgetSection() {
                         </div>
                         <div className="text-right">
                           <p className="font-semibold text-gray-900 dark:text-white">
-                            ${budget.spent.toLocaleString()} / ${budget.budgeted.toLocaleString()}
+                            ${(budget.spent || 0).toLocaleString()} / ${(budget.budgeted || 0).toLocaleString()}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            ${Math.abs(budget.remaining).toLocaleString()} {budget.remaining >= 0 ? 'left' : 'over'}
+                            ${Math.abs(budget.remaining || 0).toLocaleString()} {(budget.remaining || 0) >= 0 ? 'left' : 'over'}
                           </p>
                         </div>
                       </div>

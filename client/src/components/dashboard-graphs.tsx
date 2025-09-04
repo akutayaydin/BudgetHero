@@ -520,7 +520,7 @@ export function DashboardGraphs() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
-              ${totalSpending.toLocaleString()}
+              ${(totalSpending || 0).toLocaleString()}
             </p>
             <div className="flex items-center gap-2 mt-1">
               {spendingChange >= 0 ? (
@@ -536,7 +536,7 @@ export function DashboardGraphs() {
                 }`}
               >
                 {spendingChange >= 0 ? "You've spent" : "You've spent"} $
-                {Math.abs(spendingChange).toLocaleString()}{" "}
+                {Math.abs(spendingChange || 0).toLocaleString()}{" "}
                 {spendingChange >= 0 ? "more" : "less"} than last month
               </span>
             </div>

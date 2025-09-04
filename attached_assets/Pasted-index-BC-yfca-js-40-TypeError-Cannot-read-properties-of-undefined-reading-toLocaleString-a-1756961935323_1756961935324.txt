@@ -1,0 +1,83 @@
+index-BC-_yfca.js:40 TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at index-BC-_yfca.js:765:69976
+    at Array.map (<anonymous>)
+    at e3e (index-BC-_yfca.js:765:69298)
+    at qC (index-BC-_yfca.js:38:17031)
+    at Z1 (index-BC-_yfca.js:40:3143)
+    at E8 (index-BC-_yfca.js:40:44880)
+    at A8 (index-BC-_yfca.js:40:39822)
+    at xne (index-BC-_yfca.js:40:39748)
+    at hv (index-BC-_yfca.js:40:39598)
+    at cS (index-BC-_yfca.js:40:35960)
+Q1 @ index-BC-_yfca.js:40
+n.callback @ index-BC-_yfca.js:40
+j_ @ index-BC-_yfca.js:38
+L_ @ index-BC-_yfca.js:40
+N8 @ index-BC-_yfca.js:40
+pne @ index-BC-_yfca.js:40
+vne @ index-BC-_yfca.js:40
+jc @ index-BC-_yfca.js:40
+z_ @ index-BC-_yfca.js:40
+ac @ index-BC-_yfca.js:38
+(anonymous) @ index-BC-_yfca.js:40
+setTimeout
+s @ index-BC-_yfca.js:48
+o @ index-BC-_yfca.js:48
+batch @ index-BC-_yfca.js:48
+to @ index-BC-_yfca.js:48
+setData @ index-BC-_yfca.js:48
+onSuccess @ index-BC-_yfca.js:48
+f @ index-BC-_yfca.js:48
+Promise.then
+h @ index-BC-_yfca.js:48
+start @ index-BC-_yfca.js:48
+fetch @ index-BC-_yfca.js:48
+gp @ index-BC-_yfca.js:48
+onSubscribe @ index-BC-_yfca.js:48
+subscribe @ index-BC-_yfca.js:48
+(anonymous) @ index-BC-_yfca.js:48
+KB @ index-BC-_yfca.js:38
+Nb @ index-BC-_yfca.js:40
+_d @ index-BC-_yfca.js:40
+vne @ index-BC-_yfca.js:40
+jc @ index-BC-_yfca.js:40
+z_ @ index-BC-_yfca.js:40
+ac @ index-BC-_yfca.js:38
+(anonymous) @ index-BC-_yfca.js:40
+setTimeout
+s @ index-BC-_yfca.js:48
+o @ index-BC-_yfca.js:48
+batch @ index-BC-_yfca.js:48
+to @ index-BC-_yfca.js:48
+setData @ index-BC-_yfca.js:48
+onSuccess @ index-BC-_yfca.js:48
+f @ index-BC-_yfca.js:48
+Promise.then
+h @ index-BC-_yfca.js:48
+start @ index-BC-_yfca.js:48
+fetch @ index-BC-_yfca.js:48
+gp @ index-BC-_yfca.js:48
+onSubscribe @ index-BC-_yfca.js:48
+subscribe @ index-BC-_yfca.js:48
+(anonymous) @ index-BC-_yfca.js:48
+KB @ index-BC-_yfca.js:38
+Nb @ index-BC-_yfca.js:40
+_d @ index-BC-_yfca.js:40
+z_ @ index-BC-_yfca.js:40
+ac @ index-BC-_yfca.js:38
+vne @ index-BC-_yfca.js:40
+jc @ index-BC-_yfca.js:40
+S8 @ index-BC-_yfca.js:40
+j @ index-BC-_yfca.js:25
+_ @ index-BC-_yfca.js:25Understand this error
+index-BC-_yfca.js:765 Uncaught TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at index-BC-_yfca.js:765:69976
+    at Array.map (<anonymous>)
+    at e3e (index-BC-_yfca.js:765:69298)
+    at qC (index-BC-_yfca.js:38:17031)
+    at Z1 (index-BC-_yfca.js:40:3143)
+    at E8 (index-BC-_yfca.js:40:44880)
+    at A8 (index-BC-_yfca.js:40:39822)
+    at xne (index-BC-_yfca.js:40:39748)
+    at hv (index-BC-_yfca.js:40:39598)
+    at cS (index-BC-_yfca.js:40:35960)

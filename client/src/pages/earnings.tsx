@@ -61,7 +61,7 @@ export default function EarningsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-4xl font-bold text-gray-900 dark:text-white">
-                  ${totalIncome.toLocaleString()}
+                  ${(totalIncome || 0).toLocaleString()}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   All time total • {incomeTransactions.length} transactions
@@ -83,7 +83,7 @@ export default function EarningsPage() {
                       {month.name}
                     </div>
                     <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      ${month.total.toLocaleString()}
+                      ${(month.total || 0).toLocaleString()}
                     </span>
                   </CardTitle>
                 </CardHeader>
@@ -113,7 +113,7 @@ export default function EarningsPage() {
                         </div>
                         <div className="text-right">
                           <span className="text-xl font-bold text-green-600 dark:text-green-400">
-                            +${Math.abs(parseFloat(transaction.amount)).toLocaleString()}
+                            +${Math.abs(parseFloat(transaction.amount) || 0).toLocaleString()}
                           </span>
                           {transaction.merchant && (
                             <p className="text-sm text-gray-500 dark:text-gray-400">

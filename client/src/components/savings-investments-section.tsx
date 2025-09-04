@@ -45,7 +45,7 @@ export function SavingsInvestmentsSection() {
         <CardContent className="space-y-4">
           <div className="text-center py-6">
             <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              ${totalSavings.toLocaleString()}
+              ${(totalSavings || 0).toLocaleString()}
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               Total Savings Balance
@@ -63,7 +63,7 @@ export function SavingsInvestmentsSection() {
                     <span className="font-medium text-gray-900 dark:text-white">{asset.name}</span>
                   </div>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    ${parseFloat(asset.currentValue || '0').toLocaleString()}
+                    ${(parseFloat(asset.currentValue || '0') || 0).toLocaleString()}
                   </span>
                 </div>
               ))}
@@ -101,7 +101,7 @@ export function SavingsInvestmentsSection() {
         <CardContent className="space-y-4">
           <div className="text-center py-6">
             <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              ${totalInvestments.toLocaleString()}
+              ${(totalInvestments || 0).toLocaleString()}
             </p>
             <div className="flex items-center justify-center gap-2">
               <Badge variant="secondary" className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
@@ -129,7 +129,7 @@ export function SavingsInvestmentsSection() {
                     </div>
                   </div>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    ${parseFloat(asset.currentValue || '0').toLocaleString()}
+                    ${(parseFloat(asset.currentValue || '0') || 0).toLocaleString()}
                   </span>
                 </div>
               ))}
