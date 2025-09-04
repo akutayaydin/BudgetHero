@@ -262,19 +262,37 @@ export function DashboardGraphs() {
     let prevRun = 0;
 
     for (let i = 0; i < max; i++) {
-      const labelDate = new Date(year, month, i + 1);
-      const dateLabel = labelDate.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
+      let currentDateLabel: string | undefined;
+      let previousDateLabel: string | undefined;
+
+      // Format current month date (only if within current days)
+      if (i < curDays) {
+        const curDate = new Date(year, month, i + 1);
+        currentDateLabel = curDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      // Format previous month date (only if within previous days)
+      if (i < prevDays) {
+        const prevDate = new Date(year, month - 1, i + 1);
+        previousDateLabel = prevDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+      }
 
       if (i < curDays) curRun += curDaily[i];
       if (i < prevDays) prevRun += prevDaily[i];
 
       data.push({
-        date: dateLabel,
+        day: currentDateLabel || previousDateLabel || `Day ${i + 1}`,
         current: i < today ? Math.round(curRun) : undefined,
         previous: Math.round(prevRun),
+        currentLabel: currentDateLabel,
+        previousLabel: previousDateLabel,
+        index: i, // optional, helpful for debugging
       });
     }
 
@@ -550,6 +568,7 @@ export function DashboardGraphs() {
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: "#6B7280", fontSize: 12 }}
+                hide
               />
 
               <YAxis
@@ -565,37 +584,42 @@ export function DashboardGraphs() {
 
               <Tooltip
                 content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const dataPoint = payload[0].payload;
-                    const dateLabel = dataPoint.date || `Day ${dataPoint.day}`;
+                  if (!active || !payload?.length) return null;
 
-                    return (
-                      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 min-w-[140px]">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                          By {dateLabel}
-                        </p>
+                  const dataPoint = payload[0].payload;
+                  const today = new Date().getDate();
+                  const currentIdx = dataPoint.index; // from loop
+
+                  const showCurrentLabel = currentIdx < today;
+
+                  return (
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 min-w-[160px]">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                        {showCurrentLabel
+                          ? dataPoint.currentLabel
+                          : dataPoint.previousLabel}
+                      </p>
+                      <div className="flex flex-col gap-1">
                         {payload.map((entry, idx) => {
-                          const value = entry.value as number;
-                          const label =
-                            entry.dataKey === "current"
-                              ? "This Month"
-                              : "Last Month";
+                          const isCurrent = entry.dataKey === "current";
+                          const label = isCurrent ? "This Month" : "Last Month";
+                          const value = entry.value;
 
                           return (
-                            <div key={idx} className="flex justify-between">
-                              <span className="text-xs text-gray-500 dark:text-gray-300">
+                            <div
+                              key={idx}
+                              className="flex justify-between text-xs text-gray-900 dark:text-white"
+                            >
+                              <span className="text-gray-500 dark:text-gray-300">
                                 {label}
                               </span>
-                              <span className="text-xs font-medium text-gray-900 dark:text-white">
-                                {formatFullCurrency(value)}
-                              </span>
+                              <span>{formatFullCurrency(value)}</span>
                             </div>
                           );
                         })}
                       </div>
-                    );
-                  }
-                  return null;
+                    </div>
+                  );
                 }}
               />
 
