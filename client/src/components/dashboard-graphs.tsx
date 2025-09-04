@@ -186,14 +186,16 @@ export function DashboardGraphs() {
     if (!transactions) return { current: 0, previous: 0, change: 0 };
 
     const now = new Date();
+    const today = now.getDate(); // e.g., 3rd
+    const thisMonth = now.getMonth();
+    const lastMonth = now.getMonth() - 1;
+    const year = now.getFullYear();
 
-    // Range: Current month start → end of current month
-    const curStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const curEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+    const curStart = new Date(year, thisMonth, 1);
+    const curEnd = new Date(year, thisMonth, today);
 
-    // Range: Previous month start → end of previous month
-    const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const prevEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+    const prevStart = new Date(year, lastMonth, 1);
+    const prevEnd = new Date(year, lastMonth, today);
 
     const expenses = transactions.filter((t) => t.type === "expense");
 
@@ -412,35 +414,42 @@ export function DashboardGraphs() {
               />
 
               <Tooltip
-                content={({ active, payload, label }) => {
+                content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const dataPoint = payload[0].payload;
+                    const value = dataPoint.netWorth;
 
-                    const isValid =
-                      dataPoint.current !== undefined ||
-                      dataPoint.previous !== undefined;
-                    if (!isValid) return null;
+                    if (value === undefined) return null;
+
+                    // 🗓️ Reconstruct date from `day` field
+                    const now = new Date();
+                    const reconstructedDate = new Date(
+                      now.getFullYear(),
+                      now.getMonth(),
+                      dataPoint.label,
+                    );
+
+                    // Format as "Aug 10"
+                    const formattedDate = new Date(
+                      dataPoint.date,
+                    ).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    });
 
                     return (
                       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 min-w-[140px]">
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                          By {dataPoint.date}
+                          {formattedDate}
                         </p>
-                        {payload.map((entry, idx) => {
-                          const value = entry.value as number;
-                          const isCurrent = entry.dataKey === "current";
-                          const label = isCurrent ? "This month" : "Last month";
-                          return (
-                            <div key={idx} className="flex justify-between">
-                              <span className="text-xs text-gray-500 dark:text-gray-300">
-                                {label}
-                              </span>
-                              <span className="text-xs font-medium text-gray-900 dark:text-white">
-                                {formatFullCurrency(value)}
-                              </span>
-                            </div>
-                          );
-                        })}
+                        <div className="flex justify-between">
+                          <span className="text-xs text-gray-500 dark:text-gray-300">
+                            Net Worth
+                          </span>
+                          <span className="text-xs font-medium text-gray-900 dark:text-white">
+                            {formatFullCurrency(value)}
+                          </span>
+                        </div>
                       </div>
                     );
                   }
@@ -629,26 +638,23 @@ export function DashboardGraphs() {
           ? renderNetWorthGraph()
           : renderSpendingGraph()}
 
-        <Button
-          variant="ghost"
-          size="icon"
+        <button
           onClick={handlePrev}
           disabled={activeGraph === "networth"}
-          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 dark:bg-gray-800/70"
           aria-label="Previous graph"
+          className="p-1 rounded-full bg-black/5 hover:bg-black/10 disabled:opacity-30 absolute left-2 top-1/2 -translate-y-1/2 transition"
         >
           <ChevronLeft className="h-5 w-5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
+        </button>
+
+        <button
           onClick={handleNext}
           disabled={activeGraph === "spending"}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 dark:bg-gray-800/70"
           aria-label="Next graph"
+          className="p-1 rounded-full bg-black/5 hover:bg-black/10 disabled:opacity-30 absolute right-2 top-1/2 -translate-y-1/2 transition"
         >
           <ChevronRight className="h-5 w-5" />
-        </Button>
+        </button>
       </div>
 
       <div className="flex items-center justify-center gap-2">
