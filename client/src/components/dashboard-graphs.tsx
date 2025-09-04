@@ -105,13 +105,13 @@ const generateNetWorthData = (current: number, period: Period, firstDataDate?: D
   return [...emptyPoints, ...dataPoints];
 };
 
-const formatCompactCurrency = (value: number): string => {
-  if (value >= 1000000) {
-    return `$${(value / 1000000).toFixed(1)}M`;
-  } else if (value >= 1000) {
-    return `$${(value / 1000).toFixed(0)}k`;
-  }
-  return `$${value.toLocaleString()}`;
+const formatFullCurrency = (value: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
 };
 
 const formatTooltipDate = (dataPoint: any): string => {
@@ -291,7 +291,7 @@ export function DashboardGraphs() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
-              {formatCompactCurrency(currentNetWorth)}
+              {formatFullCurrency(currentNetWorth)}
             </p>
             <div className="flex items-center gap-2 mt-1">
               {netWorthChange >= 0 ? (
@@ -306,7 +306,7 @@ export function DashboardGraphs() {
                     : "text-red-600 dark:text-red-400"
                 }`}
               >
-                {netWorthChange >= 0 ? "+" : "-"}{formatCompactCurrency(Math.abs(netWorthChange))} vs {netWorthPeriod === "1M" ? "last month" : netWorthPeriod === "3M" ? "previous 3 months" : netWorthPeriod === "6M" ? "previous 6 months" : "last year"}
+                {netWorthChange >= 0 ? "+" : ""}{formatFullCurrency(netWorthChange)} vs {netWorthPeriod === "1M" ? "last month" : netWorthPeriod === "3M" ? "previous 3 months" : netWorthPeriod === "6M" ? "previous 6 months" : "last year"}
               </span>
             </div>
           </div>
@@ -346,12 +346,13 @@ export function DashboardGraphs() {
                 tickLine={false}
                 tick={{ fill: "#6B7280", fontSize: 12 }}
                 tickFormatter={(v) => {
-                  if (v >= 1000000) {
-                    return `$${(v / 1000000).toFixed(0)}M`;
-                  } else if (v >= 1000) {
-                    return `$${(v / 1000).toFixed(0)}k`;
-                  }
-                  return `$${v}`;
+                  return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                    notation: 'compact'
+                  }).format(v);
                 }}
               />
               <Tooltip
@@ -372,7 +373,7 @@ export function DashboardGraphs() {
                           {formattedDate}
                         </p>
                         <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                          {formatCompactCurrency(value)}
+                          {formatFullCurrency(value)}
                         </p>
                       </div>
                     );
