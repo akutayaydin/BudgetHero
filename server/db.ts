@@ -8,6 +8,7 @@ neonConfig.webSocketConstructor = ws;
 // Determine environment and use appropriate database
 const isProduction = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === 'true';
 
+
 // Use environment-specific database URLs
 const databaseUrl = isProduction 
   ? process.env.DATABASE_URL_PRODUCTION || process.env.DATABASE_URL

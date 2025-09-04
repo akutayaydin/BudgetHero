@@ -2,12 +2,8 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string;
-
-if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-  throw new Error("Missing GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET env vars");
-}
+// Note: Authentication uses Replit's OpenID Connect, not Google OAuth
+// Required environment variables are checked in replitAuth.ts
 
 const app = express();
 app.use(express.json());
@@ -93,10 +89,17 @@ app.use((req, res, next) => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === 'true';
+  
+  if (isProduction) {
+    // Ensure NODE_ENV is set to production for proper Express configuration
+    process.env.NODE_ENV = 'production';
+    app.set('env', 'production');
     serveStatic(app);
+    console.log('Server running in PRODUCTION mode');
+  } else {
+    await setupVite(app, server);
+    console.log('Server running in DEVELOPMENT mode');
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
