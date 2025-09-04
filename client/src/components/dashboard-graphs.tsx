@@ -368,8 +368,8 @@ export function DashboardGraphs() {
                     : "text-red-600 dark:text-red-400"
                 }`}
               >
-                {netWorthChange >= 0 ? "+" : ""}
-                {formatFullCurrency(netWorthChange)} vs{" "}
+                {netWorthChange >= 0 ? "Up " : "Down "}
+                {formatFullCurrency(netWorthChange)} over the <br />
                 {netWorthPeriod === "1M"
                   ? "last month"
                   : netWorthPeriod === "3M"
@@ -586,38 +586,51 @@ export function DashboardGraphs() {
                 content={({ active, payload }) => {
                   if (!active || !payload?.length) return null;
 
-                  const dataPoint = payload[0].payload;
+                  const dp = payload[0].payload;
                   const today = new Date().getDate();
-                  const currentIdx = dataPoint.index; // from loop
-
-                  const showCurrentLabel = currentIdx < today;
+                  const showBoth = dp.index < today; // index is 0-based
 
                   return (
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 min-w-[160px]">
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                        {showCurrentLabel
-                          ? dataPoint.currentLabel
-                          : dataPoint.previousLabel}
-                      </p>
-                      <div className="flex flex-col gap-1">
-                        {payload.map((entry, idx) => {
-                          const isCurrent = entry.dataKey === "current";
-                          const label = isCurrent ? "This Month" : "Last Month";
-                          const value = entry.value;
+                      {showBoth && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                          {dp.currentLabel}
+                        </p>
+                      )}
 
-                          return (
-                            <div
-                              key={idx}
-                              className="flex justify-between text-xs text-gray-900 dark:text-white"
-                            >
-                              <span className="text-gray-500 dark:text-gray-300">
-                                {label}
-                              </span>
-                              <span>{formatFullCurrency(value)}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
+                      {showBoth ? (
+                        // ✅ Up to today → show both series
+                        <div className="flex flex-col gap-1">
+                          {["current", "previous"].map((key) => {
+                            const entry = payload.find(
+                              (e) => e.dataKey === key,
+                            );
+                            if (!entry || typeof entry.value !== "number")
+                              return null;
+                            return (
+                              <div
+                                key={key}
+                                className="flex justify-between text-xs text-gray-900 dark:text-white"
+                              >
+                                <span className="text-gray-500 dark:text-gray-300">
+                                  {key === "current"
+                                    ? "This Month"
+                                    : "Last Month"}
+                                </span>
+                                <span>
+                                  {formatFullCurrency(entry.value as number)}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        // ✅ After today → only the last month sentence, no header
+                        <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                          Last month, by {dp.previousLabel}, you <br />
+                          spent <b>{formatFullCurrency(dp.previous)}.</b>
+                        </p>
+                      )}
                     </div>
                   );
                 }}
