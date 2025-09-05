@@ -22,6 +22,9 @@ import {
   Music,
   Shield,
   HelpCircle,
+  Hammer,
+  Wrench,
+  Repeat,
   type LucideIcon,
 } from "lucide-react";
 
@@ -32,6 +35,23 @@ import {
 export const getCategoryIcon = (categoryName: string): LucideIcon => {
   const name = categoryName.toLowerCase();
   const iconMap: Record<string, LucideIcon> = {
+    // Top-level categories
+    transportation: Car,
+    "food & drink": Utensils,
+    "rent & utilities": Home,
+    "general merchandise": ShoppingBag,
+    "medical & healthcare": Stethoscope,
+    "bank fees": Receipt,
+    entertainment: Film,
+    "home improvement": Hammer,
+    "general services": Wrench,
+    "government & non-profit": Landmark,
+    subscriptions: Repeat,
+    travel: Plane,
+    transfers: RotateCcw,
+    "loan payments": CreditCard,
+    uncategorized: HelpCircle,
+
     // Food & Dining
     "food & dining": Utensils,
     "fast food": Utensils,
@@ -50,7 +70,6 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     "home & garden": Home,
 
     // Transportation
-    transportation: Car,
     gas: Fuel,
     fuel: Fuel,
     "taxi & ride shares": Car,
@@ -61,7 +80,6 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     "auto & transport": Car,
 
     // Entertainment
-    entertainment: Film,
     movies: Film,
     music: Music,
     streaming: Film,
@@ -89,7 +107,6 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
 
     // Travel & Vacation
     "travel & vacation": Plane,
-    travel: Plane,
     vacation: Plane,
     hotels: Home,
     flights: Plane,
@@ -98,7 +115,6 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     housing: Home,
     rent: Home,
     mortgage: Home,
-    "home improvement": Home,
     maintenance: Home,
 
     // Education
@@ -154,7 +170,6 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     // Other / Default
     transfer: RotateCcw,
     other: HelpCircle,
-    uncategorized: HelpCircle,
   };
 
   for (const [key, icon] of Object.entries(iconMap)) {
