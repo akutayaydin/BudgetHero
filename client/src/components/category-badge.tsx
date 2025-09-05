@@ -1,7 +1,7 @@
 // client/src/components/category-badge.tsx
 import React from "react";
 import { cn } from "@/lib/utils";
-import { getCategoryIcon } from "@/lib/category-icons";
+import { getCategoryIcon, getCategoryColor } from "@/lib/category-icons";
 
 interface CategoryBadgeProps {
   categoryName: string;
@@ -10,13 +10,14 @@ interface CategoryBadgeProps {
 
 export function CategoryBadge({ categoryName, className }: CategoryBadgeProps) {
   const Icon = getCategoryIcon(categoryName);
-
+  const colorClass = getCategoryColor(categoryName);
+  
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center">
-        <Icon className="w-3 h-3 text-muted-foreground" />
+      <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center">
+        <Icon className={cn("w-4 h-4", colorClass)} />
       </div>
-      <span>{categoryName}</span>
+      <span className="text-sm">{categoryName}</span>
     </div>
   );
 }

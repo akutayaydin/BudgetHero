@@ -178,4 +178,30 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
   return HelpCircle;
 };
 
+export const getCategoryColor = (categoryName: string): string => {
+  const name = categoryName.toLowerCase();
+  const colorMap: Record<string, string> = {
+    transportation: "text-blue-600",
+    "food & drink": "text-orange-600",
+    "rent & utilities": "text-purple-600",
+    "general merchandise": "text-teal-600",
+    "medical & healthcare": "text-red-600",
+    "bank fees": "text-yellow-600",
+    entertainment: "text-pink-600",
+    "home improvement": "text-emerald-600",
+    "general services": "text-indigo-600",
+    "government & non-profit": "text-lime-600",
+    subscriptions: "text-cyan-600",
+    travel: "text-violet-600",
+    transfers: "text-amber-600",
+    "loan payments": "text-fuchsia-600",
+    uncategorized: "text-gray-500",
+  };
+
+  for (const [key, color] of Object.entries(colorMap)) {
+    if (name.includes(key)) return color;
+  }
+  return "text-muted-foreground";
+};
+
 export default getCategoryIcon;
