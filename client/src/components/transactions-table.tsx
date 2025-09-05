@@ -42,7 +42,7 @@ import {
   ChevronLeft,
   EllipsisVertical,
 } from "lucide-react";
-import { TransactionDetailDialog } from "./transaction-detail-dialog";
+//import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { TransactionRecurringBadge } from "./transaction-recurring-badge";
 import { TransactionEditModal } from "./transaction-edit-modal";
 import { MerchantSparkline } from "./merchant-sparkline";
@@ -840,16 +840,17 @@ export default function TransactionsTable({
     );
   }
 
-  
   // Merchant filter - support multiple selections client-side
   if (selectedMerchants.size > 0) {
-    filteredTransactions = filteredTransactions.filter((transaction: Transaction) => {
-      if (!transaction.merchant) return false;
-      const merchantName = transaction.merchant.toLowerCase();
-      return Array.from(selectedMerchants).some(
-        (m) => merchantName === m.toLowerCase(),
-      );
-    });
+    filteredTransactions = filteredTransactions.filter(
+      (transaction: Transaction) => {
+        if (!transaction.merchant) return false;
+        const merchantName = transaction.merchant.toLowerCase();
+        return Array.from(selectedMerchants).some(
+          (m) => merchantName === m.toLowerCase(),
+        );
+      },
+    );
   }
 
   // Account filter
