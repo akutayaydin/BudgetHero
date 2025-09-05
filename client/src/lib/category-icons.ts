@@ -183,9 +183,12 @@ export const getCategoryColor = (categoryName: string): string => {
   const colorMap: Record<string, string> = {
     transportation: "text-blue-600",
     "food & drink": "text-orange-600",
+    groceries: "text-orange-600",
     "rent & utilities": "text-purple-600",
+    "mortgage & rent": "text-purple-600",
     "general merchandise": "text-teal-600",
     "medical & healthcare": "text-red-600",
+    "personal care": "text-rose-600",
     "bank fees": "text-yellow-600",
     entertainment: "text-pink-600",
     "home improvement": "text-emerald-600",
@@ -194,8 +197,16 @@ export const getCategoryColor = (categoryName: string): string => {
     subscriptions: "text-cyan-600",
     travel: "text-violet-600",
     transfers: "text-amber-600",
+    transfer: "text-amber-600",
     "loan payments": "text-fuchsia-600",
     uncategorized: "text-gray-500",
+    salary: "text-green-600",
+    income: "text-green-600",
+    // Aliases
+    groceries: "text-orange-600",
+    "mortgage & rent": "text-purple-600",
+    transfer: "text-amber-600",
+    salary: "text-green-600",
   };
 
   for (const [key, color] of Object.entries(colorMap)) {
