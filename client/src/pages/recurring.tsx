@@ -615,8 +615,9 @@ export default function RecurringPage() {
                           <SelectItem value="Housing & Rent">🏠 Housing & Rent</SelectItem>
                           <SelectItem value="Utilities">⚡ Utilities</SelectItem>
                           <SelectItem value="Insurance">🛡️ Insurance</SelectItem>
-                          <SelectItem value="Transportation">🚗 Transportation</SelectItem>
-                          <SelectItem value="Parking & Tools">🅿️ Parking & Tools</SelectItem>
+                          <SelectItem value="Auto & Transport">🚗 Auto & Transport</SelectItem>
+                          <SelectItem value="Parking">🅿️ Parking</SelectItem>
+                          <SelectItem value="Tolls">🛣️ Tolls</SelectItem>
                           <SelectItem value="Food & Groceries">🛒 Food & Groceries</SelectItem>
                           <SelectItem value="Professional Services">💼 Professional Services</SelectItem>
                           <SelectItem value="Financial Services">💳 Financial Services</SelectItem>

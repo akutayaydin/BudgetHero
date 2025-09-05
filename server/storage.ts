@@ -13,6 +13,37 @@ import type {
 } from "@shared/schema";
 import { defaultCategories } from "../client/src/lib/transaction-classifier";
 
+// Map legacy category names to the new taxonomy
+const LEGACY_CATEGORY_MAP: Record<string, string> = {
+  "Transportation": "Auto & Transport",
+  "Rent & Utilities": "Bills & Utilities",
+  "General Merchandise": "Shopping",
+  "Home Improvement": "Home & Garden",
+  "Travel": "Travel & Vacation",
+//  "Personal Care": "Health & Wellness",
+  "Subscriptions": "Bills & Utilities",
+  "General Services: Childcare": "Family Care",
+  "General Services: Automotive Services": "Auto & Transport",
+  "Medical & Healthcare: Pets/Veterinary": "Pets",
+  "Loan Payments: Credit Card": "Credit Card Payment",
+};
+
+
+// Map legacy admin category records (including subcategories) to the new taxonomy
+const LEGACY_ADMIN_CATEGORY_RENAMES: Record<string, { name: string; subcategory?: string }> = {
+  "Transportation": { name: "Auto & Transport" },
+  "Rent & Utilities": { name: "Bills & Utilities" },
+  "General Merchandise": { name: "Shopping" },
+  "Home Improvement": { name: "Home & Garden" },
+  "Travel": { name: "Travel & Vacation" },
+//  "Personal Care": { name: "Health & Wellness" },
+  "Subscriptions": { name: "Bills & Utilities" },
+  "General Services: Childcare": { name: "Family Care", subcategory: "Childcare" },
+  "General Services: Automotive Services": { name: "Auto & Transport", subcategory: "Automotive Services" },
+  "Medical & Healthcare: Pets/Veterinary": { name: "Pets", subcategory: "Veterinary" },
+  "Loan Payments: Credit Card": { name: "Credit Card Payment", subcategory: undefined },
+};
+
 export interface IStorage {
   // User methods
   getUser(id: string): Promise<User | undefined>;
@@ -295,7 +326,17 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (filters?.category) {
-      conditions.push(eq(transactions.category, filters.category));
+      const legacyMatch = Object.entries(LEGACY_CATEGORY_MAP).find(([, newName]) => newName === filters.category);
+      if (legacyMatch) {
+        conditions.push(
+          or(
+            eq(transactions.category, filters.category),
+            eq(transactions.category, legacyMatch[0])
+          )
+        );
+      } else {
+        conditions.push(eq(transactions.category, filters.category));
+      }
     }
 
     if (filters?.type) {
@@ -330,7 +371,11 @@ export class DatabaseStorage implements IStorage {
       .where(whereCondition)
       .orderBy(sql`${transactions.date} DESC`);
     
-    return results;
+    return results.map(t => ({
+      ...t,
+      category: LEGACY_CATEGORY_MAP[t.category] || t.category,
+    }));
+    
   }
 
   async getTransaction(id: string): Promise<Transaction | undefined> {
@@ -505,7 +550,46 @@ export class DatabaseStorage implements IStorage {
 
   async getAdminCategories(): Promise<any[]> {
     const { adminCategories } = await import("@shared/schema");
-    return await db.select().from(adminCategories);
+    const { eq } = await import("drizzle-orm");
+
+    const rows = await db
+      .select()
+      .from(adminCategories)
+      .where(eq(adminCategories.isActive, true))
+      .orderBy(adminCategories.sortOrder);
+
+    const renamed: { id: string; name: string; subcategory: string | null }[] = [];
+
+    const mapped = rows.map((cat: any) => {
+      const compositeKey = cat.subcategory
+        ? `${cat.name}: ${cat.subcategory}`
+        : cat.name;
+      const rename =
+        LEGACY_ADMIN_CATEGORY_RENAMES[compositeKey] ||
+        LEGACY_ADMIN_CATEGORY_RENAMES[cat.name];
+
+      if (rename) {
+        const updated: any = { ...cat, name: rename.name };
+        if (Object.prototype.hasOwnProperty.call(rename, "subcategory")) {
+          updated.subcategory = rename.subcategory;
+          
+        }
+        renamed.push({ id: cat.id, name: updated.name, subcategory: updated.subcategory ?? null });
+        return updated;
+      }
+      return cat;
+    });
+
+    if (renamed.length) {
+      for (const r of renamed) {
+        await db
+          .update(adminCategories)
+          .set({ name: r.name, subcategory: r.subcategory })
+          .where(eq(adminCategories.id, r.id));
+      }
+    }
+
+    return mapped;
   }
 
   async getFinancialSummary(userId?: string, startDate?: Date, endDate?: Date): Promise<{
@@ -1376,14 +1460,3 @@ export class DatabaseStorage implements IStorage {
 
 export const storage = new DatabaseStorage();
 
-// Extend storage interface for admin categories
-storage.getAdminCategories = async function() {
-  const { adminCategories } = await import("@shared/schema");
-  const { eq } = await import("drizzle-orm");
-  
-  return await db
-    .select()
-    .from(adminCategories)
-    .where(eq(adminCategories.isActive, true))
-    .orderBy(adminCategories.sortOrder);
-};

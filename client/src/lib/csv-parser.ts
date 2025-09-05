@@ -166,11 +166,11 @@ function mapCategory(category: string, type: "income" | "expense"): string {
   }
   if (lowerCategory.includes("gas") || lowerCategory.includes("transport") || 
       lowerCategory.includes("uber") || lowerCategory.includes("taxi")) {
-    return "Transportation";
+    return "Auto & Transport";
   }
   if (lowerCategory.includes("electric") || lowerCategory.includes("utility") || 
       lowerCategory.includes("water") || lowerCategory.includes("internet")) {
-    return "Utilities";
+    return "Bills & Utilities";
   }
   if (lowerCategory.includes("entertainment") || lowerCategory.includes("movie") || 
       lowerCategory.includes("gaming")) {
@@ -178,7 +178,7 @@ function mapCategory(category: string, type: "income" | "expense"): string {
   }
   if (lowerCategory.includes("health") || lowerCategory.includes("medical") || 
       lowerCategory.includes("pharmacy")) {
-    return "Healthcare";
+    return "Medical & Healthcare";
   }
   if (lowerCategory.includes("shopping") || lowerCategory.includes("retail") || 
       lowerCategory.includes("store")) {

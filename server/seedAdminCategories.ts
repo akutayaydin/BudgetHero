@@ -17,8 +17,9 @@ const defaultAdminCategories = [
   { name: "Public Transit", ledgerType: "EXPENSE", color: "#B91C1C", sortOrder: 21 },
   { name: "Gas", ledgerType: "EXPENSE", color: "#991B1B", sortOrder: 22 },
   { name: "Auto Maintenance", ledgerType: "EXPENSE", color: "#7F1D1D", sortOrder: 23 },
-  { name: "Parking & Tolls", ledgerType: "EXPENSE", color: "#DC2626", sortOrder: 24 },
-  { name: "Taxi & Ride Shares", ledgerType: "EXPENSE", color: "#B91C1C", sortOrder: 25 },
+  { name: "Parking", ledgerType: "EXPENSE", color: "#DC2626", sortOrder: 24 },
+  { name: "Tolls", ledgerType: "EXPENSE", color: "#B91C1C", sortOrder: 25 },
+  { name: "Taxi & Ride Shares", ledgerType: "EXPENSE", color: "#B91C1C", sortOrder: 26 },
   
   // Housing
   { name: "Mortgage", ledgerType: "EXPENSE", color: "#2563EB", sortOrder: 30 },

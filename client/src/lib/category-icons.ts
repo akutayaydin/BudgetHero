@@ -24,7 +24,9 @@ import {
   HelpCircle,
   Hammer,
   Wrench,
-  Repeat,
+  Gift,
+  PawPrint,
+  Laptop,
   type LucideIcon,
 } from "lucide-react";
 
@@ -36,20 +38,28 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
   const name = categoryName.toLowerCase();
   const iconMap: Record<string, LucideIcon> = {
     // Top-level categories
-    transportation: Car,
+    "auto & transport": Car,
     "food & drink": Utensils,
-    "rent & utilities": Home,
-    "general merchandise": ShoppingBag,
+    "bills & utilities": Receipt,
+    shopping: ShoppingBag,
     "medical & healthcare": Stethoscope,
+    "health & wellness": Heart,
+    pets: PawPrint,
     "bank fees": Receipt,
     entertainment: Film,
-    "home improvement": Hammer,
+    "home & garden": Hammer,
     "general services": Wrench,
+    "family care": Baby,
     "government & non-profit": Landmark,
-    subscriptions: Repeat,
-    travel: Plane,
+    "software & tech": Laptop,
+    "travel & vacation": Plane,
     transfers: RotateCcw,
     "loan payments": CreditCard,
+    gifts: Gift,
+    reimbursement: RotateCcw,
+    "savings transfer": PiggyBank,
+    investment: PiggyBank,
+    "personal care": Heart,
     uncategorized: HelpCircle,
 
     // Food & Dining
@@ -69,7 +79,7 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     electronics: ShoppingBag,
     "home & garden": Home,
 
-    // Transportation
+    // Auto & Transport
     gas: Fuel,
     fuel: Fuel,
     "taxi & ride shares": Car,
@@ -77,13 +87,13 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     lyft: Car,
     "public transportation": Car,
     parking: Car,
+    tolls: Car,
     "auto & transport": Car,
 
     // Entertainment
     movies: Film,
     music: Music,
     streaming: Film,
-    "subscriptions & entertainment": Film,
     hobbies: Film,
     sports: Film,
 
@@ -181,24 +191,29 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
 export const getCategoryColor = (categoryName: string): string => {
   const name = categoryName.toLowerCase();
   const colorMap: Record<string, string> = {
-    transportation: "text-blue-600",
+    "auto & transport": "text-blue-600",
     "food & drink": "text-orange-600",
     groceries: "text-orange-600",
-    "rent & utilities": "text-purple-600",
+    "bills & utilities": "text-purple-600",
     "mortgage & rent": "text-purple-600",
-    "general merchandise": "text-teal-600",
+    "shopping": "text-teal-600",
     "medical & healthcare": "text-red-600",
-    "personal care": "text-rose-600",
+    "health & wellness": "text-rose-600",
+    pets: "text-teal-600",
+    "personal care": "text-pink-600",
     "bank fees": "text-yellow-600",
     entertainment: "text-pink-600",
-    "home improvement": "text-emerald-600",
+    "home & garden": "text-emerald-600",
     "general services": "text-indigo-600",
     "government & non-profit": "text-lime-600",
-    subscriptions: "text-cyan-600",
-    travel: "text-violet-600",
+    "software & tech": "text-cyan-600",
+    "travel & vacation": "text-violet-600",
     transfers: "text-amber-600",
     transfer: "text-amber-600",
+    reimbursement: "text-amber-600",
     "loan payments": "text-fuchsia-600",
+    gifts: "text-yellow-600",
+    investment: "text-green-600",
     uncategorized: "text-gray-500",
     salary: "text-green-600",
     income: "text-green-600",

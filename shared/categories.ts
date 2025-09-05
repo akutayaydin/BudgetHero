@@ -351,7 +351,8 @@ export class TransactionCategorizer {
       // Auto & Transport
       'Taxi & Ride Shares': ['uber', 'lyft', 'taxi', 'cab', 'rideshare', 'uber trip', 'lyft ride'],
       'Gas': ['shell', 'exxon', 'chevron', 'bp', 'mobil', 'petro', 'gas', 'fuel', 'sunoco', 'marathon', 'phillips 66'],
-      'Parking & Tolls': ['parking', 'toll', 'meter', 'garage', 'parkwhiz', 'spotangels'],
+      'Parking': ['parking', 'meter', 'garage', 'parkwhiz', 'spotangels'],
+      'Tolls': ['toll', 'fastrak', 'ezpass'],
       'Public Transit': ['metro', 'bus', 'train', 'transit', 'subway', 'mta', 'bart', 'amtrak'],
       'Auto Payment': ['car payment', 'auto loan', 'vehicle payment', 'honda financial', 'toyota financial'],
       'Auto Maintenance': ['jiffy lube', 'valvoline', 'tire', 'mechanic', 'oil change', 'car wash', 'brake'],

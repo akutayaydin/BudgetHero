@@ -108,7 +108,7 @@ export class SmartRecurringDetector {
     discretionary: {
       patterns: [/starbucks|mcdonalds|uber|lyft|restaurant|coffee|dining|shopping|entertainment/i],
       amountVarianceThreshold: 0.50, // Variable
-      categories: ['Restaurants', 'Fast Food', 'Coffee Shops', 'Transportation', 'Entertainment', 'Shopping']
+      categories: ['Restaurants', 'Fast Food', 'Coffee Shops', 'Auto & Transport', 'Entertainment', 'Shopping']
     }
   };
 

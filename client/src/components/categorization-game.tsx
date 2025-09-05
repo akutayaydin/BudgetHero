@@ -421,8 +421,8 @@ export function CategorizationGame({ onComplete }: { onComplete?: () => void }) 
               <div>
                 <p className="text-sm font-medium mb-2">Popular Categories:</p>
                 <div className="grid grid-cols-2 gap-2">
-                  {adminCategories.filter(cat => 
-                    ['Transportation', 'Shopping', 'Dining & Coffee', 'Bills & Utilities', 'Subscriptions', 'Refunds & Compensation'].includes(cat.name)
+                  {adminCategories.filter(cat =>
+                    ['Auto & Transport', 'Shopping', 'Food & Drink', 'Bills & Utilities', 'Software & Tech', 'Refunds & Compensation'].includes(cat.name)
                   ).map((category) => (
                     <Button
                       key={category.id}

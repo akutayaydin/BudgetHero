@@ -9,7 +9,9 @@ import {
   type AdminCategory,
   type UserMerchantOverride
 } from "@shared/schema";
+import { storage } from "./storage";
 import { MERCHANT_CATEGORIES } from "@shared/merchant-categories";
+
 
 // Confidence thresholds
 const CONFIDENCE_THRESHOLDS = {
@@ -33,11 +35,7 @@ interface CategorizationResult {
 let adminCategoriesCache: AdminCategory[] | null = null;
 async function getAdminCategories(): Promise<AdminCategory[]> {
   if (!adminCategoriesCache) {
-    adminCategoriesCache = await db
-      .select()
-      .from(adminCategories)
-      .where(eq(adminCategories.isActive, true))
-      .orderBy(adminCategories.sortOrder);
+    adminCategoriesCache = await storage.getAdminCategories() as AdminCategory[];
   }
   return adminCategoriesCache;
 }
@@ -76,16 +74,14 @@ export async function categorizeTransaction(
     );
     
     if (override) {
-      const adminCategory = await db
-        .select()
-        .from(adminCategories)
-        .where(eq(adminCategories.id, override.adminCategoryId))
-        .limit(1);
-      
-      if (adminCategory[0]) {
+      const adminCategory = (await getAdminCategories()).find(
+        c => c.id === override.adminCategoryId
+      );
+
+      if (adminCategory) {
         return {
-          adminCategoryId: adminCategory[0].id,
-          adminCategoryName: adminCategory[0].name,
+          adminCategoryId: adminCategory.id,
+          adminCategoryName: adminCategory.name,
           subcategoryName: override.subcategoryName || undefined,
           confidence: 1.0,
           source: 'user_override',
@@ -122,13 +118,10 @@ export async function categorizeTransaction(
     'Bills & Utilities': [
       'electric', 'electricity', 'gas', 'water', 'sewer', 'trash', 'garbage',
       'internet', 'cable', 'phone', 'utility', 'utilities', 'comcast', 'verizon',
-      'at&t', 'spectrum', 'xfinity'
+      'at&t', 'spectrum', 'xfinity', 'netflix', 'spotify', 'hulu', 'disney', 'amazon prime',
+      'apple music', 'subscription', 'monthly', 'premium', 'plus', 'pro'
     ],
-    'Subscriptions': [
-      'netflix', 'spotify', 'hulu', 'disney', 'amazon prime', 'apple music',
-      'subscription', 'monthly', 'premium', 'plus', 'pro'
-    ],
-    'Transportation': [
+    'Auto & Transport': [
       'uber', 'lyft', 'taxi', 'metro', 'bus', 'train', 'parking', 'toll',
       'dmv', 'registration'
     ],
@@ -140,7 +133,7 @@ export async function categorizeTransaction(
       'safeway', 'kroger', 'walmart', 'target', 'whole foods', 'trader joe',
       'costco', 'grocery', 'market', 'food', 'supermarket'
     ],
-    'Dining & Coffee': [
+    'Food & Drink': [
       'restaurant', 'cafe', 'coffee', 'starbucks', 'dunkin', 'mcdonald',
       'burger', 'pizza', 'dining', 'eatery', 'bistro'
     ],
@@ -293,11 +286,11 @@ async function generateCategorySuggestions(description: string, merchant?: strin
   const desc = description.toLowerCase();
   const merchantLower = (merchant || '').toLowerCase();
   
-  // Transportation patterns
+  // Auto & Transport patterns
   if (desc.includes('uber') || desc.includes('lyft') || merchantLower.includes('uber') || merchantLower.includes('lyft')) {
     suggestions.push({
-      adminCategoryId: adminCats.find(c => c.name === 'Transportation')?.id || '',
-      adminCategoryName: 'Transportation',
+      adminCategoryId: adminCats.find(c => c.name === 'Auto & Transport')?.id || '',
+      adminCategoryName: 'Auto & Transport',
       confidence: 0.95,
       reasoning: 'Rideshare service detected'
     });
@@ -316,8 +309,8 @@ async function generateCategorySuggestions(description: string, merchant?: strin
       });
     } else {
       suggestions.push({
-        adminCategoryId: adminCats.find(c => c.name === 'Transportation')?.id || '',
-        adminCategoryName: 'Transportation',
+        adminCategoryId: adminCats.find(c => c.name === 'Travel & Vacation')?.id || '',
+        adminCategoryName: 'Travel & Vacation',
         confidence: 0.9,
         reasoning: 'Airline transaction detected'
       });
@@ -361,8 +354,8 @@ async function generateCategorySuggestions(description: string, merchant?: strin
         reasoning: 'General purchase'
       },
       {
-        adminCategoryId: adminCats.find(c => c.name === 'Dining & Coffee')?.id || '',
-        adminCategoryName: 'Dining & Coffee',
+        adminCategoryId: adminCats.find(c => c.name === 'Food & Drink')?.id || '',
+        adminCategoryName: 'Food & Drink',
         confidence: 0.3,
         reasoning: 'Possible dining expense'
       }
@@ -426,11 +419,10 @@ export async function applyUserCategoryFix(
   );
   
   // Get admin category name
-  const [adminCategory] = await db
-    .select()
-    .from(adminCategories)
-    .where(eq(adminCategories.id, adminCategoryId))
-    .limit(1);
+  const adminCategory = (await getAdminCategories()).find(
+    c => c.id === adminCategoryId
+  );
+
   
   if (!adminCategory) {
     throw new Error('Admin category not found');

@@ -22,7 +22,7 @@ export const defaultCategories: CategoryDefinition[] = [
   { id: "gas", name: "Gas", ledgerType: "EXPENSE", keywords: ["SHELL", "CHEVRON", " 76 ", "ARCO", "EXXON", "GAS STATION"], color: "bg-red-100 text-red-800" },
   { id: "utilities", name: "Utilities", ledgerType: "EXPENSE", keywords: ["PG&E", "ELECTRIC", "WATER", "CONSERVICE"], color: "bg-yellow-100 text-yellow-800" },
   { id: "rent", name: "Rent", ledgerType: "EXPENSE", keywords: ["RENT", "LEASE"], color: "bg-purple-100 text-purple-800" },
-  { id: "subscriptions", name: "Subscriptions", ledgerType: "EXPENSE", keywords: ["NETFLIX", "HULU", "SPOTIFY", "SUBSCRIPTION", "HULUPLUS", "HLU*", "DISNEY+", "PRIME VIDEO", "HBO", "APPLE TV", "PARAMOUNT", "PEACOCK", "YOUTUBE PREMIUM", "APPLE MUSIC", "AMAZON MUSIC", "TIDAL", "PANDORA", "ICLOUD", "GOOGLE ONE", "DROPBOX", "ADOBE", "MICROSOFT 365", "OFFICE 365", "CANVA", "ZOOM", "SLACK", "NOTION", "EVERNOTE"], color: "bg-pink-100 text-pink-800" },
+  { id: "bills_utilities", name: "Bills & Utilities", ledgerType: "EXPENSE", keywords: ["NETFLIX", "HULU", "SPOTIFY", "SUBSCRIPTION", "HULUPLUS", "HLU*", "DISNEY+", "PRIME VIDEO", "HBO", "APPLE TV", "PARAMOUNT", "PEACOCK", "YOUTUBE PREMIUM", "APPLE MUSIC", "AMAZON MUSIC", "TIDAL", "PANDORA", "ICLOUD", "GOOGLE ONE", "DROPBOX", "ADOBE", "MICROSOFT 365", "OFFICE 365", "CANVA", "ZOOM", "SLACK", "NOTION", "EVERNOTE"], color: "bg-pink-100 text-pink-800" },
   { id: "insurance", name: "Insurance", ledgerType: "EXPENSE", keywords: ["INSURANCE", "GEICO"], color: "bg-indigo-100 text-indigo-800" },
   { id: "shopping", name: "Shopping", ledgerType: "EXPENSE", keywords: ["AMAZON", "TARGET", "WALMART"], color: "bg-cyan-100 text-cyan-800" },
 
@@ -70,12 +70,12 @@ export function classifyTransaction(description: string, amount: number): Catego
   ];
   
   if (subscriptionPatterns.some(pattern => upper.includes(pattern))) {
-    return defaultCategories.find(c => c.id === "subscriptions")!;
+    return defaultCategories.find(c => c.id === "bills_utilities")!;
   }
   
   // Check other categories by keywords with improved matching
   for (const category of defaultCategories) {
-    if (category.id === "subscriptions") continue; // Already handled above
+    if (category.id === "bills_utilities") continue; // Already handled above
     
     if (category.keywords.some(keyword => {
       // Exact match or word boundary match for better accuracy

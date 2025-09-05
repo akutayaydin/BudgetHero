@@ -48,12 +48,12 @@ export function RecentTransactionsSection() {
 
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
-      'Food & Dining': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+      'Food & Drink': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
       'Shopping': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-      'Transportation': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      'Auto & Transport': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
       'Entertainment': 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
       'Bills & Utilities': 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
-      'Healthcare': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+      'Medical & Healthcare': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
       'Income': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     };
     return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';

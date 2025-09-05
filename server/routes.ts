@@ -704,10 +704,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Updated categories with smart categorization system
       const categories = [
-        "Bills & Utilities", "Bills & Insurance", "Bills & Government", 
-        "Subscriptions", "Groceries", "Dining & Coffee", "Transportation", 
-        "Travel", "Shopping & Retail", "Pharmacy & Health", "Finance & Payments", 
-        "Fitness", "Education & Learning", "Hosting/DevOps", "Income", "Other"
+        "Bills & Utilities", "Bills & Insurance", "Bills & Government",
+        "Groceries", "Food & Drink", "Auto & Transport",
+        "Travel & Vacation", "Shopping", "Medical & Healthcare", "Finance & Payments",
+        "Health & Wellness", "Education & Learning", "Hosting/DevOps", "Pets",
+        "Family Care", "Gifts", "Reimbursement", "Savings Transfer", "Investment", "Income", "Other"
       ];
       
       // Return both database categories and new taxonomy categories
@@ -748,7 +749,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
 
         // Check for specific fixes we want to force
-        const isUberLyftFix = transaction.category === 'Tips/Gig' && categorization.category === 'Transport';
+        const isUberLyftFix = transaction.category === 'Tips/Gig' && categorization.category === 'Auto & Transport';
         console.log(`Analyzing transaction: "${transaction.description}" | Current: "${transaction.category}" | Suggested: "${categorization.category}" | Confidence: ${categorization.confidence} | Type: ${categorization.type} | Amount: ${amountForCategorization} | UberLyftFix: ${isUberLyftFix}`);
 
         // Update if:
@@ -758,7 +759,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const hasGenericCategory = !transaction.category || 
           transaction.category === 'Other' || 
           transaction.category === 'Uncategorized' ||
-          transaction.category.startsWith('Food & Dining') || 
+          transaction.category.startsWith('Food & Drink') ||
+          transaction.category.startsWith('Auto & Transport') ||
           transaction.category.startsWith('Transportation');
         
         const shouldUpdate = hasGenericCategory || isUberLyftFix || (

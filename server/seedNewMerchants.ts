@@ -123,18 +123,18 @@ const newMerchantData = [
   // Gifts
   { name: "Bank of Nova Scotia", category: "Gifts", type: "expense", frequency: "occasional", status: "active", confidence: "medium", aliases: "Bank of Nova Scotia" },
   
-  // Parking & Tolls
-  { name: "Beverly Hills Ca", category: "Parking & Tolls", type: "expense", frequency: "occasional", status: "active", confidence: "medium", aliases: "Beverly Hills Parking" },
-  { name: "City of Burlingame", category: "Parking & Tolls", type: "expense", frequency: "occasional", status: "active", confidence: "medium", aliases: "City of Burlingame Parking" },
-  { name: "FasTrak", category: "Parking & Tolls", type: "expense", frequency: "recurring", status: "active", confidence: "high", aliases: "FasTrak" },
-  { name: "LADOT Parking", category: "Parking & Tolls", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "LADOT Parking" },
-  { name: "LAZ Parking", category: "Parking & Tolls", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "LAZ Parking" },
-  { name: "Metropolitan Transportation Authority", category: "Parking & Tolls", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "MTA,Metropolitan Transportation Authority" },
-  { name: "Mta Meter", category: "Parking & Tolls", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "MTA Meter" },
-  { name: "Park SFO", category: "Parking & Tolls", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "Park SFO" },
-  { name: "Parksmart Lettuce", category: "Parking & Tolls", type: "expense", frequency: "occasional", status: "active", confidence: "low", aliases: "Parksmart Lettuce" },
-  { name: "Presidio Trust Parking", category: "Parking & Tolls", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "Presidio Trust Parking" },
-  { name: "Reef Parking", category: "Parking & Tolls", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "Reef Parking" },
+  // Parking and Tolls
+  { name: "Beverly Hills Ca", category: "Parking", type: "expense", frequency: "occasional", status: "active", confidence: "medium", aliases: "Beverly Hills Parking" },
+  { name: "City of Burlingame", category: "Parking", type: "expense", frequency: "occasional", status: "active", confidence: "medium", aliases: "City of Burlingame Parking" },
+  { name: "FasTrak", category: "Tolls", type: "expense", frequency: "recurring", status: "active", confidence: "high", aliases: "FasTrak" },
+  { name: "LADOT Parking", category: "Parking", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "LADOT Parking" },
+  { name: "LAZ Parking", category: "Parking", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "LAZ Parking" },
+  { name: "Metropolitan Transportation Authority", category: "Tolls", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "MTA,Metropolitan Transportation Authority" },
+  { name: "Mta Meter", category: "Parking", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "MTA Meter" },
+  { name: "Park SFO", category: "Parking", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "Park SFO" },
+  { name: "Parksmart Lettuce", category: "Parking", type: "expense", frequency: "occasional", status: "active", confidence: "low", aliases: "Parksmart Lettuce" },
+  { name: "Presidio Trust Parking", category: "Parking", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "Presidio Trust Parking" },
+  { name: "Reef Parking", category: "Parking", type: "expense", frequency: "recurring", status: "active", confidence: "medium", aliases: "Reef Parking" },
   
   // Cash & ATM
   { name: "ATM Withdrawal", category: "Cash & ATM", type: "withdrawal", frequency: "occasional", status: "active", confidence: "high", aliases: "ATM Withdrawal" },

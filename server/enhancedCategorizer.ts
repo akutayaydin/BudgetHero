@@ -1,6 +1,4 @@
-import { db } from './db';
-import { adminCategories, transactions } from '../shared/schema';
-import { eq, and } from 'drizzle-orm';
+import { storage } from './storage';
 
 interface Transaction {
   id: string;
@@ -42,19 +40,7 @@ export class EnhancedCategorizer {
 
   private async loadCategoriesCache() {
     try {
-      this.adminCategoriesCache = await db
-        .select({
-          id: adminCategories.id,
-          name: adminCategories.name,
-          subcategory: adminCategories.subcategory,
-          ledgerType: adminCategories.ledgerType,
-          budgetType: adminCategories.budgetType,
-          plaidPrimary: adminCategories.plaidPrimary,
-          plaidDetailed: adminCategories.plaidDetailed,
-          color: adminCategories.color,
-        })
-        .from(adminCategories)
-        .where(eq(adminCategories.isActive, true));
+      this.adminCategoriesCache = await storage.getAdminCategories() as any[];
       
       console.log(`📋 Loaded ${this.adminCategoriesCache.length} active admin categories for enhanced categorization`);
     } catch (error) {
@@ -159,20 +145,20 @@ export class EnhancedCategorizer {
       { patterns: ['mcdonalds', 'burger king', 'taco bell', 'kfc'], category: 'Fast Food', name: 'Food & Drink' },
       { patterns: ['walmart', 'target', 'costco', 'safeway', 'kroger'], category: 'Groceries', name: 'Food & Drink' },
       
-      // Transportation
-      { patterns: ['shell', 'exxon', 'chevron', 'bp', 'gas'], category: 'Gas', name: 'Transportation' },
-      { patterns: ['uber', 'lyft', 'taxi'], category: 'Taxi & Ride Shares', name: 'Transportation' },
-      
-      // General Merchandise
-      { patterns: ['amazon', 'ebay'], category: 'Online Marketplaces', name: 'General Merchandise' },
-      { patterns: ['best buy', 'apple store'], category: 'Electronics', name: 'General Merchandise' },
-      
-      // Entertainment
-      { patterns: ['netflix', 'hulu', 'disney+', 'spotify'], category: 'Streaming', name: 'Subscriptions' },
-      
-      // Utilities
-      { patterns: ['electric', 'gas company', 'power'], category: 'Gas & Electric', name: 'Rent & Utilities' },
-      { patterns: ['internet', 'comcast', 'verizon'], category: 'Internet & Cable', name: 'Rent & Utilities' },
+      // Auto & Transport
+      { patterns: ['shell', 'exxon', 'chevron', 'bp', 'gas'], category: 'Gas', name: 'Auto & Transport' },
+      { patterns: ['uber', 'lyft', 'taxi'], category: 'Taxi & Ride Shares', name: 'Auto & Transport' },
+
+      // Shopping
+      { patterns: ['amazon', 'ebay'], category: 'Online Marketplaces', name: 'Shopping' },
+      { patterns: ['best buy', 'apple store'], category: 'Electronics', name: 'Shopping' },
+
+      // Streaming
+      { patterns: ['netflix', 'hulu', 'disney+', 'spotify'], category: 'Streaming', name: 'Bills & Utilities' },
+
+      // Bills & Utilities
+      { patterns: ['electric', 'gas company', 'power'], category: 'Gas & Electric', name: 'Bills & Utilities' },
+      { patterns: ['internet', 'comcast', 'verizon'], category: 'Internet & Cable', name: 'Bills & Utilities' },
     ];
 
     for (const pattern of merchantPatterns) {
@@ -210,25 +196,26 @@ export class EnhancedCategorizer {
       { keywords: ['salary', 'paycheck', 'wages', 'direct deposit'], category: 'Paychecks', name: 'Income' },
       { keywords: ['interest', 'dividend'], category: 'Interest', name: 'Income' },
       
-      // Transportation
-      { keywords: ['gas station', 'fuel', 'gasoline'], category: 'Gas', name: 'Transportation' },
-      { keywords: ['parking', 'toll'], category: 'Parking & Tolls', name: 'Transportation' },
+      // Auto & Transport
+      { keywords: ['gas station', 'fuel', 'gasoline'], category: 'Gas', name: 'Auto & Transport' },
+      { keywords: ['parking', 'garage', 'meter'], category: 'Parking', name: 'Auto & Transport' },
+      { keywords: ['toll', 'fastrak', 'ezpass'], category: 'Tolls', name: 'Auto & Transport' },
       
       // Food
       { keywords: ['restaurant', 'cafe', 'diner'], category: 'Restaurants', name: 'Food & Drink' },
       { keywords: ['grocery', 'supermarket'], category: 'Groceries', name: 'Food & Drink' },
       
       // Utilities
-      { keywords: ['electric bill', 'electricity'], category: 'Gas & Electric', name: 'Rent & Utilities' },
-      { keywords: ['water bill'], category: 'Water', name: 'Rent & Utilities' },
-      { keywords: ['phone bill', 'cellular'], category: 'Phone', name: 'Rent & Utilities' },
+      { keywords: ['electric bill', 'electricity'], category: 'Gas & Electric', name: 'Bills & Utilities' },
+      { keywords: ['water bill'], category: 'Water', name: 'Bills & Utilities' },
+      { keywords: ['phone bill', 'cellular'], category: 'Phone', name: 'Bills & Utilities' },
       
       // Banking
       { keywords: ['atm fee', 'overdraft', 'bank fee'], category: 'ATM Fees', name: 'Bank Fees' },
       
       // Transfer/Payment
       { keywords: ['transfer', 'payment', 'ach'], category: 'Transfer In', name: 'Transfers' },
-      { keywords: ['credit card payment'], category: 'Credit Card', name: 'Loan Payments' },
+      { keywords: ['credit card payment'], category: 'Credit Card Payment', name: 'Loan Payments' },
     ];
 
     for (const pattern of keywordPatterns) {

@@ -131,11 +131,12 @@ export function ManualTransactionDialog({ open, onOpenChange }: ManualTransactio
   // Category options with emojis
   const getCategoryEmoji = (category: string) => {
     const emojiMap: Record<string, string> = {
-      'Dining': '🍽️', 'Food': '🍕', 'Transport': '🚗', 'Entertainment': '🎮',
-      'Shopping': '🛍️', 'Housing': '🏠', 'Health': '💊', 'Travel': '✈️',
-      'Bills': '📄', 'Subscriptions': '📱', 'Gas': '⛽', 'Groceries': '🛒',
+      'Dining': '🍽️', 'Food': '🍕', 'Auto & Transport': '🚗', 'Entertainment': '🎮',
+      'Shopping': '🛍️', 'Housing': '🏠', 'Health & Wellness': '💊', 'Travel & Vacation': '✈️',
+      'Bills & Utilities': '📄', 'Software & Tech': '💻', 'Gas': '⛽', 'Groceries': '🛒',
       'Coffee': '☕', 'Fitness': '💪', 'Education': '📚', 'Insurance': '🛡️',
-      'Banking': '🏦', 'Investment': '📈', 'Other': '💰'
+      'Banking': '🏦', 'Investment': '📈', 'Gifts': '🎁', 'Personal Care': '🧴',
+      'Pets': '🐾', 'Family Care': '👪', 'Reimbursement': '🔄', 'Savings Transfer': '💵', 'Other': '💰'
     };
     return emojiMap[category] || '💰';
   };
@@ -356,7 +357,7 @@ export function ManualTransactionDialog({ open, onOpenChange }: ManualTransactio
                     </div>
                     {adminCategories
                       .filter((cat: any) => cat.ledgerType === "EXPENSE" && 
-                        ["Auto Payment", "Public Transit", "Gas", "Auto Maintenance", "Parking & Tolls", "Taxi & Ride Shares"].includes(cat.name))
+                        ["Auto Payment", "Public Transit", "Gas", "Auto Maintenance", "Parking", "Tolls", "Taxi & Ride Shares"].includes(cat.name))
                       .sort((a: any, b: any) => a.sortOrder - b.sortOrder)
                       .map((category: any) => (
                         <SelectItem key={category.id} value={category.name}>

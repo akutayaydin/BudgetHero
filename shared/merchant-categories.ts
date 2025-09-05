@@ -33,30 +33,34 @@ export const MERCHANT_CATEGORIES = {
   "IRS": "Bills & Government",
   "California FTB": "Bills & Government",
   "DMV": "Bills & Government",
-  "FasTrak": "Bills & Government",
-  "E-ZPass": "Bills & Government",
-  "SunPass": "Bills & Government",
 
-  // Subscriptions
-  "Netflix": "Subscriptions",
-  "Hulu": "Subscriptions",
-  "Disney+": "Subscriptions",
-  "Max": "Subscriptions",
-  "Apple TV+": "Subscriptions",
-  "Amazon Prime Video": "Subscriptions",
-  "Peacock": "Subscriptions",
-  "Paramount+": "Subscriptions",
-  "Spotify": "Subscriptions",
-  "Apple Music": "Subscriptions",
-  "YouTube Premium": "Subscriptions",
-  "iCloud": "Subscriptions",
-  "Google One": "Subscriptions",
-  "Microsoft 365": "Subscriptions",
-  "Adobe": "Subscriptions",
-  "Dropbox": "Subscriptions",
-  "GitHub": "Subscriptions",
-  "Replit": "Subscriptions",
-  "OpenAI": "Subscriptions",
+  // Tolls
+  "FasTrak": "Tolls",
+  "E-ZPass": "Tolls",
+  "SunPass": "Tolls",
+
+  // Streaming services (Bills & Utilities)
+  "Netflix": "Bills & Utilities",
+  "Hulu": "Bills & Utilities",
+  "Disney+": "Bills & Utilities",
+  "Max": "Bills & Utilities",
+  "Apple TV+": "Bills & Utilities",
+  "Amazon Prime Video": "Bills & Utilities",
+  "Peacock": "Bills & Utilities",
+  "Paramount+": "Bills & Utilities",
+  "Spotify": "Bills & Utilities",
+  "Apple Music": "Bills & Utilities",
+  "YouTube Premium": "Bills & Utilities",
+
+  // Software & Tech subscriptions
+  "iCloud": "Software & Tech",
+  "Google One": "Software & Tech",
+  "Microsoft 365": "Software & Tech",
+  "Adobe": "Software & Tech",
+  "Dropbox": "Software & Tech",
+  "GitHub": "Software & Tech",
+  "Replit": "Software & Tech",
+  "OpenAI": "Software & Tech",
 
   // Groceries
   "Walmart": "Groceries",
@@ -72,72 +76,72 @@ export const MERCHANT_CATEGORIES = {
   "Whole Foods": "Groceries",
   "H-E-B": "Groceries",
 
-  // Dining & Coffee
-  "Starbucks": "Dining & Coffee",
-  "McDonald's": "Dining & Coffee",
-  "Chipotle": "Dining & Coffee",
-  "Subway": "Dining & Coffee",
-  "Chick-fil-A": "Dining & Coffee",
-  "Dunkin'": "Dining & Coffee",
-  "Panera": "Dining & Coffee",
-  "Taco Bell": "Dining & Coffee",
-  "Domino's": "Dining & Coffee",
-  "Pizza Hut": "Dining & Coffee",
+  // Food & Drink
+  "Starbucks": "Food & Drink",
+  "McDonald's": "Food & Drink",
+  "Chipotle": "Food & Drink",
+  "Subway": "Food & Drink",
+  "Chick-fil-A": "Food & Drink",
+  "Dunkin'": "Food & Drink",
+  "Panera": "Food & Drink",
+  "Taco Bell": "Food & Drink",
+  "Domino's": "Food & Drink",
+  "Pizza Hut": "Food & Drink",
 
-  // Transportation
-  "Uber": "Transportation",
-  "Lyft": "Transportation",
-  "BART": "Transportation",
-  "MTA": "Transportation",
-  "Caltrain": "Transportation",
-  "Shell": "Transportation",
-  "Chevron": "Transportation",
-  "Exxon": "Transportation",
-  "BP": "Transportation",
-  "ARCO": "Transportation",
-  "Valero": "Transportation",
-  "Tesla Supercharger": "Transportation",
-  "Electrify America": "Transportation",
-  "ChargePoint": "Transportation",
-  "EVgo": "Transportation",
-  "ParkMobile": "Transportation",
-  "PayByPhone": "Transportation",
+  // Auto & Transport
+  "Uber": "Auto & Transport",
+  "Lyft": "Auto & Transport",
+  "BART": "Auto & Transport",
+  "MTA": "Auto & Transport",
+  "Caltrain": "Auto & Transport",
+  "Shell": "Auto & Transport",
+  "Chevron": "Auto & Transport",
+  "Exxon": "Auto & Transport",
+  "BP": "Auto & Transport",
+  "ARCO": "Auto & Transport",
+  "Valero": "Auto & Transport",
+  "Tesla Supercharger": "Auto & Transport",
+  "Electrify America": "Auto & Transport",
+  "ChargePoint": "Auto & Transport",
+  "EVgo": "Auto & Transport",
+  "ParkMobile": "Auto & Transport",
+  "PayByPhone": "Auto & Transport",
 
-  // Travel
-  "United Airlines": "Travel",
-  "American Airlines": "Travel",
-  "Delta Airlines": "Travel",
-  "Southwest Airlines": "Travel",
-  "Alaska Airlines": "Travel",
-  "Marriott": "Travel",
-  "Hilton": "Travel",
-  "Hyatt": "Travel",
-  "IHG": "Travel",
-  "Airbnb": "Travel",
-  "Booking.com": "Travel",
-  "Expedia": "Travel",
-  "Priceline": "Travel",
+  // Travel & Vacation
+  "United Airlines": "Travel & Vacation",
+  "American Airlines": "Travel & Vacation",
+  "Delta Airlines": "Travel & Vacation",
+  "Southwest Airlines": "Travel & Vacation",
+  "Alaska Airlines": "Travel & Vacation",
+  "Marriott": "Travel & Vacation",
+  "Hilton": "Travel & Vacation",
+  "Hyatt": "Travel & Vacation",
+  "IHG": "Travel & Vacation",
+  "Airbnb": "Travel & Vacation",
+  "Booking.com": "Travel & Vacation",
+  "Expedia": "Travel & Vacation",
+  "Priceline": "Travel & Vacation",
+  
+  // Shopping
+  "Amazon": "Shopping",
+  "Target": "Shopping",
+  "Best Buy": "Shopping",
+  "Apple Store": "Shopping",
+  "Home Depot": "Shopping",
+  "Lowe's": "Shopping",
+  "IKEA": "Shopping",
+  "eBay": "Shopping",
+  "TJ Maxx": "Shopping",
+  "Marshalls": "Shopping",
+  "Nike": "Shopping",
+  "Adidas": "Shopping",
 
-  // Shopping & Retail
-  "Amazon": "Shopping & Retail",
-  "Target": "Shopping & Retail",
-  "Best Buy": "Shopping & Retail",
-  "Apple Store": "Shopping & Retail",
-  "Home Depot": "Shopping & Retail",
-  "Lowe's": "Shopping & Retail",
-  "IKEA": "Shopping & Retail",
-  "eBay": "Shopping & Retail",
-  "TJ Maxx": "Shopping & Retail",
-  "Marshalls": "Shopping & Retail",
-  "Nike": "Shopping & Retail",
-  "Adidas": "Shopping & Retail",
-
-  // Pharmacy & Health
-  "CVS": "Pharmacy & Health",
-  "Walgreens": "Pharmacy & Health",
-  "Rite Aid": "Pharmacy & Health",
-  "Kaiser Permanente": "Pharmacy & Health",
-  "One Medical": "Pharmacy & Health",
+  // Medical & Healthcare
+  "CVS": "Medical & Healthcare",
+  "Walgreens": "Medical & Healthcare",
+  "Rite Aid": "Medical & Healthcare",
+  "Kaiser Permanente": "Medical & Healthcare",
+  "One Medical": "Medical & Healthcare",
 
   // Finance & Payments
   "PayPal": "Finance & Payments",
@@ -148,12 +152,12 @@ export const MERCHANT_CATEGORIES = {
   "Robinhood": "Finance & Payments",
   "Coinbase": "Finance & Payments",
 
-  // Fitness
-  "Planet Fitness": "Fitness",
-  "24 Hour Fitness": "Fitness",
-  "Equinox": "Fitness",
-  "ClassPass": "Fitness",
-  "Peloton": "Fitness",
+  // Health & Wellness
+  "Planet Fitness": "Health & Wellness",
+  "24 Hour Fitness": "Health & Wellness",
+  "Equinox": "Health & Wellness",
+  "ClassPass": "Health & Wellness",
+  "Peloton": "Health & Wellness",
 
   // Education & Learning
   "Udemy": "Education & Learning",
@@ -174,51 +178,51 @@ export const MERCHANT_CATEGORIES = {
 // Category keywords for fuzzy matching
 export const CATEGORY_KEYWORDS = {
   "Bills & Utilities": [
-    "electric", "gas", "water", "sewer", "trash", "internet", "cable", "phone", 
-    "utility", "power", "energy", "telecom", "wireless", "fiber", "broadband"
+    "electric", "gas", "water", "sewer", "trash", "internet", "cable", "phone",
+    "utility", "power", "energy", "telecom", "wireless", "fiber", "broadband",
+    "subscription", "streaming", "media", "tv", "music"
   ],
   "Bills & Insurance": [
-    "insurance", "auto insurance", "car insurance", "home insurance", 
+    "insurance", "auto insurance", "car insurance", "home insurance",
     "health insurance", "life insurance", "coverage", "premium", "policy"
   ],
   "Bills & Government": [
-    "tax", "dmv", "registration", "license", "permit", "government", 
-    "municipal", "court", "fine", "penalty", "toll"
+    "tax", "dmv", "registration", "license", "permit", "government",
+    "municipal", "court", "fine", "penalty"
   ],
-  "Subscriptions": [
-    "subscription", "monthly", "premium", "pro", "plus", "unlimited", 
-    "streaming", "software", "saas", "cloud storage", "membership"
+  "Software & Tech": [
+    "software", "saas", "cloud", "storage", "membership", "api", "developer"
   ],
   "Groceries": [
     "grocery", "supermarket", "market", "food", "organic", "fresh", 
     "produce", "deli", "bakery", "meat", "dairy"
   ],
-  "Dining & Coffee": [
-    "restaurant", "cafe", "coffee", "food", "dining", "takeout", "delivery", 
+  "Food & Drink": [
+    "restaurant", "cafe", "coffee", "food", "dining", "takeout", "delivery",
     "pizza", "burger", "sandwich", "breakfast", "lunch", "dinner"
   ],
-  "Transportation": [
-    "gas", "fuel", "parking", "toll", "metro", "transit", "taxi", "rideshare", 
+  "Auto & Transport": [
+    "gas", "fuel", "parking", "toll", "fastrak", "ezpass", "sunpass", "metro", "transit", "taxi", "rideshare",
     "uber", "lyft", "bus", "train", "subway", "charging", "ev"
   ],
-  "Travel": [
-    "hotel", "flight", "airline", "booking", "vacation", "trip", "travel", 
+  "Travel & Vacation": [
+    "hotel", "flight", "airline", "booking", "vacation", "trip", "travel",
     "resort", "accommodation", "rental car", "cruise"
   ],
-  "Shopping & Retail": [
-    "store", "shop", "retail", "department", "electronics", "clothing", 
+  "Shopping": [
+    "store", "shop", "retail", "department", "electronics", "clothing",
     "home improvement", "furniture", "online", "marketplace"
   ],
-  "Pharmacy & Health": [
-    "pharmacy", "drug", "medical", "health", "doctor", "clinic", "hospital", 
+  "Medical & Healthcare": [
+    "pharmacy", "drug", "medical", "health", "doctor", "clinic", "hospital",
     "prescription", "wellness", "care"
   ],
   "Finance & Payments": [
     "payment", "transfer", "fee", "bank", "credit", "investment", "trading", 
     "financial", "crypto", "brokerage"
   ],
-  "Fitness": [
-    "gym", "fitness", "workout", "exercise", "health club", "training", 
+  "Health & Wellness": [
+    "gym", "fitness", "workout", "exercise", "health club", "training",
     "sport", "yoga", "pilates"
   ],
   "Education & Learning": [
