@@ -72,7 +72,8 @@ import {
 } from "@/lib/transaction-classifier";
 import { TransactionDetailsModal } from "./transaction-details-modal";
 import { InlineCategorySelector } from "./inline-category-selector";
-import { CategoryBadge, getCategoryIcon } from "./category-badge";
+import { CategoryBadge } from "./category-badge";
+import { getCategoryIcon } from "@/lib/category-icons";
 import { IgnoreButton } from "./ignore-button";
 import { InlineDescriptionEditor } from "./inline-description-editor";
 import { CreateRuleModal } from "./create-rule-modal";

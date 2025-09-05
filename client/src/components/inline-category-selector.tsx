@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { getCategoryIcon } from "./category-badge";
+import { getCategoryIcon } from "@/lib/category-icons";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 
