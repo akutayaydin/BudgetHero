@@ -28,6 +28,25 @@ interface Category {
   };
 }
 
+export function findCategoryByName(
+  categories: Category[],
+  categoryName: string,
+) {
+  if (!Array.isArray(categories)) return undefined;
+  const match = categories.find(
+    (cat) =>
+      cat.subcategory === categoryName ||
+      cat.name === categoryName ||
+      `${cat.name} - ${cat.subcategory}` === categoryName,
+  );
+  if (!match) return undefined;
+  const fullName = match.subcategory
+    ? `${match.name} - ${match.subcategory}`
+    : match.name;
+  return { id: match.id, fullName };
+}
+
+
 interface InlineCategorySelectorProps {
   currentCategoryId?: string;
   currentCategoryName?: string;
