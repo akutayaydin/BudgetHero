@@ -5,10 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  formatCategoryDisplay,
-  getCategoryDisplayName,
-} from "@/lib/category-display";
+
 import {
   Select,
   SelectContent,
@@ -213,7 +210,7 @@ export default function TransactionsTable({
   const categoriesArray = Array.isArray(adminCategories) ? adminCategories : [];
 
   // Create category display function that includes subcategory
-  const formatCategoryDisplay = (cat: any) => {
+  const formatCategoryWithSubcategory = (cat: any) => {
     // Check if there's a subcategory and it's different from the main category
     if (
       cat.subcategory &&
@@ -228,12 +225,12 @@ export default function TransactionsTable({
 
   const incomeCategories = categoriesArray
     .filter((cat: any) => cat.ledgerType === "INCOME")
-    .map(formatCategoryDisplay)
+    .map(formatCategoryWithSubcategory)
     .sort((a, b) => a.localeCompare(b));
 
   const expenseCategories = categoriesArray
     .filter((cat: any) => cat.ledgerType === "EXPENSE")
-    .map(formatCategoryDisplay)
+    .map(formatCategoryWithSubcategory)
     .sort((a, b) => a.localeCompare(b));
 
   const businessCategories = categoriesArray
@@ -243,7 +240,7 @@ export default function TransactionsTable({
         cat.sortOrder >= 200 &&
         cat.sortOrder < 300,
     )
-    .map(formatCategoryDisplay)
+    .map(formatCategoryWithSubcategory)
     .sort((a, b) => a.localeCompare(b));
 
   const transferCategories = categoriesArray
@@ -251,7 +248,7 @@ export default function TransactionsTable({
       (cat: any) =>
         cat.ledgerType === "TRANSFER" || cat.ledgerType === "ADJUSTMENT",
     )
-    .map(formatCategoryDisplay)
+    .map(formatCategoryWithSubcategory)
     .sort((a, b) => a.localeCompare(b));
 
   const allCategories = categoriesArray.map((cat: any) => cat.name);
