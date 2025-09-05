@@ -1,23 +1,34 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  X, 
-  Calendar, 
-  DollarSign, 
-  Building2, 
-  CreditCard, 
-  Split, 
-  Settings, 
-  Receipt, 
+import {
+  X,
+  Calendar,
+  DollarSign,
+  Building2,
+  CreditCard,
+  Split,
+  Settings,
+  Receipt,
   ChevronDown,
   ChevronRight,
   Plus,
@@ -28,7 +39,7 @@ import {
   Tag,
   Edit3,
   Save,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/financial-utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -44,7 +55,7 @@ interface Transaction {
   merchant?: string;
   amount: string;
   rawAmount: string;
-  type: 'income' | 'expense';
+  type: "income" | "expense";
   category: string;
   categoryId?: string;
   accountId: string;
@@ -72,18 +83,25 @@ interface TransactionDetailsModalProps {
   onClose: () => void;
 }
 
-export function TransactionDetailsModal({ transaction, isOpen, onClose }: TransactionDetailsModalProps) {
+export function TransactionDetailsModal({
+  transaction,
+  isOpen,
+  onClose,
+}: TransactionDetailsModalProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTransaction, setEditedTransaction] = useState<Transaction | null>(null);
+  const [editedTransaction, setEditedTransaction] =
+    useState<Transaction | null>(null);
   const [showSplitModal, setShowSplitModal] = useState(false);
   const [showRuleModal, setShowRuleModal] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [editingCategory, setEditingCategory] = useState(false);
   const [showRulePrompt, setShowRulePrompt] = useState(false);
-  const [pendingChanges, setPendingChanges] = useState<Partial<Transaction>>({});
+  const [pendingChanges, setPendingChanges] = useState<Partial<Transaction>>(
+    {},
+  );
   const [showIgnoreOptions, setShowIgnoreOptions] = useState(false);
   const [showBankDetails, setShowBankDetails] = useState(false);
-  
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -110,13 +128,17 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
   // Update transaction mutation
   const updateTransaction = useMutation({
     mutationFn: async (updatedTransaction: Partial<Transaction>) => {
-      return apiRequest(`/api/transactions/${transaction?.id}`, 'PATCH', updatedTransaction);
+      return apiRequest(
+        `/api/transactions/${transaction?.id}`,
+        "PATCH",
+        updatedTransaction,
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/transactions'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
       toast({
         title: "Success",
-        description: "Transaction updated successfully!"
+        description: "Transaction updated successfully!",
       });
       setIsEditing(false);
     },
@@ -124,14 +146,14 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
       toast({
         title: "Error",
         description: error.message || "Failed to update transaction",
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const handleSave = () => {
     if (!editedTransaction) return;
-    
+
     const updates = {
       description: editedTransaction.description,
       merchant: editedTransaction.merchant,
@@ -140,26 +162,28 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
       notes: editedTransaction.notes,
       isIgnored: editedTransaction.isIgnored,
       isTaxDeductible: editedTransaction.isTaxDeductible,
-      tags: editedTransaction.tags
+      tags: editedTransaction.tags,
     };
-    
+
     updateTransaction.mutate(updates);
   };
 
-  const handleIgnore = (ignoreType: 'this' | 'all' | 'future') => {
+  const handleIgnore = (ignoreType: "this" | "all" | "future") => {
     if (!editedTransaction) return;
-    
+
     // Implementation would depend on your ignore logic
-    const updates = { 
+    const updates = {
       isIgnored: true,
-      ignoreType // You may need to add this field to your schema
+      ignoreType, // You may need to add this field to your schema
     };
-    
+
     updateTransaction.mutate(updates);
     setShowIgnoreOptions(false);
   };
 
-  const currentAccount = accounts.find(acc => acc.id === transaction?.accountId);
+  const currentAccount = accounts.find(
+    (acc) => acc.id === transaction?.accountId,
+  );
 
   if (!transaction || !editedTransaction) return null;
 
@@ -181,15 +205,17 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                     <Badge variant="outline" className="text-xs">
                       {formatDate(transaction.date)}
                     </Badge>
-                    <Badge variant={transaction.type === 'income' ? 'default' : 'secondary'} className="text-xs">
+                    <Badge
+                      variant={
+                        transaction.type === "income" ? "default" : "secondary"
+                      }
+                      className="text-xs"
+                    >
                       {transaction.type.toUpperCase()}
                     </Badge>
                   </div>
                 </div>
               </div>
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                <X className="w-4 h-4" />
-              </Button>
             </div>
           </DialogHeader>
 
@@ -207,26 +233,49 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                     <div className="flex items-center gap-2 mt-1">
                       <Input
                         value={editedTransaction.description}
-                        onChange={(e) => setEditedTransaction(prev => prev ? { ...prev, description: e.target.value } : null)}
+                        onChange={(e) =>
+                          setEditedTransaction((prev) =>
+                            prev
+                              ? { ...prev, description: e.target.value }
+                              : null,
+                          )
+                        }
                         onBlur={() => {
                           setEditingName(false);
-                          setPendingChanges({...pendingChanges, description: editedTransaction.description});
+                          setPendingChanges({
+                            ...pendingChanges,
+                            description: editedTransaction.description,
+                          });
                           setShowRulePrompt(true);
                         }}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             setEditingName(false);
-                            setPendingChanges({...pendingChanges, description: editedTransaction.description});
+                            setPendingChanges({
+                              ...pendingChanges,
+                              description: editedTransaction.description,
+                            });
                             setShowRulePrompt(true);
-                          } else if (e.key === 'Escape') {
+                          } else if (e.key === "Escape") {
                             setEditingName(false);
-                            setEditedTransaction(prev => prev ? { ...prev, description: transaction.description } : null);
+                            setEditedTransaction((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    description: transaction.description,
+                                  }
+                                : null,
+                            );
                           }
                         }}
                         autoFocus
                         className="flex-1"
                       />
-                      <Button size="sm" variant="ghost" onClick={() => setEditingName(false)}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setEditingName(false)}
+                      >
                         <Save className="w-3 h-3" />
                       </Button>
                     </div>
@@ -236,7 +285,9 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                       onClick={() => setEditingName(true)}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-sm">{editedTransaction.description}</span>
+                        <span className="text-sm">
+                          {editedTransaction.description}
+                        </span>
                         <Edit3 className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </div>
@@ -250,8 +301,12 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                   </Label>
                   <Input
                     id="merchant"
-                    value={editedTransaction.merchant || ''}
-                    onChange={(e) => setEditedTransaction(prev => prev ? { ...prev, merchant: e.target.value } : null)}
+                    value={editedTransaction.merchant || ""}
+                    onChange={(e) =>
+                      setEditedTransaction((prev) =>
+                        prev ? { ...prev, merchant: e.target.value } : null,
+                      )
+                    }
                     disabled={!isEditing}
                     className="mt-1"
                     placeholder="Enter merchant name"
@@ -268,14 +323,24 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                       <Select
                         value={editedTransaction.category}
                         onValueChange={(value) => {
-                          const selectedCategory = Array.isArray(categories) ? categories.find((c: any) => c.name === value) : null;
-                          setEditedTransaction(prev => prev ? { 
-                            ...prev, 
-                            category: value,
-                            categoryId: selectedCategory?.id 
-                          } : null);
+                          const selectedCategory = Array.isArray(categories)
+                            ? categories.find((c: any) => c.name === value)
+                            : null;
+                          setEditedTransaction((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  category: value,
+                                  categoryId: selectedCategory?.id,
+                                }
+                              : null,
+                          );
                           setEditingCategory(false);
-                          setPendingChanges({...pendingChanges, category: value, categoryId: selectedCategory?.id});
+                          setPendingChanges({
+                            ...pendingChanges,
+                            category: value,
+                            categoryId: selectedCategory?.id,
+                          });
                           setShowRulePrompt(true);
                         }}
                         open={true}
@@ -285,11 +350,15 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
-                          {Array.isArray(categories) && categories.map((category: any) => (
-                            <SelectItem key={category.id} value={category.name}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
+                          {Array.isArray(categories) &&
+                            categories.map((category: any) => (
+                              <SelectItem
+                                key={category.id}
+                                value={category.name}
+                              >
+                                {category.name}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -316,10 +385,15 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                   <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                     Transaction Amount
                   </div>
-                  <div className={`text-4xl font-bold ${
-                    transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {transaction.type === 'income' ? '+' : ''}{formatCurrency(parseFloat(transaction.amount))}
+                  <div
+                    className={`text-4xl font-bold ${
+                      transaction.type === "income"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {transaction.type === "income" ? "+" : ""}
+                    {formatCurrency(parseFloat(transaction.amount))}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Raw: {formatCurrency(parseFloat(transaction.rawAmount))}
@@ -330,16 +404,30 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Tags</Label>
                   <div className="flex flex-wrap gap-2">
-                    <Badge 
-                      variant={editedTransaction.isTaxDeductible ? "default" : "outline"}
+                    <Badge
+                      variant={
+                        editedTransaction.isTaxDeductible
+                          ? "default"
+                          : "outline"
+                      }
                       className={`cursor-pointer transition-all ${
-                        editedTransaction.isTaxDeductible 
-                          ? 'bg-green-600 hover:bg-green-700 text-white' 
-                          : 'hover:bg-green-50 hover:border-green-300'
+                        editedTransaction.isTaxDeductible
+                          ? "bg-green-600 hover:bg-green-700 text-white"
+                          : "hover:bg-green-50 hover:border-green-300"
                       }`}
                       onClick={() => {
-                        setEditedTransaction(prev => prev ? { ...prev, isTaxDeductible: !prev.isTaxDeductible } : null);
-                        setPendingChanges({...pendingChanges, isTaxDeductible: !editedTransaction.isTaxDeductible});
+                        setEditedTransaction((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                isTaxDeductible: !prev.isTaxDeductible,
+                              }
+                            : null,
+                        );
+                        setPendingChanges({
+                          ...pendingChanges,
+                          isTaxDeductible: !editedTransaction.isTaxDeductible,
+                        });
                         setShowRulePrompt(true);
                       }}
                     >
@@ -347,7 +435,11 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                       Tax Deductible
                     </Badge>
                     {editedTransaction.tags?.map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-xs"
+                      >
                         {tag}
                       </Badge>
                     ))}
@@ -363,8 +455,12 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
               </Label>
               <Textarea
                 id="notes"
-                value={editedTransaction.notes || ''}
-                onChange={(e) => setEditedTransaction(prev => prev ? { ...prev, notes: e.target.value } : null)}
+                value={editedTransaction.notes || ""}
+                onChange={(e) =>
+                  setEditedTransaction((prev) =>
+                    prev ? { ...prev, notes: e.target.value } : null,
+                  )
+                }
                 disabled={!isEditing}
                 placeholder="Add a note..."
                 className="mt-1 min-h-[80px]"
@@ -374,7 +470,7 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
             {/* Actions Section */}
             <div className="space-y-3">
               <h3 className="text-lg font-semibold">ACTIONS</h3>
-              
+
               {/* Ignore Section */}
               <Card>
                 <CardContent className="p-4">
@@ -387,19 +483,25 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                       <EyeOff className="w-4 h-4" />
                       <span>Ignore?</span>
                       <span className="text-sm text-gray-500">
-                        {editedTransaction.isIgnored ? 'Currently ignored' : 'Not ignored'}
+                        {editedTransaction.isIgnored
+                          ? "Currently ignored"
+                          : "Not ignored"}
                       </span>
                     </div>
-                    {showIgnoreOptions ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                    {showIgnoreOptions ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
                   </Button>
-                  
+
                   {showIgnoreOptions && (
                     <div className="mt-3 space-y-2 border-t pt-3">
                       <Button
                         variant="outline"
                         size="sm"
                         className="w-full justify-start"
-                        onClick={() => handleIgnore('this')}
+                        onClick={() => handleIgnore("this")}
                       >
                         Ignore this transaction only
                       </Button>
@@ -407,7 +509,7 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                         variant="outline"
                         size="sm"
                         className="w-full justify-start"
-                        onClick={() => handleIgnore('all')}
+                        onClick={() => handleIgnore("all")}
                       >
                         Ignore from all accounts
                       </Button>
@@ -415,7 +517,7 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                         variant="outline"
                         size="sm"
                         className="w-full justify-start"
-                        onClick={() => handleIgnore('future')}
+                        onClick={() => handleIgnore("future")}
                       >
                         Ignore future transactions like this
                       </Button>
@@ -435,7 +537,9 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                     <div className="flex items-center gap-2">
                       <Split className="w-4 h-4 text-blue-600" />
                       <span>Split Transaction</span>
-                      <span className="text-xs text-gray-500">Break into multiple categories</span>
+                      <span className="text-xs text-gray-500">
+                        Break into multiple categories
+                      </span>
                     </div>
                     <ChevronRight className="w-4 h-4" />
                   </Button>
@@ -453,7 +557,9 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                     <div className="flex items-center gap-2">
                       <Settings className="w-4 h-4 text-purple-600" />
                       <span>Create Automation Rule</span>
-                      <span className="text-xs text-gray-500">Auto-categorize similar transactions</span>
+                      <span className="text-xs text-gray-500">
+                        Auto-categorize similar transactions
+                      </span>
                     </div>
                     <ChevronRight className="w-4 h-4" />
                   </Button>
@@ -469,9 +575,13 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                 onClick={() => setShowBankDetails(!showBankDetails)}
               >
                 <span className="text-sm font-medium">Bank Details</span>
-                {showBankDetails ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                {showBankDetails ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
               </Button>
-              
+
               {showBankDetails && currentAccount && (
                 <Card>
                   <CardContent className="p-4 space-y-3">
@@ -481,18 +591,28 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">Type</span>
-                      <span className="font-medium">{currentAccount.subtype}</span>
+                      <span className="font-medium">
+                        {currentAccount.subtype}
+                      </span>
                     </div>
                     {currentAccount.mask && (
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Account Number</span>
-                        <span className="font-medium">****{currentAccount.mask}</span>
+                        <span className="text-sm text-gray-600">
+                          Account Number
+                        </span>
+                        <span className="font-medium">
+                          ****{currentAccount.mask}
+                        </span>
                       </div>
                     )}
                     {transaction.paymentChannel && (
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Payment Channel</span>
-                        <span className="font-medium capitalize">{transaction.paymentChannel}</span>
+                        <span className="text-sm text-gray-600">
+                          Payment Channel
+                        </span>
+                        <span className="font-medium capitalize">
+                          {transaction.paymentChannel}
+                        </span>
                       </div>
                     )}
                     <div className="text-xs text-gray-500 mt-3 pt-3 border-t">
@@ -512,11 +632,11 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
                   <Button variant="outline" onClick={() => setIsEditing(false)}>
                     Cancel
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleSave}
                     disabled={updateTransaction.isPending}
                   >
-                    {updateTransaction.isPending ? 'Saving...' : 'Save Changes'}
+                    {updateTransaction.isPending ? "Saving..." : "Save Changes"}
                   </Button>
                 </>
               ) : (
@@ -543,10 +663,12 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
-              You've made changes to this transaction. Would you like to create a rule to automatically apply these changes to similar transactions in the future?
+              You've made changes to this transaction. Would you like to create
+              a rule to automatically apply these changes to similar
+              transactions in the future?
             </p>
             <div className="flex gap-2">
-              <Button 
+              <Button
                 onClick={() => {
                   setShowRulePrompt(false);
                   setShowRuleModal(true);
@@ -555,8 +677,8 @@ export function TransactionDetailsModal({ transaction, isOpen, onClose }: Transa
               >
                 Create Rule
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowRulePrompt(false);
                   handleSave();

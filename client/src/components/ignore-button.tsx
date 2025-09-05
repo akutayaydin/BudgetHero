@@ -1,52 +1,64 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { EyeOff, Eye, Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import type { Transaction } from '@shared/schema';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { EyeOff, CircleOff, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { Transaction } from "@shared/schema";
 
 interface IgnoreButtonProps {
   transaction: Transaction;
   onIgnoreChange: (ignoreType: string) => void;
 }
 
-type IgnoreType = 'none' | 'budget' | 'everything';
+type IgnoreType = "none" | "budget" | "everything";
 
 const IGNORE_OPTIONS = [
   {
-    value: 'none' as IgnoreType,
+    value: "none" as IgnoreType,
     label: "Don't ignore",
-    description: "Include in all calculations and reports"
+    description: "Include in all calculations and reports",
   },
   {
-    value: 'budget' as IgnoreType,
+    value: "budget" as IgnoreType,
     label: "Ignore from Budget",
-    description: "Exclude from budget tracking only"
+    description: "Exclude from budget tracking only",
   },
   {
-    value: 'everything' as IgnoreType,
+    value: "everything" as IgnoreType,
     label: "Ignore from Everything",
-    description: "Exclude from all spending reports and charts"
-  }
+    description: "Exclude from all spending reports and charts",
+  },
 ];
 
-export function IgnoreButton({ transaction, onIgnoreChange }: IgnoreButtonProps) {
+export function IgnoreButton({
+  transaction,
+  onIgnoreChange,
+}: IgnoreButtonProps) {
   const [open, setOpen] = useState(false);
-  
+
   // Get current ignore type, default to 'none' if not set
-  const currentIgnoreType = (transaction.ignoreType || 'none') as IgnoreType;
-  const isIgnored = currentIgnoreType !== 'none';
-  
+  const currentIgnoreType = (transaction.ignoreType || "none") as IgnoreType;
+  const isIgnored = currentIgnoreType !== "none";
+
   // Get tooltip content based on current state
   const getTooltipContent = () => {
     switch (currentIgnoreType) {
-      case 'budget':
-        return 'Ignored from budget tracking';
-      case 'everything':
-        return 'Ignored from all reports and charts';
+      case "budget":
+        return "Ignored from budget tracking";
+      case "everything":
+        return "Ignored from all reports and charts";
       default:
-        return 'Click to ignore transaction';
+        return "Click to ignore transaction";
     }
   };
 
@@ -66,9 +78,9 @@ export function IgnoreButton({ transaction, onIgnoreChange }: IgnoreButtonProps)
                 variant="outline"
                 className={cn(
                   "h-7 w-7 p-0 sm:h-8 sm:w-8 transition-all",
-                  isIgnored 
+                  isIgnored
                     ? "text-orange-600 hover:text-orange-700 bg-orange-50 border-orange-200 hover:border-orange-300"
-                    : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
+                    : "text-gray-400 hover:text-gray-600 hover:bg-gray-50",
                 )}
                 title={getTooltipContent()}
                 data-testid={`ignore-button-${transaction.id}`}
@@ -76,12 +88,12 @@ export function IgnoreButton({ transaction, onIgnoreChange }: IgnoreButtonProps)
                 {isIgnored ? (
                   <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" />
                 ) : (
-                  <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <CircleOff className="w-3 h-3 sm:w-4 sm:h-4" />
                 )}
               </Button>
             </TooltipTrigger>
           </PopoverTrigger>
-          
+
           <PopoverContent className="w-64 p-0" align="end">
             <div className="p-1">
               <div className="px-3 py-2 text-sm font-medium text-foreground border-b">
@@ -94,7 +106,8 @@ export function IgnoreButton({ transaction, onIgnoreChange }: IgnoreButtonProps)
                     onClick={() => handleIgnoreChange(option.value)}
                     className={cn(
                       "flex items-start gap-3 w-full px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left",
-                      currentIgnoreType === option.value && "bg-blue-50 dark:bg-blue-900/20"
+                      currentIgnoreType === option.value &&
+                        "bg-blue-50 dark:bg-blue-900/20",
                     )}
                     data-testid={`ignore-option-${option.value}`}
                   >
@@ -117,7 +130,7 @@ export function IgnoreButton({ transaction, onIgnoreChange }: IgnoreButtonProps)
             </div>
           </PopoverContent>
         </Popover>
-        
+
         <TooltipContent>
           <p>{getTooltipContent()}</p>
         </TooltipContent>

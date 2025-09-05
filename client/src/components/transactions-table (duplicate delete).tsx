@@ -71,8 +71,10 @@ import {
   getLedgerTypeLabel,
 } from "@/lib/transaction-classifier";
 import { TransactionDetailsModal } from "./transaction-details-modal";
-import { InlineCategorySelector } from "./inline-category-selector";
-import { CategoryBadge, getCategoryIcon } from "./category-badge";
+import {
+  InlineCategorySelector,
+  CategoryBadge,
+} from "./inline-category-selector";
 import { IgnoreButton } from "./ignore-button";
 import { InlineDescriptionEditor } from "./inline-description-editor";
 import { CreateRuleModal } from "./create-rule-modal";
@@ -191,6 +193,31 @@ export default function TransactionsTable({
       </div>
     );
   };
+
+  // Category icon mapping for mobile cards
+  function getCategoryIcon(category: string): string {
+    const iconMap: Record<string, string> = {
+      "Food & Dining": "🍔",
+      Groceries: "🛒",
+      Transportation: "🚗",
+      Gas: "⛽",
+      Shopping: "🛍️",
+      Entertainment: "🎬",
+      "Bills & Utilities": "⚡",
+      Healthcare: "🏥",
+      "Travel & Vacation": "✈️",
+      Housing: "🏠",
+      Education: "📚",
+      "Personal Care": "💄",
+      "Family & Kids": "👶",
+      "Business Services": "💼",
+      Financial: "💰",
+      Government: "🏛️",
+      "Credit Card Payment": "💳",
+      Uncategorized: "❓",
+    };
+    return iconMap[category] || iconMap["Uncategorized"];
+  }
 
   // Debounced search to prevent excessive API calls
   const [debouncedSearch, setDebouncedSearch] = useState(search);
@@ -723,6 +750,79 @@ export default function TransactionsTable({
     a.download = `transactions-${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
+  };
+
+  // Enhanced category color coding with specific category colors
+  const getCategoryColor = (categoryName: string) => {
+    const category = categoriesArray.find(
+      (cat: any) => cat.name === categoryName,
+    );
+    if (!category) return "bg-gray-100 text-gray-800 border-gray-200";
+
+    // Specific category colors for better scanability
+    const categoryColors: Record<string, string> = {
+      // Food & Dining
+      Groceries: "bg-emerald-100 text-emerald-800 border-emerald-200",
+      Restaurants: "bg-orange-100 text-orange-800 border-orange-200",
+      "Fast Food": "bg-red-100 text-red-800 border-red-200",
+      "Coffee & Tea": "bg-amber-100 text-amber-800 border-amber-200",
+
+      // Transportation
+      "Gas & Fuel": "bg-yellow-100 text-yellow-800 border-yellow-200",
+      "Taxi & Ride Shares": "bg-indigo-100 text-indigo-800 border-indigo-200",
+      "Public Transportation": "bg-cyan-100 text-cyan-800 border-cyan-200",
+      Parking: "bg-slate-100 text-slate-800 border-slate-200",
+
+      // Utilities & Bills
+      Utilities: "bg-blue-100 text-blue-800 border-blue-200",
+      "Internet & Cable": "bg-purple-100 text-purple-800 border-purple-200",
+      "Mobile Phone": "bg-pink-100 text-pink-800 border-pink-200",
+      Insurance: "bg-teal-100 text-teal-800 border-teal-200",
+
+      // Entertainment
+      "Movies & Entertainment": "bg-rose-100 text-rose-800 border-rose-200",
+      "Subscriptions & Entertainment":
+        "bg-violet-100 text-violet-800 border-violet-200",
+      Gaming: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200",
+
+      // Shopping
+      "Clothing & Accessories": "bg-lime-100 text-lime-800 border-lime-200",
+      "Electronics & Software": "bg-sky-100 text-sky-800 border-sky-200",
+      "Software & Technology": "bg-sky-100 text-sky-800 border-sky-200",
+      "Home & Garden": "bg-green-100 text-green-800 border-green-200",
+
+      // Healthcare
+      "Healthcare & Medical": "bg-red-100 text-red-800 border-red-200",
+      Pharmacy: "bg-pink-100 text-pink-800 border-pink-200",
+
+      // Financial
+      "Bank Fees": "bg-gray-100 text-gray-800 border-gray-200",
+      "ATM Fees": "bg-gray-100 text-gray-800 border-gray-200",
+      "Credit Card Payment": "bg-slate-100 text-slate-800 border-slate-200",
+      Investment: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    };
+
+    // Check for specific category color first
+    if (categoryColors[categoryName]) {
+      return categoryColors[categoryName];
+    }
+
+    // Fallback to ledger type colors
+    switch (category.ledgerType) {
+      case "INCOME":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "EXPENSE":
+        // Differentiate business expenses
+        if (category.sortOrder >= 200 && category.sortOrder < 300) {
+          return "bg-blue-100 text-blue-800 border-blue-200";
+        }
+        return "bg-red-100 text-red-800 border-red-200";
+      case "TRANSFER":
+      case "ADJUSTMENT":
+        return "bg-purple-100 text-purple-800 border-purple-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
   };
 
   // Enhanced merchant logo with proper fallbacks
@@ -1716,13 +1816,10 @@ export default function TransactionsTable({
                                               {transaction.merchant ||
                                                 transaction.description}
                                             </div>
-                                            <div className="flex items-center gap-1 text-xs">
-                                              <CategoryBadge
-                                                categoryName={
-                                                  transaction.category
-                                                }
-                                                className="text-xs"
-                                              />
+                                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                              <span>
+                                                {transaction.category}
+                                              </span>
                                               {/* Dynamic Trend Indicator */}
                                               {transaction.merchant && (
                                                 <TrendIndicator
@@ -2021,10 +2118,10 @@ export default function TransactionsTable({
                                 </div>
                               </div>
                               {/* Show category on mobile since it's hidden in table */}
-                              <div className="sm:hidden text-xs mt-2">
+                              <div className="sm:hidden text-xs text-muted-foreground mt-2">
                                 <CategoryBadge
                                   categoryName={transaction.category}
-                                  className="text-xs"
+                                  className={`${getCategoryColor(transaction.category)} text-xs`}
                                 />
                               </div>
                             </div>
@@ -2065,7 +2162,7 @@ export default function TransactionsTable({
                             >
                               <CategoryBadge
                                 categoryName={transaction.category}
-                                className="text-xs"
+                                className={`${getCategoryColor(transaction.category)} cursor-pointer hover:shadow-sm transition-all`}
                               />
                             </button>
                           )}
