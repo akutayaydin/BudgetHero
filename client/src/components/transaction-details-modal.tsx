@@ -321,25 +321,27 @@ export function TransactionDetailsModal({
                   {editingCategory ? (
                     <div className="mt-1">
                       <Select
-                        value={editedTransaction.category}
+                        value={editedTransaction.categoryId ?? ""}
                         onValueChange={(value) => {
                           const selectedCategory = Array.isArray(categories)
-                            ? categories.find((c: any) => c.name === value)
+                            ? categories.find((c: any) => c.id === value)
                             : null;
+                          const categoryName =
+                            selectedCategory?.subcategory || selectedCategory?.name || "";
                           setEditedTransaction((prev) =>
                             prev
                               ? {
                                   ...prev,
-                                  category: value,
-                                  categoryId: selectedCategory?.id,
+                                  category: categoryName,
+                                  categoryId: value,
                                 }
                               : null,
                           );
                           setEditingCategory(false);
                           setPendingChanges({
                             ...pendingChanges,
-                            category: value,
-                            categoryId: selectedCategory?.id,
+                            category: categoryName,
+                            categoryId: value,
                           });
                           setShowRulePrompt(true);
                         }}
@@ -352,11 +354,11 @@ export function TransactionDetailsModal({
                         <SelectContent>
                           {Array.isArray(categories) &&
                             categories.map((category: any) => (
-                              <SelectItem
-                                key={category.id}
-                                value={category.name}
-                              >
-                                {category.name}
+                              <SelectItem key={category.id} value={category.id}>
+                                {category.subcategory
+                                ? `${category.name} - ${category.subcategory}`
+                             
+                                : category.name}
                               </SelectItem>
                             ))}
                         </SelectContent>
