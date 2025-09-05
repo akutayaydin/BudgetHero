@@ -840,7 +840,17 @@ export default function TransactionsTable({
     );
   }
 
-  // Merchant filter - handled by backend API, no additional frontend filtering needed
+  
+  // Merchant filter - support multiple selections client-side
+  if (selectedMerchants.size > 0) {
+    filteredTransactions = filteredTransactions.filter((transaction: Transaction) => {
+      if (!transaction.merchant) return false;
+      const merchantName = transaction.merchant.toLowerCase();
+      return Array.from(selectedMerchants).some(
+        (m) => merchantName === m.toLowerCase(),
+      );
+    });
+  }
 
   // Account filter
   if (selectedAccounts.size > 0) {

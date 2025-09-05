@@ -69,23 +69,23 @@ export default function TransactionsPage() {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all" className="flex items-center justify-center gap-2">
+        <TabsList className="grid w-full grid-cols-4 overflow-x-auto">
+          <TabsTrigger value="all" className="flex items-center justify-center gap-2  min-w-[120px]">
             <List className="h-4 w-4" />
             <span className="sm:hidden">All</span>
             <span className="hidden sm:inline">All Transactions</span>
           </TabsTrigger>
-          <TabsTrigger value="game" className="flex items-center justify-center gap-2">
+          <TabsTrigger value="game" className="flex items-center justify-center gap-2 min-w-[120px]">
             <Target className="h-4 w-4" />
             <span className="sm:hidden">Game</span>
             <span className="hidden sm:inline">Quick Game</span>
           </TabsTrigger>
-          <TabsTrigger value="review" className="flex items-center justify-center gap-2">
+          <TabsTrigger value="review" className="flex items-center justify-center gap-2 min-w-[120px]">
             <AlertTriangle className="h-4 w-4" />
             <span className="sm:hidden">Review</span>
             <span className="hidden sm:inline">Smart Review</span>
           </TabsTrigger>
-          <TabsTrigger value="export" className="flex items-center justify-center gap-2">
+          <TabsTrigger value="export" className="flex items-center justify-center gap-2 min-w-[120px]">
             <Download className="h-4 w-4" />
             <span className="sm:hidden">Export</span>
             <span className="hidden sm:inline">Export Data</span>
