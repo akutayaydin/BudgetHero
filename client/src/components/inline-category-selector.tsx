@@ -32,17 +32,33 @@ export function findCategoryByName(
   categories: Category[],
   categoryName: string,
 ) {
-  if (!Array.isArray(categories)) return undefined;
-  const match = categories.find(
-    (cat) =>
-      cat.subcategory === categoryName ||
-      cat.name === categoryName ||
-      `${cat.name} - ${cat.subcategory}` === categoryName,
-  );
+  if (!Array.isArray(categories) || !categoryName) return undefined;
+  const target = categoryName.trim().toLowerCase();
+
+  const match = categories.find((cat) => {
+    const main = cat.parent?.name?.toLowerCase() || cat.name.toLowerCase();
+    const sub = cat.subcategory
+      ? cat.subcategory.toLowerCase()
+      : cat.parent
+      ? cat.name.toLowerCase()
+      : undefined;
+    const full = cat.subcategory
+      ? `${cat.name} - ${cat.subcategory}`.toLowerCase()
+      : cat.parent
+      ? `${cat.parent.name} - ${cat.name}`.toLowerCase()
+      : cat.name.toLowerCase();
+
+    return [main, sub, full].filter(Boolean).includes(target);
+  });
+
   if (!match) return undefined;
+
   const fullName = match.subcategory
     ? `${match.name} - ${match.subcategory}`
+    : match.parent
+    ? `${match.parent.name} - ${match.name}`
     : match.name;
+
   return { id: match.id, fullName };
 }
 
@@ -73,22 +89,26 @@ export function InlineCategorySelector({
   // Transform admin categories into grouped structure
   const categoriesByGroup = useMemo(() => {
     return (adminCategories as any[]).reduce((acc: any, category: any) => {
-      const mainCategory = category.name;
+      const mainCategory = category.parent?.name || category.name;
+      const subcategory = category.parent ? category.name : category.subcategory;
+      const displayName = subcategory || mainCategory;
+      const fullName = subcategory
+        ? `${mainCategory} - ${subcategory}`
+        : mainCategory;
+
+     
       if (!acc[mainCategory]) {
         acc[mainCategory] = [];
       }
 
-      const displayName = category.subcategory || category.name;
-      const fullName = category.subcategory
-        ? `${category.name} - ${category.subcategory}`
-        : category.name;
+
 
       acc[mainCategory].push({
         id: category.id,
         name: displayName,
-        fullName: fullName,
-        mainCategory: category.name,
-        subcategory: category.subcategory,
+        fullName,
+        mainCategory,
+        subcategory,
         color: category.color,
         ledgerType: category.ledgerType,
         budgetType: category.budgetType,
