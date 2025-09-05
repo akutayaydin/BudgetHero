@@ -17,6 +17,7 @@ import {
   Baby,
   Briefcase,
   PiggyBank,
+  RotateCcw,
   Landmark,
   CreditCard,
   HelpCircle,
@@ -43,6 +44,12 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     financial: PiggyBank,
     government: Landmark,
     "credit card payment": CreditCard,
+    paycheck: Briefcase,
+    dividend: PiggyBank,
+    retirement: PiggyBank,
+    "tax refund": RotateCcw,
+    unemployment: RotateCcw,
+    "other income": PiggyBank,
   };
 
   for (const [key, icon] of Object.entries(iconMap)) {

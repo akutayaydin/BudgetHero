@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown, Search } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { getCategoryIcon } from "./category-badge";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -187,15 +187,11 @@ export function InlineCategorySelector({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
         <Command>
-          <div className="flex items-center border-b px-3">
-            <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-            <CommandInput
-              placeholder="Search categories..."
-              value={searchValue}
-              onValueChange={setSearchValue}
-              className="flex h-11 w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
-            />
-          </div>
+          <CommandInput
+            placeholder="Search categories..."
+            value={searchValue}
+            onValueChange={setSearchValue}
+          />
           <CommandList className="max-h[300px] overflow-auto">
             <CommandEmpty>No categories found.</CommandEmpty>
 
