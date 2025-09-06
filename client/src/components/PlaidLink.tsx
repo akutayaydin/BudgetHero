@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, ReactNode } from "react";
 import { usePlaidLink } from "react-plaid-link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,17 @@ interface PlaidLinkProps {
   size?: "sm" | "default" | "lg";
   className?: string;
   buttonText?: string;
+  icon?: ReactNode;
 }
 
-export function PlaidLink({ onSuccess, variant = "default", size = "default", className, buttonText = "Connect Bank Account" }: PlaidLinkProps) {
+export function PlaidLink({
+  onSuccess,
+  variant = "default",
+  size = "default",
+  className,
+  buttonText = "Connect Bank Account",
+  icon,
+}: PlaidLinkProps) {
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [shouldOpenLink, setShouldOpenLink] = useState(false);
   const [showConsentDialog, setShowConsentDialog] = useState(false);
@@ -161,6 +169,11 @@ export function PlaidLink({ onSuccess, variant = "default", size = "default", cl
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Connecting...
+          </>
+        ) : icon ? (
+          <>
+            {icon}
+            {buttonText && <span className="ml-2">{buttonText}</span>}
           </>
         ) : (
           <>
