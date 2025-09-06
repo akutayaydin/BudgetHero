@@ -1083,6 +1083,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/budget/plan", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const plan = { ...req.body, userId };
+      const created = await storage.createBudgetPlan(plan);
+      res.status(201).json(created);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(404).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Failed to create budget plan" });
+      }
+    }
+  });
+
+
   app.patch("/api/budgets/:id", isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
