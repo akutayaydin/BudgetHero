@@ -991,12 +991,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Failed to create budget plan:', error);
       if (error instanceof ZodError) {
-        res.status(400).json({ message: 'Invalid budget plan data', errors: error.errors });
+        res.status(400).json({ message: 'Invalid budget plan data', errors: error.errors, error: error.message });
       } else {
-        res.status(500).json({ message: 'Failed to create budget plan' });
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        res.status(500).json({ message: 'Failed to create budget plan', error: message });
       }
     }
   });
+
+  
 
   app.patch('/api/budget/plan/:id', isAuthenticated, async (req: any, res) => {
     try {
