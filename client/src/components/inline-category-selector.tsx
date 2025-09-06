@@ -232,7 +232,11 @@ export function InlineCategorySelector({
             value={searchValue}
             onValueChange={setSearchValue}
           />
-          <ScrollArea className="h-64">
+          <ScrollArea
+            className="h-64"
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+          >
             <CommandList>
               <CommandEmpty>No categories found.</CommandEmpty>
 
