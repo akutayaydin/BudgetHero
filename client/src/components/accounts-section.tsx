@@ -2,7 +2,17 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown, ChevronRight, Wallet, CreditCard, DollarSign, Building2, Plus } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Wallet,
+  CreditCard,
+  DollarSign,
+  PiggyBank,
+  Building2,
+  LineChart,
+  Plus 
+} from "lucide-react";
 import { PlaidLink } from "@/components/PlaidLink";
 import { useToast } from "@/hooks/use-toast";
 
@@ -248,7 +258,8 @@ export function AccountsSection({ className }: AccountsSectionProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-100 dark:bg-green-950/30 rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" /> 
+                  {/*<PiggyBank className="w-5 h-5 text-green-600 dark:text-green-400" />*/}
                 </div>
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white">Net Cash</h4>
