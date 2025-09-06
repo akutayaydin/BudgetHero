@@ -973,9 +973,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: 'User ID not found' });
       const data = insertBudgetPlanSchema.parse(req.body);
-      const earnings = Number(data.expectedEarnings);
-      const bills = Number(data.expectedBills);
-      const rate = Number(data.savingsRate);
+      // Ensure numeric fields are valid numbers to avoid NaN values causing database errors
+      const earnings = Number(data.expectedEarnings) || 0;
+      const bills = Number(data.expectedBills) || 0;
+      const rate = Number(data.savingsRate) || 0
       const savingsReserve = earnings * rate / 100;
       const spendingBudget = earnings - bills - savingsReserve;
       const created = await storage.upsertBudgetPlan({
@@ -1007,9 +1008,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = insertBudgetPlanSchema.partial().parse(req.body);
       let updates: any = { ...data };
       if (data.expectedEarnings !== undefined || data.expectedBills !== undefined || data.savingsRate !== undefined) {
-        const earnings = Number(data.expectedEarnings ?? 0);
-        const bills = Number(data.expectedBills ?? 0);
-        const rate = Number(data.savingsRate ?? 0);
+        // Normalize values to prevent NaN from propagating to the database
+        const earnings = Number(data.expectedEarnings ?? 0) || 0;
+        const bills = Number(data.expectedBills ?? 0) || 0;
+        const rate = Number(data.savingsRate ?? 0) || 0;
         const savingsReserve = earnings * rate / 100;
         const spendingBudget = earnings - bills - savingsReserve;
         updates = {

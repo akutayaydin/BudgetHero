@@ -548,8 +548,9 @@ export const insertBudgetPlanSchema = z.object({
   expectedEarnings: z.coerce.number(),
   expectedBills: z.coerce.number(),
   savingsRate: z.coerce.number(),
-  savingsReserve: z.coerce.number(),
-  spendingBudget: z.coerce.number(),
+  // These fields are calculated server-side and may not be supplied by the client
+  savingsReserve: z.coerce.number().optional(),
+  spendingBudget: z.coerce.number().optional(),
 });
 
 export const insertGoalSchema = createInsertSchema(goals).omit({
