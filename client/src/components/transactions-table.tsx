@@ -95,9 +95,10 @@ export default function TransactionsTable({
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<
-    Partial<Transaction> & { editingCategory?: boolean }
-  >({});
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
+    null,
+  );
+  const [editForm, setEditForm] = useState<Partial<Transaction>>({});
   const [categoryFilter, setCategoryFilter] = useState(filterByCategory || "");
   const [typeFilter, setTypeFilter] = useState("");
   const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(
@@ -2040,35 +2041,23 @@ export default function TransactionsTable({
                           )}
                         </td>
                         <td className="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
-                          {editingId === transaction.id &&
-                          editForm.editingCategory ? (
+                          {editingCategoryId === transaction.id ? (
                             <InlineCategorySelector
-                              currentCategoryName={
-                                editForm.category || transaction.category
-                              }
+                              currentCategoryName={transaction.category}
                               onCategoryChange={(categoryId, categoryName) => {
-                                // Use rule-aware handler for category changes
+
                                 handleCategoryChangeWithRule(
                                   transaction,
                                   categoryId,
                                   categoryName,
                                 );
-                                setEditForm({
-                                  ...editForm,
-                                  editingCategory: false,
-                                });
+                                setEditingCategoryId(null);
                               }}
                               className="w-full min-w-[180px]"
                             />
                           ) : (
                             <button
-                              onClick={() => {
-                                setEditingId(transaction.id);
-                                setEditForm({
-                                  category: transaction.category,
-                                  editingCategory: true,
-                                });
-                              }}
+                              onClick={() => setEditingCategoryId(transaction.id)}
                               className="group text-left hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md p-1 -m-1 transition-colors cursor-pointer"
                               title="Click to edit category"
                             >
@@ -2139,38 +2128,23 @@ export default function TransactionsTable({
                         </td>
 
                         <td className="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium">
-                          {isEditing ? (
-                            <Input
-                              type="number"
-                              step="0.01"
-                              value={editForm.amount || ""}
-                              onChange={(e) =>
-                                setEditForm({
-                                  ...editForm,
-                                  amount: e.target.value,
-                                })
-                              }
-                              className="w-full text-right"
-                            />
-                          ) : (
-                            <div className="text-right">
-                              <span
-                                className={`font-bold text-sm sm:text-base ${
-                                  transaction.ignoreType &&
-                                  transaction.ignoreType !== "none"
-                                    ? "text-gray-400 dark:text-gray-500"
-                                    : transaction.type === "income"
-                                      ? "text-green-600 dark:text-green-400"
-                                      : "text-red-600 dark:text-red-400"
-                                }`}
-                              >
-                                {transaction.type === "income" ? "+" : "-"}
-                                {formatCurrency(
-                                  Math.abs(parseFloat(transaction.amount)),
-                                )}
-                              </span>
-                            </div>
-                          )}
+                          <div className="text-right">
+                            <span
+                              className={`font-bold text-sm sm:text-base ${
+                                transaction.ignoreType &&
+                                transaction.ignoreType !== "none"
+                                  ? "text-gray-400 dark:text-gray-500"
+                                  : transaction.type === "income"
+                                    ? "text-green-600 dark:text-green-400"
+                                    : "text-red-600 dark:text-red-400"
+                              }`}
+                            >
+                              {transaction.type === "income" ? "+" : "-"}
+                              {formatCurrency(
+                                Math.abs(parseFloat(transaction.amount)),
+                              )}
+                            </span>
+                          </div>
                         </td>
 
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
