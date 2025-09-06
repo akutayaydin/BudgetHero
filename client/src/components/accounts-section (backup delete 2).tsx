@@ -14,19 +14,12 @@ import {
   PiggyBank,
   Plus,
   Loader2,
-  Info,
 } from "lucide-react";
 import { PlaidLink } from "@/components/PlaidLink";
 import { useToast } from "@/hooks/use-toast";
 import { useLastSynced } from "@/hooks/useLastSynced";
 import { useSyncAccounts } from "@/hooks/useSyncAccounts";
 import { formatDistanceToNow } from "date-fns";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface Account {
   id: string;
@@ -56,10 +49,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
     queryKey: ["/api/accounts"],
   });
 
-  const {
-    data: lastSynced,
-    isLoading: lastSyncedLoading,
-  } = useLastSynced();
+  const { data: lastSynced, isLoading: lastSyncedLoading } = useLastSynced();
 
   const syncMutation = useSyncAccounts();
 
@@ -72,11 +62,13 @@ export function AccountsSection({ className }: AccountsSectionProps) {
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) =>
-      prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section]
+      prev.includes(section)
+        ? prev.filter((s) => s !== section)
+        : [...prev, section]
     );
   };
 
-  // Group accounts
+  // Group accounts by type/subtype
   const checkingAccounts = accounts.filter(
     (acc) => acc.type === "depository" && acc.subtype !== "savings"
   );
@@ -120,7 +112,6 @@ export function AccountsSection({ className }: AccountsSectionProps) {
   }, 0);
 
   const netCash = totalChecking - totalCredit;
-
   const isCheckingEmpty = checkingAccounts.length === 0;
   const isCreditEmpty = creditAccounts.length === 0;
   const isSavingsEmpty = savingsAccounts.length === 0;
@@ -129,13 +120,11 @@ export function AccountsSection({ className }: AccountsSectionProps) {
 
   const isExpanded = (section: string) => expandedSections.includes(section);
 
-  // Show "1 minute ago" instead of "Last synced a minute ago" / remove "about"
   const lastSyncedText = lastSynced?.lastSyncedAt
-    ? formatDistanceToNow(new Date(lastSynced.lastSyncedAt), { addSuffix: true }).replace(
-        /^about\s+/i,
-        ""
-      )
-    : "never";
+    ? `Last synced ${formatDistanceToNow(new Date(lastSynced.lastSyncedAt), {
+        addSuffix: true,
+      })}`
+    : "Last synced never";
 
   const handleSync = () => {
     syncMutation.mutate();
@@ -143,17 +132,26 @@ export function AccountsSection({ className }: AccountsSectionProps) {
 
   return (
     <Card className={className}>
-      {/* Header: mobile stack (title → status → CTA), desktop split */}
-      <CardHeader className="pb-4 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
         <div className="space-y-1">
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <Wallet className="w-5 h-5" />
             Accounts
           </CardTitle>
 
-          <div className="flex items-center gap-1 text-xs text-muted-foreground" aria-live="polite">
-            {lastSyncedLoading ? <Skeleton className="h-3 w-24" /> : <span>{lastSyncedText}</span>}
+          <div
+            className="flex items-center gap-1 text-xs text-muted-foreground"
+            aria-live="polite"
+          >
+            {lastSyncedLoading ? (
+              <Skeleton className="h-3 w-24" />
+
+            ) : (
+              <span>{lastSyncedText}</span>
+            )}
+
             <span aria-hidden="true">|</span>
+
             <Button
               variant="link"
               className="h-auto p-0 text-xs"
@@ -161,7 +159,9 @@ export function AccountsSection({ className }: AccountsSectionProps) {
               disabled={syncMutation.isPending}
               aria-busy={syncMutation.isPending}
             >
-              {syncMutation.isPending && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+              {syncMutation.isPending && (
+                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+              )}
               Sync now
             </Button>
           </div>
@@ -169,7 +169,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
 
         <PlaidLink
           buttonText="Add Account"
-          className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium px-3 py-1.5 text-xs shadow-md transition-all"
+          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium px-3 py-1.5 text-xs shadow-md transition-all"
           size="sm"
           onSuccess={handlePlaidSuccess}
         />
@@ -184,7 +184,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
         </div>
       )}
 
-      <CardContent className="p-4 space-y-6">
+      <CardContent className="space-y-4">
         {isLoading ? (
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -192,7 +192,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
             ))}
           </div>
         ) : isError ? (
-          <div className="text-sm text-red-600">
+          <div className="p-4 text-sm text-red-600">
             Failed to load accounts.{" "}
             <Button variant="link" className="p-0 text-sm" onClick={() => refetch()}>
               Retry
@@ -200,7 +200,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
           </div>
         ) : (
           <>
-            {/* Checking */}
+            {/* Checking Section */}
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
               <Button
                 variant="ghost"
@@ -212,9 +212,12 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="text-left">
-                    <h4 className="font-medium text-gray-900 dark:text-white">Checking</h4>
+                    <h4 className="font-medium text-gray-900 dark:text-white">
+                      Checking
+                    </h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {checkingAccounts.length}
+                      {checkingAccounts.length} account
+                      {checkingAccounts.length !== 1 ? "s" : ""}
                     </p>
                   </div>
                 </div>
@@ -278,7 +281,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
               )}
             </div>
 
-            {/* Credit Cards */}
+            {/* Credit Cards Section */}
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
               <Button
                 variant="ghost"
@@ -290,9 +293,12 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     <CreditCard className="w-5 h-5 text-red-600 dark:text-red-400" />
                   </div>
                   <div className="text-left">
-                    <h4 className="font-medium text-gray-900 dark:text-white">Credit Cards</h4>
+                    <h4 className="font-medium text-gray-900 dark:text-white">
+                      Credit Cards
+                    </h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {creditAccounts.length}
+                      {creditAccounts.length} card
+                      {creditAccounts.length !== 1 ? "s" : ""}
                     </p>
                   </div>
                 </div>
@@ -355,41 +361,32 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                 </div>
               )}
             </div>
-
-            {/* Net Cash Summary (small card with tooltip) */}
-            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 dark:bg-green-950/30 rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
-                </div>
-                <div className="flex items-center gap-1">
-                  <h4 className="font-medium text-gray-900 dark:text-white">Net Cash</h4>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top">
+            
+            {/* Net Cash Section */}
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-950/30 rounded-lg flex items-center justify-center">
+                      <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-white">Net Cash</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         Checking minus credit balances
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                      </p>
+                    </div>
+                  </div>
+                  {hasAnyAccount && (
+                    <span className={`font-semibold ${netCash >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      ${netCash.toLocaleString()}
+                    </span>
+                  )}
                 </div>
               </div>
-              {hasAnyAccount && (
-                <span
-                  className={`font-semibold ${
-                    netCash >= 0
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
-                  }`}
-                >
-                  ${netCash.toLocaleString()}
-                </span>
-              )}
             </div>
 
-            {/* Savings */}
+            {/* Savings Section */}
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
               <Button
                 variant="ghost"
@@ -401,9 +398,12 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     <PiggyBank className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div className="text-left">
-                    <h4 className="font-medium text-gray-900 dark:text-white">Savings</h4>
+                    <h4 className="font-medium text-gray-900 dark:text-white">
+                      Savings
+                    </h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {savingsAccounts.length}
+                      {savingsAccounts.length} account
+                      {savingsAccounts.length !== 1 ? "s" : ""}
                     </p>
                   </div>
                 </div>
@@ -467,91 +467,71 @@ export function AccountsSection({ className }: AccountsSectionProps) {
               )}
             </div>
 
-            {/* Investments (inline empty state) */}
+            {/* Investments Section */}
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
-              {isInvestmentsEmpty ? (
-                <div className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-950/30 rounded-lg flex items-center justify-center">
-                      <LineChart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                    </div>
+              <Button
+                variant="ghost"
+                className="w-full justify-between p-4 h-auto"
+                onClick={() => toggleSection("investments")}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-950/30 rounded-lg flex items-center justify-center">
+                    <LineChart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <div className="text-left">
+                    <h4 className="font-medium text-gray-900 dark:text-white">
+                      Investments
+                    </h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      No investment accounts yet
+                      {investmentAccounts.length} account
+                      {investmentAccounts.length !== 1 ? "s" : ""}
                     </p>
                   </div>
-                  <PlaidLink
-                    icon={<Plus className="h-4 w-4" />}
-                    buttonText=""
-                    variant="outline"
-                    size="sm"
-                    className="h-8 w-8 p-0"
-                    onSuccess={handlePlaidSuccess}
-                  />
                 </div>
-              ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between p-4 h-auto"
-                    onClick={() => toggleSection("investments")}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-purple-100 dark:bg-purple-950/30 rounded-lg flex items-center justify-center">
-                        <LineChart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                      </div>
-                      <div className="text-left">
-                        <h4 className="font-medium text-gray-900 dark:text-white">Investments</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {investmentAccounts.length}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        ${totalInvestments.toLocaleString()}
-                      </span>
-                      {isExpanded("investments") ? (
-                        <ChevronDown className="w-4 h-4" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4" />
-                      )}
-                    </div>
-                  </Button>
-
-                  {isExpanded("investments") && (
-                    <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-3">
-                      {investmentAccounts.map((account) => (
-                        <div key={account.id} className="flex items-center gap-3 py-2">
-                          <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
-                              {account.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                              {account.name}
-                            </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {account.mask ? `••${account.mask}` : ""}
-                              {account.mask && account.officialName ? " | " : ""}
-                              {account.officialName || ""}
-                            </div>
-                          </div>
-
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
-                            $
-                            {(
-                              (typeof account.currentBalance === "string"
-                                ? parseFloat(account.currentBalance)
-                                : account.currentBalance) || 0
-                            ).toLocaleString()}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    ${totalInvestments.toLocaleString()}
+                  </span>
+                  {isExpanded("investments") ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
                   )}
-                </>
+                </div>
+              </Button>
+
+              {isExpanded("investments") && (
+                <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-3">
+                  {investmentAccounts.map((account) => (
+                    <div key={account.id} className="flex items-center gap-3 py-2">
+                      <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                          {account.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {account.name}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {account.mask ? `••${account.mask}` : ""}
+                          {account.mask && account.officialName ? " | " : ""}
+                          {account.officialName || ""}
+                        </div>
+                      </div>
+
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
+                        $
+                        {(
+                          (typeof account.currentBalance === "string"
+                            ? parseFloat(account.currentBalance)
+                            : account.currentBalance) || 0
+                        ).toLocaleString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </>
@@ -560,3 +540,4 @@ export function AccountsSection({ className }: AccountsSectionProps) {
     </Card>
   );
 }
+
