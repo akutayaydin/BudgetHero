@@ -2069,12 +2069,13 @@ export default function TransactionsTable({
                                   editingCategory: true,
                                 });
                               }}
-                              className="text-left hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md p-1 -m-1 transition-colors"
+                              className="group text-left hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md p-1 -m-1 transition-colors cursor-pointer"
                               title="Click to edit category"
                             >
                               <CategoryBadge
                                 categoryName={transaction.category}
                                 className="text-xs"
+                                editable
                               />
                             </button>
                           )}

@@ -26,6 +26,8 @@ const LEGACY_CATEGORY_MAP: Record<string, string> = {
   "General Services: Automotive Services": "Auto & Transport",
   "Medical & Healthcare: Pets/Veterinary": "Pets",
   "Loan Payments: Credit Card": "Credit Card Payment",
+  "Loan Payments: Credit Card Payment": "Credit Card Payment",
+  "Food & Drink: Groceries": "Groceries",
 };
 
 
@@ -42,6 +44,8 @@ const LEGACY_ADMIN_CATEGORY_RENAMES: Record<string, { name: string; subcategory?
   "General Services: Automotive Services": { name: "Auto & Transport", subcategory: "Automotive Services" },
   "Medical & Healthcare: Pets/Veterinary": { name: "Pets", subcategory: "Veterinary" },
   "Loan Payments: Credit Card": { name: "Credit Card Payment", subcategory: undefined },
+  "Loan Payments: Credit Card Payment": { name: "Credit Card Payment", subcategory: undefined },
+  "Food & Drink: Groceries": { name: "Groceries", subcategory: undefined },
 };
 
 export interface IStorage {

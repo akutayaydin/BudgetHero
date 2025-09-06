@@ -57,7 +57,6 @@ BudgetHero uses **52 categories** across 4 ledger types, while Plaid uses **16 p
 
 #### Utilities & Housing
 **BudgetHero:**
-- Mortgage ✓
 - Rent → RENT_AND_UTILITIES_RENT ✓
 - Gas & Electric → RENT_AND_UTILITIES_GAS_AND_ELECTRICITY ✓
 - Internet & Cable → RENT_AND_UTILITIES_INTERNET_AND_CABLE ✓

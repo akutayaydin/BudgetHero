@@ -42,6 +42,7 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     "food & drink": Utensils,
     "bills & utilities": Receipt,
     shopping: ShoppingBag,
+    groceries: ShoppingCart,
     "medical & healthcare": Stethoscope,
     "health & wellness": Heart,
     pets: PawPrint,
@@ -55,6 +56,7 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     "travel & vacation": Plane,
     transfers: RotateCcw,
     "loan payments": CreditCard,
+    "credit card payment": CreditCard,
     gifts: Gift,
     reimbursement: RotateCcw,
     "savings transfer": PiggyBank,
@@ -71,7 +73,6 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     dining: Utensils,
 
     // Groceries & Shopping
-    groceries: ShoppingCart,
     grocery: ShoppingCart,
     shopping: ShoppingBag,
     retail: ShoppingBag,
@@ -155,7 +156,6 @@ export const getCategoryIcon = (categoryName: string): LucideIcon => {
     financial: PiggyBank,
     banking: PiggyBank,
     fees: Receipt,
-    "credit card payment": CreditCard,
     investment: PiggyBank,
     insurance: Shield,
 
@@ -212,13 +212,13 @@ export const getCategoryColor = (categoryName: string): string => {
     transfer: "text-amber-600",
     reimbursement: "text-amber-600",
     "loan payments": "text-fuchsia-600",
+    "credit card payment": "text-amber-600",
     gifts: "text-yellow-600",
     investment: "text-green-600",
     uncategorized: "text-gray-500",
     salary: "text-green-600",
     income: "text-green-600",
     // Aliases
-    groceries: "text-orange-600",
     "mortgage & rent": "text-purple-600",
     transfer: "text-amber-600",
     salary: "text-green-600",

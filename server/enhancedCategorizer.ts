@@ -143,7 +143,7 @@ export class EnhancedCategorizer {
       // Food & Drink
       { patterns: ['starbucks', 'dunkin', 'coffee'], category: 'Coffee Shops', name: 'Food & Drink' },
       { patterns: ['mcdonalds', 'burger king', 'taco bell', 'kfc'], category: 'Fast Food', name: 'Food & Drink' },
-      { patterns: ['walmart', 'target', 'costco', 'safeway', 'kroger'], category: 'Groceries', name: 'Food & Drink' },
+      { patterns: ['walmart', 'target', 'costco', 'safeway', 'kroger'], category: null, name: 'Groceries' },
       
       // Auto & Transport
       { patterns: ['shell', 'exxon', 'chevron', 'bp', 'gas'], category: 'Gas', name: 'Auto & Transport' },
@@ -203,7 +203,7 @@ export class EnhancedCategorizer {
       
       // Food
       { keywords: ['restaurant', 'cafe', 'diner'], category: 'Restaurants', name: 'Food & Drink' },
-      { keywords: ['grocery', 'supermarket'], category: 'Groceries', name: 'Food & Drink' },
+      { keywords: ['grocery', 'supermarket'], category: null, name: 'Groceries' },
       
       // Utilities
       { keywords: ['electric bill', 'electricity'], category: 'Gas & Electric', name: 'Bills & Utilities' },
@@ -215,7 +215,7 @@ export class EnhancedCategorizer {
       
       // Transfer/Payment
       { keywords: ['transfer', 'payment', 'ach'], category: 'Transfer In', name: 'Transfers' },
-      { keywords: ['credit card payment'], category: 'Credit Card Payment', name: 'Loan Payments' },
+      { keywords: ['credit card payment'], category: null, name: 'Credit Card Payment' },
     ];
 
     for (const pattern of keywordPatterns) {

@@ -21,8 +21,10 @@ const enhancedCategoryData = [
   { name: "Auto & Transport", subcategory: "Bikes & Scooters", ledgerType: "EXPENSE", budgetType: "FLEXIBLE", plaidPrimary: "TRANSPORTATION", plaidDetailed: "TRANSPORTATION_BIKES_AND_SCOOTERS", color: "#3b82f6", sortOrder: 25 },
   { name: "Auto & Transport", subcategory: "Auto Payment / Maintenance", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "TRANSPORTATION", plaidDetailed: "TRANSPORTATION_OTHER_TRANSPORTATION", color: "#3b82f6", sortOrder: 26 },
 
+  // GROCERIES
+  { name: "Groceries", subcategory: null, ledgerType: "EXPENSE", budgetType: "FLEXIBLE", plaidPrimary: "FOOD_AND_DRINK", plaidDetailed: "FOOD_AND_DRINK_GROCERIES", color: "#f59e0b", sortOrder: 30 },
+
   // FOOD & DRINK
-  { name: "Food & Drink", subcategory: "Groceries", ledgerType: "EXPENSE", budgetType: "FLEXIBLE", plaidPrimary: "FOOD_AND_DRINK", plaidDetailed: "FOOD_AND_DRINK_GROCERIES", color: "#f59e0b", sortOrder: 30 },
   { name: "Food & Drink", subcategory: "Restaurants", ledgerType: "EXPENSE", budgetType: "FLEXIBLE", plaidPrimary: "FOOD_AND_DRINK", plaidDetailed: "FOOD_AND_DRINK_RESTAURANT", color: "#f59e0b", sortOrder: 31 },
   { name: "Food & Drink", subcategory: "Coffee Shops", ledgerType: "EXPENSE", budgetType: "FLEXIBLE", plaidPrimary: "FOOD_AND_DRINK", plaidDetailed: "FOOD_AND_DRINK_COFFEE", color: "#f59e0b", sortOrder: 32 },
   { name: "Food & Drink", subcategory: "Fast Food", ledgerType: "EXPENSE", budgetType: "FLEXIBLE", plaidPrimary: "FOOD_AND_DRINK", plaidDetailed: "FOOD_AND_DRINK_FAST_FOOD", color: "#f59e0b", sortOrder: 33 },
@@ -31,12 +33,11 @@ const enhancedCategoryData = [
 
   // BILLS & UTILITIES
   { name: "Bills & Utilities", subcategory: "Rent", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_RENT", color: "#8b5cf6", sortOrder: 40 },
-  { name: "Bills & Utilities", subcategory: "Mortgage", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_MORTGAGE", color: "#8b5cf6", sortOrder: 41 },
-  { name: "Bills & Utilities", subcategory: "Gas & Electric", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_GAS_AND_ELECTRICITY", color: "#8b5cf6", sortOrder: 42 },
-  { name: "Bills & Utilities", subcategory: "Internet & Cable", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_INTERNET_AND_CABLE", color: "#8b5cf6", sortOrder: 43 },
-  { name: "Bills & Utilities", subcategory: "Phone", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_TELEPHONE", color: "#8b5cf6", sortOrder: 44 },
-  { name: "Bills & Utilities", subcategory: "Water", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_WATER", color: "#8b5cf6", sortOrder: 45 },
-  { name: "Bills & Utilities", subcategory: "Garbage / Waste", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_SEWAGE_AND_WASTE_MANAGEMENT", color: "#8b5cf6", sortOrder: 46 },
+  { name: "Bills & Utilities", subcategory: "Gas & Electric", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_GAS_AND_ELECTRICITY", color: "#8b5cf6", sortOrder: 41 },
+  { name: "Bills & Utilities", subcategory: "Internet & Cable", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_INTERNET_AND_CABLE", color: "#8b5cf6", sortOrder: 42 },
+  { name: "Bills & Utilities", subcategory: "Phone", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_TELEPHONE", color: "#8b5cf6", sortOrder: 43 },
+  { name: "Bills & Utilities", subcategory: "Water", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_WATER", color: "#8b5cf6", sortOrder: 44 },
+  { name: "Bills & Utilities", subcategory: "Garbage / Waste", ledgerType: "EXPENSE", budgetType: "FIXED", plaidPrimary: "RENT_AND_UTILITIES", plaidDetailed: "RENT_AND_UTILITIES_SEWAGE_AND_WASTE_MANAGEMENT", color: "#8b5cf6", sortOrder: 45 },
 
   // SHOPPING
   { name: "Shopping", subcategory: "Clothing", ledgerType: "EXPENSE", budgetType: "FLEXIBLE", plaidPrimary: "GENERAL_MERCHANDISE", plaidDetailed: "GENERAL_MERCHANDISE_CLOTHING_AND_ACCESSORIES", color: "#ec4899", sortOrder: 50 },
@@ -127,11 +128,10 @@ const enhancedCategoryData = [
   { name: "Loan Payments", subcategory: "Mortgage", ledgerType: "DEBT_CREDIT", budgetType: "FIXED", plaidPrimary: "LOAN_PAYMENTS", plaidDetailed: "LOAN_PAYMENTS_MORTGAGE_PAYMENT", color: "#dc2626", sortOrder: 160 },
   { name: "Loan Payments", subcategory: "Student", ledgerType: "DEBT_CREDIT", budgetType: "FIXED", plaidPrimary: "LOAN_PAYMENTS", plaidDetailed: "LOAN_PAYMENTS_STUDENT_LOAN_PAYMENT", color: "#dc2626", sortOrder: 161 },
   { name: "Loan Payments", subcategory: "Personal", ledgerType: "DEBT_CREDIT", budgetType: "FIXED", plaidPrimary: "LOAN_PAYMENTS", plaidDetailed: "LOAN_PAYMENTS_PERSONAL_LOAN_PAYMENT", color: "#dc2626", sortOrder: 162 },
-  { name: "Loan Payments", subcategory: "Credit Card Payment", ledgerType: "DEBT_CREDIT", budgetType: "FIXED", plaidPrimary: "LOAN_PAYMENTS", plaidDetailed: "LOAN_PAYMENTS_CREDIT_CARD_PAYMENT", color: "#dc2626", sortOrder: 163 },
+  { name: "Loan Payments", subcategory: "Auto", ledgerType: "DEBT_CREDIT", budgetType: "FIXED", plaidPrimary: "LOAN_PAYMENTS", plaidDetailed: "LOAN_PAYMENTS_CAR_PAYMENT", color: "#dc2626", sortOrder: 163 },
+  { name: "Loan Payments", subcategory: "Other", ledgerType: "DEBT_CREDIT", budgetType: "FIXED", plaidPrimary: "LOAN_PAYMENTS", plaidDetailed: "LOAN_PAYMENTS_OTHER_PAYMENT", color: "#dc2626", sortOrder: 164 },
 
-  
-  { name: "Loan Payments", subcategory: "Auto", ledgerType: "DEBT_CREDIT", budgetType: "FIXED", plaidPrimary: "LOAN_PAYMENTS", plaidDetailed: "LOAN_PAYMENTS_CAR_PAYMENT", color: "#dc2626", sortOrder: 164 },
-  { name: "Loan Payments", subcategory: "Other", ledgerType: "DEBT_CREDIT", budgetType: "FIXED", plaidPrimary: "LOAN_PAYMENTS", plaidDetailed: "LOAN_PAYMENTS_OTHER_PAYMENT", color: "#dc2626", sortOrder: 165 },
+  { name: "Credit Card Payment", subcategory: null, ledgerType: "TRANSFER", budgetType: "FLEXIBLE", plaidPrimary: "TRANSFER_OUT", plaidDetailed: "TRANSFER_OUT_CREDIT_CARD_PAYMENT", color: "#71717a", sortOrder: 165 },
 
   { name: "Gifts", subcategory: null, ledgerType: "EXPENSE", budgetType: "FLEXIBLE", plaidPrimary: "GENERAL_MERCHANDISE", plaidDetailed: "GENERAL_MERCHANDISE_GIFTS_AND_PARTY_SUPPLIES", color: "#d97706", sortOrder: 170 },
   { name: "Personal Care", subcategory: null, ledgerType: "EXPENSE", budgetType: "FLEXIBLE", plaidPrimary: "PERSONAL_CARE", plaidDetailed: "PERSONAL_CARE_OTHER_PERSONAL_CARE", color: "#f43f5e", sortOrder: 171 },
