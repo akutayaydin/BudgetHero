@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Wallet,
+  ChevronDown,
+  ChevronRight,
+  RefreshCw,
+  Loader2,
   Building2,
   CreditCard,
   PiggyBank,
+  Wallet,
   LineChart,
-  ChevronDown,
-  ChevronRight,
-  Loader2,
-  RefreshCw,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/financial-utils";
 import { useAccountsOverview } from "@/hooks/useAccountsOverview";
@@ -25,7 +25,10 @@ interface AccountsPanelProps {
 }
 
 // Map account group identifiers to icons. Extend this object to support new groups.
-const groupIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+const groupIcons: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   checking: Building2,
   creditCards: CreditCard,
   savings: PiggyBank,
@@ -36,62 +39,113 @@ const groupIcons: Record<string, React.ComponentType<{ className?: string }>> = 
 export function AccountsPanel({ onAddAccount }: AccountsPanelProps) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const { data: overview, isLoading, isError, refetch } = useAccountsOverview();
-  const { data: lastSynced, isLoading: lastSyncedLoading } = useLastSynced();
+  const {
+    data: lastSynced,
+    isLoading: lastSyncedLoading,
+    isError: lastSyncedError,
+    refetch: refetchLastSynced,
+  } = useLastSynced();
   const syncMutation = useSyncAccounts();
 
   const toggle = (id: string) =>
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  const lastSyncedText = lastSynced?.lastSyncedAt
-    ? `Last synced ${formatDistanceToNow(new Date(lastSynced.lastSyncedAt), {
+  const relativeTime = lastSynced
+    ? formatDistanceToNow(new Date(lastSynced.lastSyncedAt), {
         addSuffix: true,
-      })}`
-    : "Last synced never";
+      })
+    : "";
 
   const handleSync = () => {
-    syncMutation.mutate();
+    syncMutation.mutate(undefined, {
+      onError: () => {
+        // no-op, error handled via state
+      },
+    });
   };
 
   const renderGroup = (group: AccountGroup) => {
     const Icon = groupIcons[group.id] || Wallet;
     const hasChildren = Boolean(group.children && group.children.length);
-    const isOpen = !!expanded[group.id];
+    const isExpanded = expanded[group.id];
 
     return (
       <div key={group.id} className="border-b last:border-b-0">
         <button
           className="flex w-full items-center justify-between px-4 py-3 focus:outline-none"
           onClick={hasChildren ? () => toggle(group.id) : undefined}
-          aria-expanded={hasChildren ? isOpen : undefined}
+          aria-expanded={hasChildren ? isExpanded : undefined}
         >
           <div className="flex items-center gap-2">
             <Icon className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium">{group.label}</span>
           </div>
-
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-gray-900 dark:text-white">
-              {formatCurrency(group.amount)}
-            </span>
+            {group.action ? (
+              <Button
+                variant="link"
+                className="p-0 text-red-600"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddAccount?.(group.id);
+                }}
+              >
+                {group.action.label} +
+              </Button>
+            ) : (
+              <span
+                className={
+                  group.tone === "positive"
+                    ? "text-green-600"
+                    : group.tone === "negative"
+                      ? "text-red-600"
+                      : ""
+                }
+              >
+                {group.total !== undefined ? formatCurrency(group.total) : ""}
+              </span>
+            )}
             {hasChildren &&
-              (isOpen ? (
+              (isExpanded ? (
                 <ChevronDown className="h-4 w-4 text-muted-foreground" />
               ) : (
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               ))}
           </div>
         </button>
-
-        {hasChildren && isOpen && (
-          <div className="bg-muted/30">
+        {hasChildren && isExpanded && (
+          <div className="divide-y">
             {group.children!.map((child) => (
               <div
                 key={child.id}
-                className="flex items-center justify-between px-4 py-3"
+                className="flex items-center gap-3 px-8 py-3"
               >
-                <div className="text-sm text-muted-foreground">
-                  {child.label}
+                {/* Institution Logo or Placeholder */}
+                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                  {child.institutionName ? (
+                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                      {child.institutionName.charAt(0).toUpperCase()}
+                    </span>
+                  ) : (
+                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                      {child.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
                 </div>
+
+                {/* Account Details */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {child.name}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {child.mask ? `••${child.mask}` : ''}
+                    {child.mask && child.officialName ? ' | ' : ''}
+                    {child.officialName || child.institutionName || ''}
+                  </div>
+                </div>
+
+                {/* Balance */}
                 <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
                   {formatCurrency(child.amount)}
                 </div>
@@ -112,15 +166,22 @@ export function AccountsPanel({ onAddAccount }: AccountsPanelProps) {
           </CardTitle>
           <RefreshCw className="h-4 w-4 text-muted-foreground" />
         </div>
-
         <div
           className="flex items-center gap-1 text-xs text-muted-foreground"
           aria-live="polite"
         >
           {lastSyncedLoading ? (
-            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-3 w-20" />
+          ) : lastSyncedError ? (
+            <Button
+              variant="link"
+              className="h-auto p-0 text-xs"
+              onClick={() => refetchLastSynced()}
+            >
+              Retry
+            </Button>
           ) : (
-            <span>{lastSyncedText}</span>
+            <span>{relativeTime}</span>
           )}
           <span aria-hidden="true">|</span>
           <Button
@@ -137,7 +198,6 @@ export function AccountsPanel({ onAddAccount }: AccountsPanelProps) {
           </Button>
         </div>
       </CardHeader>
-
       {syncMutation.isError && (
         <div className="px-4 text-xs text-red-600">
           Sync failed.{" "}
@@ -146,7 +206,6 @@ export function AccountsPanel({ onAddAccount }: AccountsPanelProps) {
           </Button>
         </div>
       )}
-
       <CardContent className="p-0">
         {isLoading ? (
           <div className="divide-y">
@@ -168,6 +227,7 @@ export function AccountsPanel({ onAddAccount }: AccountsPanelProps) {
               className="p-0 text-sm"
               onClick={() => {
                 refetch();
+                refetchLastSynced();
               }}
             >
               Retry

@@ -1206,25 +1206,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get last synced timestamp for user's accounts
-  app.get("/api/accounts/last-synced", isAuthenticated, async (req, res) => {
-    try {
-      const userId = getUserId(req);
-      const accounts = await storage.getAccounts(userId);
-      const lastSyncAt = accounts.reduce<Date | null>((latest, acc) => {
-        const date = acc.lastSyncAt ? new Date(acc.lastSyncAt) : null;
-        return date && (!latest || date > latest) ? date : latest;
-      }, null);
-
-      res.json({ lastSyncedAt: lastSyncAt ? lastSyncAt.toISOString() : null });
-    } catch (error) {
-      console.error('Error fetching last synced time:', error);
-      res.status(500).json({ error: 'Failed to fetch last synced time' });
-    }
-  });
-
-  
-  
   // Accounts overview endpoint - returns grouped account data
   app.get("/api/accounts/overview", isAuthenticated, async (req, res) => {
     try {

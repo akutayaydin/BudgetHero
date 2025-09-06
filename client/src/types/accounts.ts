@@ -31,5 +31,5 @@ export interface AccountsOverviewResponse {
 }
 
 export interface LastSyncedResponse {
-  lastSyncedAt: string;
+  lastSyncedAt: string | null;
 }

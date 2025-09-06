@@ -10,9 +10,12 @@ export function useSyncAccounts() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => apiRequest("/api/accounts/sync", "POST"),
+    //mutationFn: () => apiRequest("/api/accounts/sync", "POST"),
+    mutationFn: () => apiRequest("/api/accounts/sync-all", "POST"),
     onSuccess: () => {
-      // Refetch account groups and last-sync timestamp after a successful sync.
+      // Refetch account lists, transactions, grouped data, and last-sync timestamp after a successful sync.
+      queryClient.invalidateQueries({ queryKey: ["/api/accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
       queryClient.invalidateQueries({ queryKey: accountsOverviewQueryKey });
       queryClient.invalidateQueries({ queryKey: lastSyncedQueryKey });
     },

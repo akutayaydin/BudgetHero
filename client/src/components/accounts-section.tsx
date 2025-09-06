@@ -9,6 +9,7 @@ import {
   Wallet,
   CreditCard,
   Building2,
+  DollarSign,
   LineChart,
   PiggyBank,
   Plus,
@@ -48,12 +49,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
     queryKey: ["/api/accounts"],
   });
 
-  const {
-    data: lastSynced,
-    isLoading: lastSyncedLoading,
-    isError: lastSyncedError,
-    refetch: refetchLastSynced,
-  } = useLastSynced();
+  const { data: lastSynced, isLoading: lastSyncedLoading } = useLastSynced();
 
   const syncMutation = useSyncAccounts();
 
@@ -115,18 +111,20 @@ export function AccountsSection({ className }: AccountsSectionProps) {
     return sum + (isNaN(balance) ? 0 : balance);
   }, 0);
 
+  const netCash = totalChecking - totalCredit;
   const isCheckingEmpty = checkingAccounts.length === 0;
   const isCreditEmpty = creditAccounts.length === 0;
   const isSavingsEmpty = savingsAccounts.length === 0;
   const isInvestmentsEmpty = investmentAccounts.length === 0;
+  const hasAnyAccount = !isCheckingEmpty || !isCreditEmpty;
 
   const isExpanded = (section: string) => expandedSections.includes(section);
 
-  const lastSyncedText = lastSynced
+  const lastSyncedText = lastSynced?.lastSyncedAt
     ? `Last synced ${formatDistanceToNow(new Date(lastSynced.lastSyncedAt), {
         addSuffix: true,
       })}`
-    : "";
+    : "Last synced never";
 
   const handleSync = () => {
     syncMutation.mutate();
@@ -147,14 +145,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
           >
             {lastSyncedLoading ? (
               <Skeleton className="h-3 w-24" />
-            ) : lastSyncedError ? (
-              <Button
-                variant="link"
-                className="h-auto p-0 text-xs"
-                onClick={() => refetchLastSynced()}
-              >
-                Retry
-              </Button>
+
             ) : (
               <span>{lastSyncedText}</span>
             )}
@@ -369,6 +360,30 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                   ))}
                 </div>
               )}
+            </div>
+            
+            {/* Net Cash Section */}
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-950/30 rounded-lg flex items-center justify-center">
+                      <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-white">Net Cash</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Checking minus credit balances
+                      </p>
+                    </div>
+                  </div>
+                  {hasAnyAccount && (
+                    <span className={`font-semibold ${netCash >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      ${netCash.toLocaleString()}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Savings Section */}
