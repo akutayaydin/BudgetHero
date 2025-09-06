@@ -818,6 +818,13 @@
       "name": "budget_plans",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
         "user_id": {
           "name": "user_id",
           "type": "varchar",
@@ -844,7 +851,7 @@
         },
         "savings_rate": {
           "name": "savings_rate",
-          "type": "numeric(5, 2)",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -859,6 +866,20 @@
           "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": true
+          },
+          "created_at": {
+            "name": "created_at",
+            "type": "timestamp",
+            "primaryKey": false,
+            "notNull": false,
+            "default": "now()"
+          },
+          "updated_at": {
+            "name": "updated_at",
+            "type": "timestamp",
+            "primaryKey": false,
+            "notNull": false,
+            "default": "now()"
         }
       },
       "indexes": {
@@ -879,16 +900,16 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "budget_plans_user_id_month_pk": {
-          "name": "budget_plans_user_id_month_pk",
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "budget_plans_user_id_month_unique": {
+          "name": "budget_plans_user_id_month_unique",
           "columns": [
             "user_id",
             "month"
           ]
         }
       },
-      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

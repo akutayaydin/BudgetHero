@@ -122,14 +122,17 @@ CREATE TABLE "bill_notifications" (
 );
 --> statement-breakpoint
 CREATE TABLE "budget_plans" (
+  "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   "user_id" varchar NOT NULL,
   "month" varchar(7) NOT NULL,
   "expected_earnings" numeric(10, 2) NOT NULL,
   "expected_bills" numeric(10, 2) NOT NULL,
-  "savings_rate" numeric(5, 2) NOT NULL,
+  "savings_rate" integer NOT NULL,
   "savings_reserve" numeric(10, 2) NOT NULL,
   "spending_budget" numeric(10, 2) NOT NULL,
-  CONSTRAINT "budget_plans_user_id_month_pk" PRIMARY KEY("user_id","month")
+  "created_at" timestamp DEFAULT now(),
+  "updated_at" timestamp DEFAULT now(),
+  CONSTRAINT "budget_plans_user_id_month_unique" UNIQUE("user_id","month")
 );
 --> statement-breakpoint
 CREATE TABLE "budgets" (
