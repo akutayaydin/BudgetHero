@@ -117,7 +117,6 @@ export interface IStorage {
   getBudgets(userId?: string): Promise<Budget[]>;
   getBudget(id: string): Promise<Budget | undefined>;
   createBudget(budget: InsertBudget): Promise<Budget>;
-  createBudgetPlan(plan: any): Promise<any>;
   updateBudget(id: string, budget: Partial<InsertBudget>): Promise<Budget | undefined>;
   deleteBudget(id: string): Promise<boolean>;
 
@@ -674,27 +673,6 @@ export class DatabaseStorage implements IStorage {
     const [newBudget] = await db.insert(budgets).values(budget).returning();
     return newBudget;
   }
-
-  async createBudgetPlan(plan: any): Promise<any> {
-    try {
-      const result = await db.execute(
-        sql`INSERT INTO budget_plans (plan) VALUES (${plan}) RETURNING *`
-      );
-      return result.rows[0];
-    } catch (error: any) {
-      if (
-        error?.code === "42P01" ||
-        error?.code === "ECONNREFUSED" ||
-        (error?.message && error.message.toLowerCase().includes("budget_plans"))
-      ) {
-        throw new Error(
-          "Budget plans table not found or database connection error"
-        );
-      }
-      throw error;
-    }
-  }
-
 
   async updateBudget(id: string, budget: Partial<InsertBudget>): Promise<Budget | undefined> {
     const [updated] = await db
