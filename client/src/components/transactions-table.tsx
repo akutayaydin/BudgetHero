@@ -1768,20 +1768,16 @@ export default function TransactionsTable({
                                                 parseFloat(transaction.amount),
                                               )}
                                             </div>
-                                            <Button
-                                              variant="ghost"
-                                              size="sm"
-                                              className="h-6 w-6 p-0 opacity-60 hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all"
-                                              onClick={() => {
-                                                setSelectedTransaction(
-                                                  transaction,
-                                                );
-                                                setIsDetailsModalOpen(true);
-                                              }}
-                                              data-testid={`details-button-${transaction.id}`}
-                                            >
-                                              <EllipsisVertical className="h-3 w-3" />
-                                            </Button>
+                                            <TransactionEditModal transaction={transaction}>
+                                              <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-6 w-6 p-0 opacity-60 hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all"
+                                                data-testid={`details-button-${transaction.id}`}
+                                              >
+                                                <EllipsisVertical className="h-3 w-3" />
+                                              </Button>
+                                            </TransactionEditModal>
                                           </div>
                                         </div>
                                       </div>

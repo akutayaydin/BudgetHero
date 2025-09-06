@@ -76,13 +76,21 @@ export function InlineDescriptionEditor({
   return (
     <div 
       className={cn(
-        "flex items-center gap-1 group cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-1 py-0.5 transition-colors",
-        className
+        "flex items-center gap-1 rounded px-1 py-0.5 transition-colors",
+        !disabled &&
+          "group cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800",
+        className,
       )}
       onClick={() => !disabled && setIsEditing(true)}
       data-testid="description-display"
     >
-      <span className="flex-1 text-xs text-foreground truncate">
+      <span
+        className={cn(
+          "flex-1 text-xs text-foreground truncate",
+          !disabled &&
+            "px-1 pb-[1px] group-hover:border-b group-hover:border-dashed group-hover:border-gray-300 dark:group-hover:border-gray-600",
+        )}
+      >
         {currentDescription}
       </span>
       <Edit3 className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />

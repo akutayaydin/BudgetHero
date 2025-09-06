@@ -7,24 +7,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 
 import type { Transaction } from "@shared/schema";
-import {
-  Edit3,
-  Save,
-  X,
-  Tag,
-  Receipt,
-  Calendar,
-  DollarSign,
-  Building2,
-} from "lucide-react";
+import { Edit3, Save, X, Tag, Receipt } from "lucide-react";
 import {
   InlineCategorySelector,
   findCategoryByName,
@@ -42,11 +32,9 @@ export function TransactionEditModal({
   const [open, setOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     description: transaction.description,
-    merchant: transaction.merchant || "",
+
     category: transaction.category,
     categoryId: transaction.categoryId || "",
-    amount: transaction.amount,
-    date: new Date(transaction.date).toISOString().split("T")[0],
   });
 
   const { toast } = useToast();
@@ -104,11 +92,9 @@ export function TransactionEditModal({
   const handleSave = () => {
     updateMutation.mutate({
       description: editForm.description,
-      merchant: editForm.merchant || null,
+
       category: editForm.category,
       categoryId: editForm.categoryId || null,
-      amount: editForm.amount,
-      date: editForm.date,
     });
   };
 
@@ -124,38 +110,6 @@ export function TransactionEditModal({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Transaction Date */}
-          <div className="space-y-2">
-            <Label htmlFor="date" className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Date
-            </Label>
-            <Input
-              id="date"
-              type="date"
-              value={editForm.date}
-              onChange={(e) =>
-                setEditForm({ ...editForm, date: e.target.value })
-              }
-            />
-          </div>
-
-          {/* Merchant Name */}
-          <div className="space-y-2">
-            <Label htmlFor="merchant" className="flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              Merchant
-            </Label>
-            <Input
-              id="merchant"
-              placeholder="Enter merchant name..."
-              value={editForm.merchant}
-              onChange={(e) =>
-                setEditForm({ ...editForm, merchant: e.target.value })
-              }
-            />
-          </div>
-
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="flex items-center gap-2">
@@ -186,28 +140,6 @@ export function TransactionEditModal({
                 setEditForm({ ...editForm, categoryId: id, category: name })
               }
             />
-          </div>
-
-          {/* Amount */}
-          <div className="space-y-2">
-            <Label htmlFor="amount" className="flex items-center gap-2">
-              <DollarSign className="w-4 h-4" />
-              Amount
-            </Label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={editForm.amount}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, amount: e.target.value })
-                }
-                className="pl-10"
-              />
-            </div>
           </div>
         </div>
 
