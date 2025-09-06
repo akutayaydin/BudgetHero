@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
@@ -231,43 +232,46 @@ export function InlineCategorySelector({
             value={searchValue}
             onValueChange={setSearchValue}
           />
-          <CommandList>
-            <CommandEmpty>No categories found.</CommandEmpty>
+          <ScrollArea className="h-64">
+            <CommandList>
+              <CommandEmpty>No categories found.</CommandEmpty>
 
-            {Object.entries(groupedCategories).map(
-              ([groupName, groupCategories]) => (
-                <CommandGroup key={groupName} heading={groupName}>
-                  {groupCategories.map((category) => {
-                    const Icon = category.icon;
-                    return (
-                      <CommandItem
-                        key={category.id}
-                        value={category.searchTerms}
-                        onSelect={() => handleSelect(category)}
-                        className="cursor-pointer"
-                        data-testid={`category-option-${category.id}`}
-                      >
-                        <div className="flex items-center gap-2 flex-1">
-                          <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center">
-                            <Icon className="w-3 h-3 text-muted-foreground" />
+              {Object.entries(groupedCategories).map(
+                ([groupName, groupCategories]) => (
+                  <CommandGroup key={groupName} heading={groupName}>
+                    {groupCategories.map((category) => {
+                      const Icon = category.icon;
+                      return (
+                        <CommandItem
+                          key={category.id}
+                          value={category.searchTerms}
+                          onSelect={() => handleSelect(category)}
+                          className="cursor-pointer"
+                          data-testid={`category-option-${category.id}`}
+                        >
+                          <div className="flex items-center gap-2 flex-1">
+                            <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center">
+                              <Icon className="w-3 h-3 text-muted-foreground" />
+                            </div>
+                            <span className="flex-1">{category.displayName}</span>
+                            
                           </div>
-                          <span className="flex-1">{category.displayName}</span>
-                        </div>
-                        <Check
-                          className={cn(
-                            "ml-2 h-4 w-4",
-                            currentCategoryId === category.id
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-              ),
+            <Check
+              className={cn(
+                "ml-2 h-4 w-4",
+                currentCategoryId === category.id
+                  ? "opacity-100"
+                  : "opacity-0",
+              )}
+            />
+            </CommandItem>
+            );
+            })}
+            </CommandGroup>
+            ),
             )}
-          </CommandList>
+            </CommandList>
+            </ScrollArea>
         </Command>
       </PopoverContent>
     </Popover>
