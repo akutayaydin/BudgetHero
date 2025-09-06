@@ -123,7 +123,7 @@ export interface IStorage {
   // Budget plan methods
   getBudgetPlan(userId: string, month: string): Promise<BudgetPlan | undefined>;
   createBudgetPlan(plan: InsertBudgetPlan & { userId: string }): Promise<BudgetPlan>;
-  updateBudgetPlan(id: string, plan: Partial<InsertBudgetPlan>): Promise<BudgetPlan | undefined>;
+  upsertBudgetPlan(plan: InsertBudgetPlan & { userId: string }): Promise<BudgetPlan>;
   getIncomeEstimate(userId: string, months: number): Promise<{ average: number; months: { month: string; total: number }[] }>;
   getBillsEstimate(userId: string, months: number): Promise<{ average: number; candidates: any[] }>;
   
@@ -754,7 +754,7 @@ export class DatabaseStorage implements IStorage {
   }
 
 
-  async upsertBudgetPlan(plan: InsertBudgetPlan): Promise<BudgetPlan> {
+  async upsertBudgetPlan(plan: InsertBudgetPlan & { userId: string }): Promise<BudgetPlan> {
     const existing = await this.getBudgetPlan(plan.userId, plan.month);
     if (existing) {
       const [updated] = await db

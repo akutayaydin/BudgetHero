@@ -978,7 +978,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const rate = Number(data.savingsRate);
       const savingsReserve = earnings * rate / 100;
       const spendingBudget = earnings - bills - savingsReserve;
-      const created = await storage.createBudgetPlan({
+      const created = await storage.upsertBudgetPlan({
         ...data,
         userId,
         expectedEarnings: earnings,
