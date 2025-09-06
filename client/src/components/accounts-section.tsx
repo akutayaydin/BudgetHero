@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import {
   ChevronDown,
-  ChevronRight,
+  ChevronUp,
   Wallet,
   CreditCard,
   Building2,
@@ -56,11 +56,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
     queryKey: ["/api/accounts"],
   });
 
-  const {
-    data: lastSynced,
-    isLoading: lastSyncedLoading,
-  } = useLastSynced();
-
+  const { data: lastSynced, isLoading: lastSyncedLoading } = useLastSynced();
   const syncMutation = useSyncAccounts();
 
   const handlePlaidSuccess = () => {
@@ -129,7 +125,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
 
   const isExpanded = (section: string) => expandedSections.includes(section);
 
-  // Show "1 minute ago" instead of "Last synced a minute ago" / remove "about"
+  // Show "1 minute ago" style (no "about", no "Last synced")
   const lastSyncedText = lastSynced?.lastSyncedAt
     ? formatDistanceToNow(new Date(lastSynced.lastSyncedAt), { addSuffix: true }).replace(
         /^about\s+/i,
@@ -143,15 +139,18 @@ export function AccountsSection({ className }: AccountsSectionProps) {
 
   return (
     <Card className={className}>
-      {/* Header: mobile stack (title → status → CTA), desktop split */}
+      {/* Header: single row; title left, status right, CTA still available */}
       <CardHeader className="pb-4 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
-        <div className="space-y-1">
+        <div className="flex w-full items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <Wallet className="w-5 h-5" />
             Accounts
           </CardTitle>
 
-          <div className="flex items-center gap-1 text-xs text-muted-foreground" aria-live="polite">
+          <div
+            className="ml-auto flex items-center gap-1 text-xs text-muted-foreground"
+            aria-live="polite"
+          >
             {lastSyncedLoading ? <Skeleton className="h-3 w-24" /> : <span>{lastSyncedText}</span>}
             <span aria-hidden="true">|</span>
             <Button
@@ -167,12 +166,14 @@ export function AccountsSection({ className }: AccountsSectionProps) {
           </div>
         </div>
 
-        <PlaidLink
-          buttonText="Add Account"
-          className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium px-3 py-1.5 text-xs shadow-md transition-all"
-          size="sm"
-          onSuccess={handlePlaidSuccess}
-        />
+        <div className="flex w-full justify-end">
+          <PlaidLink
+            buttonText="Add Account"
+            className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium px-3 py-1.5 text-xs shadow-md transition-all"
+            size="sm"
+            onSuccess={handlePlaidSuccess}
+          />
+        </div>
       </CardHeader>
 
       {syncMutation.isError && (
@@ -213,9 +214,6 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                   </div>
                   <div className="text-left">
                     <h4 className="font-medium text-gray-900 dark:text-white">Checking</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {checkingAccounts.length}
-                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -234,9 +232,9 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                         ${totalChecking.toLocaleString()}
                       </span>
                       {isExpanded("checking") ? (
-                        <ChevronDown className="w-4 h-4" />
+                        <ChevronUp className="w-4 h-4" />
                       ) : (
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronDown className="w-4 h-4" />
                       )}
                     </>
                   )}
@@ -254,11 +252,16 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                        <div
+                          className="text-sm font-semibold text-gray-900 dark:text-white truncate"
+                          title={account.name}
+                        >
                           {account.name}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {account.mask ? `••${account.mask}` : ""}
+                          {account.mask && (
+                            <span className="font-mono">{`• • ${account.mask}`}</span>
+                          )}
                           {account.mask && account.officialName ? " | " : ""}
                           {account.officialName || ""}
                         </div>
@@ -291,9 +294,6 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                   </div>
                   <div className="text-left">
                     <h4 className="font-medium text-gray-900 dark:text-white">Credit Cards</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {creditAccounts.length}
-                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -312,9 +312,9 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                         ${totalCredit.toLocaleString()}
                       </span>
                       {isExpanded("credit") ? (
-                        <ChevronDown className="w-4 h-4" />
+                        <ChevronUp className="w-4 h-4" />
                       ) : (
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronDown className="w-4 h-4" />
                       )}
                     </>
                   )}
@@ -332,11 +332,16 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                        <div
+                          className="text-sm font-semibold text-gray-900 dark:text-white truncate"
+                          title={account.name}
+                        >
                           {account.name}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {account.mask ? `••${account.mask}` : ""}
+                          {account.mask && (
+                            <span className="font-mono">{`• • ${account.mask}`}</span>
+                          )}
                           {account.mask && account.officialName ? " | " : ""}
                           {account.officialName || ""}
                         </div>
@@ -369,9 +374,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground" />
                       </TooltipTrigger>
-                      <TooltipContent side="top">
-                        Checking minus credit balances
-                      </TooltipContent>
+                      <TooltipContent side="top">Checking minus credit balances</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
@@ -402,9 +405,6 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                   </div>
                   <div className="text-left">
                     <h4 className="font-medium text-gray-900 dark:text-white">Savings</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {savingsAccounts.length}
-                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -423,9 +423,9 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                         ${totalSavings.toLocaleString()}
                       </span>
                       {isExpanded("savings") ? (
-                        <ChevronDown className="w-4 h-4" />
+                        <ChevronUp className="w-4 h-4" />
                       ) : (
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronDown className="w-4 h-4" />
                       )}
                     </>
                   )}
@@ -443,11 +443,16 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                        <div
+                          className="text-sm font-semibold text-gray-900 dark:text-white truncate"
+                          title={account.name}
+                        >
                           {account.name}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {account.mask ? `••${account.mask}` : ""}
+                          {account.mask && (
+                            <span className="font-mono">{`• • ${account.mask}`}</span>
+                          )}
                           {account.mask && account.officialName ? " | " : ""}
                           {account.officialName || ""}
                         </div>
@@ -475,9 +480,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     <div className="w-10 h-10 bg-purple-100 dark:bg-purple-950/30 rounded-lg flex items-center justify-center">
                       <LineChart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      No investment accounts yet
-                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">No investment accounts yet</p>
                   </div>
                   <PlaidLink
                     icon={<Plus className="h-4 w-4" />}
@@ -501,9 +504,6 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                       </div>
                       <div className="text-left">
                         <h4 className="font-medium text-gray-900 dark:text-white">Investments</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {investmentAccounts.length}
-                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -511,9 +511,9 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                         ${totalInvestments.toLocaleString()}
                       </span>
                       {isExpanded("investments") ? (
-                        <ChevronDown className="w-4 h-4" />
+                        <ChevronUp className="w-4 h-4" />
                       ) : (
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronDown className="w-4 h-4" />
                       )}
                     </div>
                   </Button>
@@ -529,11 +529,16 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                           </div>
 
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                            <div
+                              className="text-sm font-semibold text-gray-900 dark:text-white truncate"
+                              title={account.name}
+                            >
                               {account.name}
                             </div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {account.mask ? `••${account.mask}` : ""}
+                              {account.mask && (
+                                <span className="font-mono">{`• • ${account.mask}`}</span>
+                              )}
                               {account.mask && account.officialName ? " | " : ""}
                               {account.officialName || ""}
                             </div>
