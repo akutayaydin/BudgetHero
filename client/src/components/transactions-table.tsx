@@ -44,7 +44,7 @@ import {
 } from "lucide-react";
 //import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { TransactionRecurringBadge } from "./transaction-recurring-badge";
-import { TransactionEditModal } from "./transaction-edit-modal";
+
 import { MerchantSparkline } from "./merchant-sparkline";
 import { MerchantHoverTooltip } from "./merchant-hover-tooltip";
 import { MerchantDetailDialog } from "./merchant-detail-dialog";
@@ -1768,16 +1768,18 @@ export default function TransactionsTable({
                                                 parseFloat(transaction.amount),
                                               )}
                                             </div>
-                                            <TransactionEditModal transaction={transaction}>
-                                              <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="h-6 w-6 p-0 opacity-60 hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all"
-                                                data-testid={`details-button-${transaction.id}`}
-                                              >
-                                                <EllipsisVertical className="h-3 w-3" />
-                                              </Button>
-                                            </TransactionEditModal>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              className="h-6 w-6 p-0 opacity-60 hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all"
+                                              data-testid={`details-button-${transaction.id}`}
+                                              onClick={() => {
+                                                setSelectedTransaction(transaction);
+                                                setIsDetailsModalOpen(true);
+                                              }}
+                                            >
+                                              <EllipsisVertical className="h-3 w-3" />
+                                            </Button>
                                           </div>
                                         </div>
                                       </div>

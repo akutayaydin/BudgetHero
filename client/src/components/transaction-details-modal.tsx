@@ -28,7 +28,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatDateOnly } from "@/lib/financial-utils";
 import { TransactionSplitModal } from "./transaction-split-modal";
 import { CreateRuleModal } from "./create-rule-modal";
-import { CategoryBadge } from "./category-badge";
+import { InlineCategorySelector } from "./inline-category-selector";
+import { InlineDescriptionEditor } from "./inline-description-editor";
 import { getClearbitLogoUrl, getMerchantInitials } from "@/lib/merchant-logo";
 import type { Transaction } from "@shared/schema";
 
@@ -58,6 +59,9 @@ export function TransactionDetailsModal({
   onClose,
 }: TransactionDetailsModalProps) {
   const [notes, setNotes] = useState("");
+  const [description, setDescription] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [categoryName, setCategoryName] = useState("");
   const [splitOpen, setSplitOpen] = useState(false);
   const [ruleOpen, setRuleOpen] = useState(false);
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -71,6 +75,9 @@ export function TransactionDetailsModal({
 
   useEffect(() => {
     setNotes(transaction?.notes || "");
+    setDescription(transaction?.description || "");
+    setCategoryId(transaction?.categoryId || "");
+    setCategoryName(transaction?.category || "");
   }, [transaction]);
 
   const updateMutation = useMutation({
@@ -178,7 +185,15 @@ export function TransactionDetailsModal({
             />
             <div>
               <DialogTitle className="text-lg font-semibold">
-                {transaction.description}
+
+                <InlineDescriptionEditor
+                  currentDescription={description}
+                  onDescriptionChange={(newDesc) => {
+                    setDescription(newDesc);
+                    updateMutation.mutate({ description: newDesc });
+                  }}
+                  className="w-full text-lg font-semibold"
+                />
               </DialogTitle>
               {accountInfo && (
                 <p className="text-xs text-muted-foreground">{accountInfo}</p>
@@ -216,11 +231,20 @@ export function TransactionDetailsModal({
             </span>
           </div>
 
-          {(transaction as any).category && (
-            <div className="flex justify-center">
-              <CategoryBadge categoryName={transaction.category} />
-            </div>
-          )}
+          <div className="flex justify-center">
+            <InlineCategorySelector
+              currentCategoryId={categoryId}
+              currentCategoryName={categoryName}
+              onCategoryChange={(id, name) => {
+                setCategoryId(id);
+                setCategoryName(name);
+                updateMutation.mutate({
+                  category: name,
+                  categoryId: id || null,
+                });
+              }}
+            />
+          </div>
 
           <Textarea
             placeholder="Add notes..."

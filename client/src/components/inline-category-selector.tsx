@@ -231,7 +231,7 @@ export function InlineCategorySelector({
             value={searchValue}
             onValueChange={setSearchValue}
           />
-          <CommandList className="max-h[300px] overflow-auto">
+          <CommandList>
             <CommandEmpty>No categories found.</CommandEmpty>
 
             {Object.entries(groupedCategories).map(

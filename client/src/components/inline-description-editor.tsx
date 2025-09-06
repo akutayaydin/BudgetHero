@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Check, X, Edit3 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Check, X, Edit3 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface InlineDescriptionEditorProps {
   currentDescription: string;
@@ -15,27 +15,33 @@ export function InlineDescriptionEditor({
   currentDescription,
   onDescriptionChange,
   className,
-  disabled = false
+  disabled = false,
 }: InlineDescriptionEditorProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(currentDescription || '');
+  const [editValue, setEditValue] = useState(currentDescription || "");
+
+  useEffect(() => {
+    if (!isEditing) {
+      setEditValue(currentDescription || "");
+    }
+  }, [currentDescription, isEditing]);
 
   const handleSave = () => {
-    if (editValue.trim() && editValue !== (currentDescription || '')) {
+    if (editValue.trim() && editValue !== (currentDescription || "")) {
       onDescriptionChange(editValue.trim());
     }
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditValue(currentDescription || '');
+    setEditValue(currentDescription || "");
     setIsEditing(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSave();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       handleCancel();
     }
   };
@@ -74,7 +80,7 @@ export function InlineDescriptionEditor({
   }
 
   return (
-    <div 
+    <div
       className={cn(
         "flex items-center gap-1 rounded px-1 py-0.5 transition-colors",
         !disabled &&
