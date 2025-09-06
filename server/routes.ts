@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupMultiAuth, isAuthenticated } from "./multiAuth";
-import { insertTransactionSchema, updateTransactionSchema, insertBudgetSchema, insertGoalSchema, transactionFiltersSchema, insertInstitutionSchema, insertAccountSchema, insertAssetSchema, insertLiabilitySchema, insertManualSubscriptionSchema, insertTransactionTagSchema, insertAutomationRuleSchema, insertTransactionSplitSchema, transactions, budgets, accounts, adminCategories, passwordResetTokens, forgotPasswordSchema, resetPasswordSchema, recurringMerchants, insertRecurringMerchantSchema, users } from "@shared/schema";
+import { insertTransactionSchema, updateTransactionSchema, insertBudgetSchema, insertBudgetPlanSchema, insertGoalSchema, transactionFiltersSchema, insertInstitutionSchema, insertAccountSchema, insertAssetSchema, insertLiabilitySchema, insertManualSubscriptionSchema, insertTransactionTagSchema, insertAutomationRuleSchema, insertTransactionSplitSchema, transactions, budgets, accounts, adminCategories, passwordResetTokens, forgotPasswordSchema, resetPasswordSchema, recurringMerchants, insertRecurringMerchantSchema, users } from "@shared/schema";
 import { sendEmail, generatePasswordResetEmail } from "./emailService";
 import { getTransactionsNeedingReview } from "./enhancedCategorization";
 import { enhancedRecurringDetection } from './enhancedRecurringDetection';
@@ -947,6 +947,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  
+
+  // Budget plan routes
+  app.get('/api/budget/plan', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) return res.status(401).json({ message: 'User ID not found' });
+      const month = req.query.month as string;
+      if (!month) return res.status(400).json({ message: 'month required' });
+      const plan = await storage.getBudgetPlan(userId, month);
+      if (!plan) return res.status(404).json({ message: 'Plan not found' });
+      res.json(plan);
+    } catch (error: any) {
+      if (error?.message?.includes('budget_plans') || error?.code === 'ECONNREFUSED') {
+        res.status(404).json({ message: 'Plan not found' });
+      } else {
+        res.status(500).json({ message: 'Failed to get budget plan' });
+      }
+    }
+  });
+
+  app.post('/api/budget/plan', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) return res.status(401).json({ message: 'User ID not found' });
+      const data = insertBudgetPlanSchema.parse(req.body);
+      const earnings = Number(data.expectedEarnings);
+      const bills = Number(data.expectedBills);
+      const rate = Number(data.savingsRate);
+      const savingsReserve = earnings * rate / 100;
+      const spendingBudget = earnings - bills - savingsReserve;
+      const created = await storage.createBudgetPlan({
+        ...data,
+        userId,
+        expectedEarnings: earnings,
+        expectedBills: bills,
+        savingsRate: rate,
+        savingsReserve,
+        spendingBudget,
+      });
+      res.status(201).json(created);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ message: 'Invalid budget plan data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Failed to create budget plan' });
+      }
+    }
+  });
+
+  app.patch('/api/budget/plan/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const data = insertBudgetPlanSchema.partial().parse(req.body);
+      let updates: any = { ...data };
+      if (data.expectedEarnings !== undefined || data.expectedBills !== undefined || data.savingsRate !== undefined) {
+        const earnings = Number(data.expectedEarnings ?? 0);
+        const bills = Number(data.expectedBills ?? 0);
+        const rate = Number(data.savingsRate ?? 0);
+        const savingsReserve = earnings * rate / 100;
+        const spendingBudget = earnings - bills - savingsReserve;
+        updates = {
+          ...updates,
+          expectedEarnings: data.expectedEarnings !== undefined ? earnings : undefined,
+          expectedBills: data.expectedBills !== undefined ? bills : undefined,
+          savingsRate: data.savingsRate !== undefined ? rate : undefined,
+          savingsReserve,
+          spendingBudget,
+        };
+      }
+      const updated = await storage.updateBudgetPlan(id, updates);
+      if (!updated) return res.status(404).json({ message: 'Plan not found' });
+      res.json(updated);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ message: 'Invalid budget plan data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Failed to update budget plan' });
+      }
+    }
+  });
+
+  app.get('/api/budget/income/estimate', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) return res.status(401).json({ message: 'User ID not found' });
+      const months = parseInt((req.query.months as string) || '3');
+      const data = await storage.getIncomeEstimate(userId, months);
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to estimate income' });
+    }
+  });
+
+  app.get('/api/budget/bills/estimate', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) return res.status(401).json({ message: 'User ID not found' });
+      const months = parseInt((req.query.months as string) || '3');
+      const data = await storage.getBillsEstimate(userId, months);
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to estimate bills' });
+    }
+  });
+
+  
   // Budget routes
   app.get("/api/budgets", isAuthenticated, async (req, res) => {
     try {

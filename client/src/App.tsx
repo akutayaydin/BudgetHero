@@ -14,7 +14,9 @@ import Home from "@/pages/home";
 import Upload from "@/pages/upload";
 import Dashboard from "@/pages/dashboard";
 import Transactions from "@/pages/transactions";
-import Budgets from "@/pages/budgets";
+import BudgetsIndex from "@/pages/budgets";
+import BudgetSetup from "@/pages/budgets-setup";
+import BudgetPlanPage from "@/pages/budget-plan";
 import Bills from "@/pages/bills-simple";
 import RecurringPage from "@/pages/recurring";
 import Goals from "@/pages/goals";
@@ -111,7 +113,9 @@ function Router() {
             <Route path="/spending" component={SpendingPage} />
             <Route path="/earnings" component={EarningsPage} />
             <Route path="/spending-categories" component={SpendingCategoriesPage} />
-            <Route path="/budgets" component={Budgets} />
+            <Route path="/budgets/setup" component={BudgetSetup} />
+            <Route path="/budgets" component={BudgetsIndex} />
+            <Route path="/budget-plan" component={BudgetPlanPage} />
             <Route path="/bills" component={Bills} />
             <Route path="/recurring" component={RecurringPage} />
 

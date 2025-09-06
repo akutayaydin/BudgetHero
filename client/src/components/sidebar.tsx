@@ -56,7 +56,7 @@ const navigation = [
     description: "All transactions & categorization",
   },
   {
-    name: "Budget Wizard",
+    name: "Budgets",
     href: "/budgets",
     icon: PieChart,
     description: "AI-generated personalized budgets",

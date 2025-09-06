@@ -171,6 +171,19 @@ export const budgets = pgTable("budgets", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const budgetPlans = pgTable("budget_plans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  month: varchar("month").notNull(), // YYYY-MM
+  expectedEarnings: decimal("expected_earnings", { precision: 10, scale: 2 }).notNull(),
+  expectedBills: decimal("expected_bills", { precision: 10, scale: 2 }).notNull(),
+  savingsRate: integer("savings_rate").notNull(),
+  savingsReserve: decimal("savings_reserve", { precision: 10, scale: 2 }).notNull(),
+  spendingBudget: decimal("spending_budget", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const goals = pgTable("goals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
@@ -530,6 +543,15 @@ export const insertBudgetSchema = createInsertSchema(budgets).omit({
   createdAt: true,
 });
 
+export const insertBudgetPlanSchema = z.object({
+  month: z.string(),
+  expectedEarnings: z.coerce.number(),
+  expectedBills: z.coerce.number(),
+  savingsRate: z.coerce.number(),
+  savingsReserve: z.coerce.number(),
+  spendingBudget: z.coerce.number(),
+});
+
 export const insertGoalSchema = createInsertSchema(goals).omit({
   id: true,
   createdAt: true,
@@ -672,6 +694,7 @@ export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Category = typeof categories.$inferSelect;
 export type InsertBudget = z.infer<typeof insertBudgetSchema>;
 export type Budget = typeof budgets.$inferSelect;
+export type BudgetPlan = typeof budgetPlans.$inferSelect;
 export type InsertGoal = z.infer<typeof insertGoalSchema>;
 export type Goal = typeof goals.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;

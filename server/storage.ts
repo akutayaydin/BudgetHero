@@ -1,10 +1,10 @@
 import { db } from "./db";
-import { transactions, budgets, goals, users, categories, institutions, accounts, subscriptionPlans, assets, liabilities, recurringTransactions, billNotifications, manualSubscriptions, categorizationRules, transactionTags, transactionTagAssignments, automationRules, transactionSplits } from "@shared/schema";
+import { transactions, budgets, budgetPlans, goals, users, categories, institutions, accounts, subscriptionPlans, assets, liabilities, recurringTransactions, billNotifications, manualSubscriptions, categorizationRules, transactionTags, transactionTagAssignments, automationRules, transactionSplits } from "@shared/schema";
 import { eq, and, gte, lte, like, or, ilike } from "drizzle-orm";
 import { sql } from "drizzle-orm";
-import type { 
-  User, InsertUser, UpsertUser, Transaction, InsertTransaction, Category, InsertCategory, 
-  Budget, InsertBudget, Goal, InsertGoal, TransactionFilters, Institution, InsertInstitution,
+import type {
+  User, InsertUser, UpsertUser, Transaction, InsertTransaction, Category, InsertCategory,
+  Budget, InsertBudget, BudgetPlan, InsertBudgetPlan, Goal, InsertGoal, TransactionFilters, Institution, InsertInstitution,
   Account, InsertAccount, Asset, InsertAsset, Liability, InsertLiability,
   RecurringTransaction, InsertRecurringTransaction, BillNotification, InsertBillNotification,
   ManualSubscription, InsertManualSubscription, CategorizationRule, InsertCategorizationRule,
@@ -120,6 +120,13 @@ export interface IStorage {
   updateBudget(id: string, budget: Partial<InsertBudget>): Promise<Budget | undefined>;
   deleteBudget(id: string): Promise<boolean>;
 
+  // Budget plan methods
+  getBudgetPlan(userId: string, month: string): Promise<BudgetPlan | undefined>;
+  createBudgetPlan(plan: InsertBudgetPlan & { userId: string }): Promise<BudgetPlan>;
+  updateBudgetPlan(id: string, plan: Partial<InsertBudgetPlan>): Promise<BudgetPlan | undefined>;
+  getIncomeEstimate(userId: string, months: number): Promise<{ average: number; months: { month: string; total: number }[] }>;
+  getBillsEstimate(userId: string, months: number): Promise<{ average: number; candidates: any[] }>;
+  
   // Goal methods
   getGoals(userId?: string): Promise<Goal[]>;
   getGoal(id: string): Promise<Goal | undefined>;
@@ -679,6 +686,86 @@ export class DatabaseStorage implements IStorage {
   async deleteBudget(id: string): Promise<boolean> {
     const result = await db.delete(budgets).where(eq(budgets.id, id));
     return (result.rowCount || 0) > 0;
+  }
+
+  async getBudgetPlan(userId: string, month: string): Promise<BudgetPlan | undefined> {
+    try {
+      const [plan] = await db
+        .select()
+        .from(budgetPlans)
+        .where(and(eq(budgetPlans.userId, userId), eq(budgetPlans.month, month)));
+      return plan || undefined;
+    } catch (error: any) {
+      // If the table hasn't been migrated yet or the database isn't reachable,
+      // treat it as "no plan" so the API can respond with a 404 instead of a 500.
+      if (error?.message?.includes('budget_plans') || error?.code === 'ECONNREFUSED') {
+        return undefined;
+      }
+      throw error;
+    }
+  }
+
+  async createBudgetPlan(plan: InsertBudgetPlan & { userId: string }): Promise<BudgetPlan> {
+    const [newPlan] = await db.insert(budgetPlans).values(plan).returning();
+    return newPlan;
+  }
+
+  async updateBudgetPlan(id: string, plan: Partial<InsertBudgetPlan>): Promise<BudgetPlan | undefined> {
+    const [updated] = await db.update(budgetPlans).set(plan).where(eq(budgetPlans.id, id)).returning();
+    return updated || undefined;
+  }
+
+  async getIncomeEstimate(userId: string, months: number): Promise<{ average: number; months: { month: string; total: number }[] }> {
+    const rows = await db
+      .select({
+        month: sql<string>`to_char(${transactions.date}, 'YYYY-MM')`,
+        total: sql<string>`sum(${transactions.amount})`,
+      })
+      .from(transactions)
+      .where(and(eq(transactions.userId, userId), eq(transactions.type, 'income')))
+      .groupBy(sql`to_char(${transactions.date}, 'YYYY-MM')`)
+      .limit(months);
+
+    const monthsData = rows.map(r => ({ month: r.month, total: Number(r.total) }));
+    const average = monthsData.length ? monthsData.reduce((s, r) => s + r.total, 0) / monthsData.length : 0;
+    return { average, months: monthsData };
+  }
+
+  async getBillsEstimate(userId: string, months: number): Promise<{ average: number; candidates: any[] }> {
+    const rows = await db
+      .select({
+        month: sql<string>`to_char(${transactions.date}, 'YYYY-MM')`,
+        total: sql<string>`sum(${transactions.amount})`,
+      })
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.userId, userId),
+          eq(transactions.category, 'Bills & Utilities'),
+          eq(transactions.type, 'expense')
+        )
+      )
+      .groupBy(sql`to_char(${transactions.date}, 'YYYY-MM')`)
+      .limit(months);
+
+    const monthsData = rows.map(r => ({ month: r.month, total: Number(r.total) }));
+    const average = monthsData.length ? monthsData.reduce((s, r) => s + r.total, 0) / monthsData.length : 0;
+    return { average, candidates: [] };
+  }
+
+
+  async upsertBudgetPlan(plan: InsertBudgetPlan): Promise<BudgetPlan> {
+    const existing = await this.getBudgetPlan(plan.userId, plan.month);
+    if (existing) {
+      const [updated] = await db
+        .update(budgetPlans)
+        .set(plan)
+        .where(eq(budgetPlans.id, existing.id))
+        .returning();
+      return updated;
+    }
+    const [inserted] = await db.insert(budgetPlans).values(plan).returning();
+    return inserted;
   }
 
   async getGoals(userId?: string): Promise<Goal[]> {
