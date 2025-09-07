@@ -70,7 +70,7 @@ function BudgetRow({ name, budgeted, actual, icon: Icon, isIncome }: RowProps) {
   }
 
   return (
-    <tr className="border-t hover:bg-muted/50 odd:bg-muted/30">
+      <tr className="border-b last:border-b-0 hover:bg-muted/50 odd:bg-muted/30">
       <td className="py-2">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-muted-foreground" />
@@ -139,6 +139,7 @@ export default function ManageBudget({ plan }: Props) {
       return res.json();
     },
   });
+  const basicsSet = new Set(["income", "bills & utilities"]);
   const availableCategories = Array.from(
     new Map(
       adminCats
@@ -148,6 +149,7 @@ export default function ManageBudget({ plan }: Props) {
   )
     .filter(
       name =>
+        !basicsSet.has(name.toLowerCase()) &&
         !budgets.some(
           b => (b.name || "").toLowerCase() === name.toLowerCase()
         )
@@ -199,7 +201,15 @@ export default function ManageBudget({ plan }: Props) {
       }
     });
 
-    const categories = budgets.map((b) => ({
+    const categoriesMap = new Map<string, Budget>();
+    budgets.forEach(b => {
+      const key = (b.name || "").toLowerCase();
+      if (!categoriesMap.has(key)) {
+        categoriesMap.set(key, b);
+      }
+    });
+    const categories = Array.from(categoriesMap.values()).map(b => ({
+      
       id: (b as any).id,
       name: (b as any).name as string,
       budgeted: Number((b as any).limit),
@@ -275,6 +285,14 @@ export default function ManageBudget({ plan }: Props) {
           <Card>
             <CardContent className="overflow-x-auto p-0">
               <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-xs text-muted-foreground border-b">
+                    <th className="py-2 text-left">Category</th>
+                    <th className="py-2 text-right">Budgeted</th>
+                    <th className="py-2 text-right">Actual</th>
+                    <th className="py-2 text-right">Remaining</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {basics.map((b) => (
                     <BudgetRow key={b.name} {...b} />
@@ -350,6 +368,14 @@ export default function ManageBudget({ plan }: Props) {
                 </div>
               )}
               <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-xs text-muted-foreground border-b">
+                    <th className="py-2 text-left">Category</th>
+                    <th className="py-2 text-right">Budgeted</th>
+                    <th className="py-2 text-right">Actual</th>
+                    <th className="py-2 text-right">Remaining</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {categoryRows.map((c) => (
                     <BudgetRow
