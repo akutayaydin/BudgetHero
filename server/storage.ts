@@ -1,4 +1,4 @@
-import { db } from "./db";
+import { db, migrateDb } from "./db";
 import { transactions, budgets, budgetPlans, goals, users, categories, institutions, accounts, subscriptionPlans, assets, liabilities, recurringTransactions, billNotifications, manualSubscriptions, categorizationRules, transactionTags, transactionTagAssignments, automationRules, transactionSplits } from "@shared/schema";
 import { eq, and, gte, lte, like, or, ilike } from "drizzle-orm";
 import { sql } from "drizzle-orm";
@@ -706,13 +706,31 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createBudgetPlan(plan: InsertBudgetPlan & { userId: string }): Promise<BudgetPlan> {
-    const [newPlan] = await db.insert(budgetPlans).values(plan).returning();
-    return newPlan;
+    try {
+      const [newPlan] = await db.insert(budgetPlans).values(plan).returning();
+      return newPlan;
+    } catch (error: any) {
+      if (error?.message?.includes('budget_plans')) {
+        await migrateDb();
+        const [newPlan] = await db.insert(budgetPlans).values(plan).returning();
+        return newPlan;
+      }
+      throw error;
+    }
   }
 
   async updateBudgetPlan(id: string, plan: Partial<InsertBudgetPlan>): Promise<BudgetPlan | undefined> {
-    const [updated] = await db.update(budgetPlans).set(plan).where(eq(budgetPlans.id, id)).returning();
-    return updated || undefined;
+    try {
+      const [updated] = await db.update(budgetPlans).set(plan).where(eq(budgetPlans.id, id)).returning();
+      return updated || undefined;
+    } catch (error: any) {
+      if (error?.message?.includes('budget_plans')) {
+        await migrateDb();
+        const [updated] = await db.update(budgetPlans).set(plan).where(eq(budgetPlans.id, id)).returning();
+        return updated || undefined;
+      }
+      throw error;
+    }
   }
 
   async getIncomeEstimate(userId: string, months: number): Promise<{ average: number; months: { month: string; total: number }[] }> {
@@ -756,16 +774,34 @@ export class DatabaseStorage implements IStorage {
 
   async upsertBudgetPlan(plan: InsertBudgetPlan & { userId: string }): Promise<BudgetPlan> {
     const existing = await this.getBudgetPlan(plan.userId, plan.month);
-    if (existing) {
-      const [updated] = await db
-        .update(budgetPlans)
-        .set(plan)
-        .where(eq(budgetPlans.id, existing.id))
-        .returning();
-      return updated;
+    try {
+      if (existing) {
+        const [updated] = await db
+          .update(budgetPlans)
+          .set(plan)
+          .where(eq(budgetPlans.id, existing.id))
+          .returning();
+        return updated;
+      }
+      const [inserted] = await db.insert(budgetPlans).values(plan).returning();
+      return inserted;
+    } catch (error: any) {
+      if (error?.message?.includes('budget_plans')) {
+        await migrateDb();
+        if (existing) {
+          const [updated] = await db
+            .update(budgetPlans)
+            .set(plan)
+            .where(eq(budgetPlans.id, existing.id))
+            .returning();
+          return updated;
+        }
+        const [inserted] = await db.insert(budgetPlans).values(plan).returning();
+        return inserted;
+      }
+      throw error;
     }
-    const [inserted] = await db.insert(budgetPlans).values(plan).returning();
-    return inserted;
+
   }
 
   async getGoals(userId?: string): Promise<Goal[]> {

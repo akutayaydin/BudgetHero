@@ -553,6 +553,8 @@ export const insertBudgetPlanSchema = z.object({
   spendingBudget: z.coerce.number().optional(),
 });
 
+export type InsertBudgetPlan = z.infer<typeof insertBudgetPlanSchema>;
+
 export const insertGoalSchema = createInsertSchema(goals).omit({
   id: true,
   createdAt: true,
