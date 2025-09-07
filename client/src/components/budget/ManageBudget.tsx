@@ -520,8 +520,10 @@ export default function ManageBudget({ plan }: Props) {
     };
   }, [transactions, budgets, expectedEarnings, expectedBills, spendingBudget, month]);
 
-  const percentLeft =
-    spendingBudget > 0 ? (remaining / spendingBudget) * 100 : 0;
+  const percentLeft = useMemo(
+    () => (spendingBudget > 0 ? (remaining / spendingBudget) * 100 : 0),
+    [spendingBudget, remaining],
+  );
 
   const ringColor =
     remaining < 0 ? "text-red-500" : percentLeft <= 10 ? "text-orange-500" : "text-green-600";
