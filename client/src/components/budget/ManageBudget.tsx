@@ -150,16 +150,20 @@ function BudgetRow({
             {editable ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="group text-right"
+                className="group flex flex-col items-end text-right"
                 title="Click to edit"
               >
-                <div>{fmt.format(budgeted)}</div>
+                <span
+                  className="px-1 pb-[1px] group-hover:border-b group-hover:border-dashed group-hover:border-gray-300 dark:group-hover:border-gray-600"
+                >
+                  {fmt.format(budgeted)}
+                </span>
 
               </button>
             ) : (
             <div>{fmt.format(budgeted)}</div>
             )}
-          </div>
+          <div className="text-right">
         )}
       </td>
       <td className="py-2 text-right align-top">
