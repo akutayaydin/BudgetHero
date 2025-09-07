@@ -214,7 +214,7 @@ function BudgetRow({
 export default function ManageBudget({ plan }: Props) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { month, expectedEarnings, expectedBills, spendingBudget } = plan;
+  const { month, expectedEarnings, expectedBills } = plan;
 
   const { data: transactions = [] } = useQuery<Transaction[]>({
     queryKey: ["/api/transactions", month],
@@ -271,13 +271,33 @@ export default function ManageBudget({ plan }: Props) {
   async function handleAddCategories() {
     try {
       const created: Budget[] = [];
+      const [y, m] = month.split("-").map(Number);
+      const start = new Date(y, m - 4, 1).toISOString().slice(0, 10);
+      const end = new Date(y, m - 1, 0).toISOString().slice(0, 10);
       for (const name of Array.from(selectedCats)) {
+        let avg = 0;
+        try {
+          const txRes = await fetch(
+            `/api/transactions?startDate=${start}&endDate=${end}&category=${encodeURIComponent(name)}`,
+            { credentials: "include" },
+          );
+          if (txRes.ok) {
+            const txs = (await txRes.json()) as Transaction[];
+            const total = txs.reduce(
+              (s, t) => s + Math.abs(Number(t.amount) || 0),
+              0,
+            );
+            avg = total / 3;
+          }
+        } catch (e) {
+          // ignore errors and default average to 0
+        }
         const res = await fetch("/api/budgets", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           // Backend expects decimal values as strings (NUMERIC columns).
-          body: JSON.stringify({ name, limit: "0", spent: "0" }),
+          body: JSON.stringify({ name, limit: String(avg.toFixed(2)), spent: "0" }),
         });
         if (res.ok) {
           const budget = (await res.json()) as Budget;
@@ -389,7 +409,16 @@ export default function ManageBudget({ plan }: Props) {
     }
   }
 
-  const { basics, categoryRows, currentSpend, remaining, validationError } = useMemo(() => {
+
+    const {
+      basics,
+      categoryRows,
+      currentSpend,
+      remaining,
+      validationError,
+      spendingBudget,
+      leftForSavings,
+    } = useMemo(() => {
     let income = 0;
     let billsActual = 0;
     let totalExpenses = 0;
@@ -434,10 +463,25 @@ export default function ManageBudget({ plan }: Props) {
     const categoriesSpent = categories.reduce((s, c) => s + c.actual, 0);
     const spendingExpenses = totalExpenses - billsActual;
 
+      const incomeBudgeted = Number(expectedEarnings);
+      const billsBudgeted = Number(expectedBills);
+      const diff = incomeBudgeted - billsBudgeted;
+      const targetSavings = incomeBudgeted * 0.15;
+      let savings = diff >= targetSavings ? targetSavings : diff;
+      let everythingElseBudgeted = diff - savings;
+
+      if (allocated > everythingElseBudgeted) {
+        const overspend = allocated - everythingElseBudgeted;
+        savings -= overspend;
+        everythingElseBudgeted = 0;
+      } else {
+        everythingElseBudgeted -= allocated;
+      }
+
     const everythingElse = {
       id: "everything-else",
       name: "Everything Else",
-      budgeted: Math.max(Number(spendingBudget) - allocated, 0),
+      budgeted: everythingElseBudgeted,
       actual: Math.max(spendingExpenses - categoriesSpent, 0),
       icon: getIcon("everything else"),
     };
@@ -446,7 +490,7 @@ export default function ManageBudget({ plan }: Props) {
       {
         id: "income",
         name: "Income",
-        budgeted: Number(expectedEarnings),
+        budgeted: incomeBudgeted,
         actual: income,
         icon: getIcon("income"),
         isIncome: true,
@@ -454,32 +498,33 @@ export default function ManageBudget({ plan }: Props) {
       {
         id: "bills",
         name: "Bills & Utilities",
-        budgeted: Number(expectedBills),
+        budgeted: billsBudgeted,
         actual: billsActual,
         icon: getIcon("bills & utilities"),
       },
     ];
 
+    const totalBudgeted = allocated + everythingElseBudgeted;
+
     const currentSpendVal = categoriesSpent + everythingElse.actual;
-    const remainingVal = Number(spendingBudget) - currentSpendVal;
+      const remainingVal = totalBudgeted - currentSpendVal;
 
     return {
       basics: basicsRows,
       categoryRows: [...categories, everythingElse],
       currentSpend: currentSpendVal,
       remaining: remainingVal,
-      validationError: allocated > Number(spendingBudget),
+      validationError: savings < 0,
+      spendingBudget: totalBudgeted,
+      leftForSavings: savings,
     };
   }, [transactions, budgets, expectedEarnings, expectedBills, spendingBudget, month]);
 
   const percentLeft =
-    Number(spendingBudget) > 0 ? (remaining / Number(spendingBudget)) * 100 : 0;
+    spendingBudget > 0 ? (remaining / spendingBudget) * 100 : 0;
 
   const ringColor =
     remaining < 0 ? "text-red-500" : percentLeft <= 10 ? "text-orange-500" : "text-green-600";
-
-  const leftForSavings =
-    Number(expectedEarnings) - Number(expectedBills) - Number(spendingBudget);
 
   const [yy, mm] = month.split("-").map(Number);
   const endOfMonth = new Date(yy, mm, 0);
@@ -724,7 +769,7 @@ export default function ManageBudget({ plan }: Props) {
                           </div>
                         </td>
                         <td className="p-4 align-middle text-right font-medium">
-                          {fmt.format(Number(spendingBudget))}
+                          {fmt.format(spendingBudget)}
                         </td>
                         <td className="p-4 align-middle text-right font-medium">
                           {fmt.format(currentSpend)}
@@ -740,7 +785,7 @@ export default function ManageBudget({ plan }: Props) {
                             <span className="font-medium">Left for Savings</span>
                           </div>
                         </td>
-                        <td className="p-4 align-middle text-right font-medium">
+                        <td className={`p-4 align-middle text-right font-medium ${leftForSavings < 0 ? 'text-red-600' : ''}`}>
                           {fmt.format(leftForSavings)}
                         </td>
                         <td className="p-4 align-middle text-right"></td>
@@ -814,7 +859,7 @@ export default function ManageBudget({ plan }: Props) {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Spending Budget</span>
-                  <span className="text-sm font-medium">{fmt.format(Number(spendingBudget))}</span>
+                  <span className="text-sm font-medium">{fmt.format(spendingBudget)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Current Spend</span>
