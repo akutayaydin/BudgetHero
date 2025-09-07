@@ -229,5 +229,5 @@ export const getCategoryColor = (categoryName: string): string => {
   }
   return "text-muted-foreground";
 };
-
+export const getIcon = getCategoryIcon;
 export default getCategoryIcon;
