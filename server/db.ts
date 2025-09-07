@@ -1,5 +1,6 @@
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
+import { migrate } from 'drizzle-orm/neon-serverless/migrator';
 import ws from "ws";
 import * as schema from "@shared/schema";
 
@@ -24,3 +25,7 @@ console.log(`Database configuration: Using ${isProduction ? 'PRODUCTION' : 'DEVE
 
 export const pool = new Pool({ connectionString: databaseUrl });
 export const db = drizzle({ client: pool, schema });
+
+export async function migrateDb() {
+  await migrate(db, { migrationsFolder: 'migrations' });
+}

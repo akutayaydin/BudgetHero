@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { migrateDb } from "./db";
 
 // Note: Authentication uses Replit's OpenID Connect, not Google OAuth
 // Required environment variables are checked in replitAuth.ts
@@ -40,6 +41,13 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Run database migrations on startup
+  try {
+    await migrateDb();
+  } catch (error) {
+    console.error("Failed to run migrations:", error);
+  }
+
   // Seed enhanced admin categories on startup
   try {
     const { seedEnhancedCategories } = await import("./seedEnhancedCategories");
