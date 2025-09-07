@@ -156,12 +156,12 @@ function BudgetRow({
           >
             {fmt.format(budgeted)}
           </span>
-          <div className="text-xs text-muted-foreground">Budgeted</div>
+          
         </button>
         ) : (
           <div className="text-right">
             <div>{fmt.format(budgeted)}</div>
-            <div className="text-xs text-muted-foreground">Budgeted</div>
+            
               </div>
             )}
       </td>
