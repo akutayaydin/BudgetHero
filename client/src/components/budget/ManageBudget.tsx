@@ -42,7 +42,7 @@ function Ring({ percent }: { percent: number }) {
         d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831"
         fill="none"
         stroke="currentColor"
-        className="text-muted-foreground/20"
+        className="text-gray-300 dark:text-gray-700"
         strokeWidth="3"
       />
       <path
