@@ -720,8 +720,8 @@ export default function ManageBudget({ plan }: Props) {
           </section>
         </div>
 
-        <div className="md:col-span-1">
-          <Card className="shadow-sm sticky top-6">
+         <div className="md:col-span-1 md:sticky md:top-6">
+           <Card className="shadow-sm w-full md:max-w-sm">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg">Budget Summary</CardTitle>
               <p className="text-sm text-muted-foreground">Your spending overview for this month</p>
@@ -731,8 +731,8 @@ export default function ManageBudget({ plan }: Props) {
                 className="flex flex-col items-center justify-center"
                 aria-label={`Left to spend: ${fmt.format(remaining)}`}
               >
-                <div className="relative w-28 h-28">
-                  <svg viewBox="0 0 36 36" className="w-28 h-28" aria-hidden="true">
+                <div className="relative w-24 h-24">
+                  <svg viewBox="0 0 36 36" className="w-24 h-24" aria-hidden="true">
                     <path
                       d="M18 2.0845a 15.9155 15.9155 0 1 1 0 31.831a 15.9155 15.9155 0 1 1 0 -31.831"
                       fill="none"
@@ -752,7 +752,7 @@ export default function ManageBudget({ plan }: Props) {
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-card-foreground">
+                    <span className="text-sm font-bold text-card-foreground">
                       {fmt.format(remaining)}
                     </span>
                   </div>
