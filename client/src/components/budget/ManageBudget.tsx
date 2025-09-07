@@ -1,5 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import type { BudgetPlan, Transaction, Budget, AdminCategory } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -250,8 +252,8 @@ export default function ManageBudget({ plan }: Props) {
         const budget = (await res.json()) as Budget;
         created.push(budget);
       }
-      }
-      if (created.length) {
+    }
+    if (created.length) {
       queryClient.setQueryData<Budget[]>(["/api/budgets"], old => [
         ...(old || []),
         ...created,
