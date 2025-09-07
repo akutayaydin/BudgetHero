@@ -774,34 +774,18 @@ export class DatabaseStorage implements IStorage {
 
   async upsertBudgetPlan(plan: InsertBudgetPlan & { userId: string }): Promise<BudgetPlan> {
     const existing = await this.getBudgetPlan(plan.userId, plan.month);
-    try {
-      if (existing) {
-        const [updated] = await db
-          .update(budgetPlans)
-          .set(plan)
-          .where(eq(budgetPlans.id, existing.id))
-          .returning();
-        return updated;
-      }
-      const [inserted] = await db.insert(budgetPlans).values(plan).returning();
-      return inserted;
-    } catch (error: any) {
-      if (error?.message?.includes('budget_plans')) {
-        await migrateDb();
-        if (existing) {
-          const [updated] = await db
-            .update(budgetPlans)
-            .set(plan)
-            .where(eq(budgetPlans.id, existing.id))
-            .returning();
-          return updated;
-        }
-        const [inserted] = await db.insert(budgetPlans).values(plan).returning();
-        return inserted;
-      }
-      throw error;
+    
+    if (existing) {
+      const [updated] = await db
+        .update(budgetPlans)
+        .set(plan)
+        .where(eq(budgetPlans.id, existing.id))
+        .returning();
+      return updated;
     }
-
+    
+    const [inserted] = await db.insert(budgetPlans).values(plan).returning();
+    return inserted;
   }
 
   async getGoals(userId?: string): Promise<Goal[]> {
