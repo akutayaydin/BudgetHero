@@ -2,7 +2,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import type { BudgetPlan, Transaction, Budget, AdminCategory } from "@shared/schema";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,11 +14,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getIcon } from "@/lib/category-icons";
-import { Check, X, Trash2, Plus, Wallet, PiggyBank, type LucideIcon } from "lucide-react";
+import { Check, X, Trash2, Plus, Wallet, PiggyBank, Info, type LucideIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Props {
@@ -313,6 +321,17 @@ export default function ManageBudget({ plan }: Props) {
         "This is a catch-all bucket. Any money not explicitly assigned to a category budget will fall here, so you always account for 100% of spending.",
     },
   ] as const;
+
+  const [faqOpenItem, setFaqOpenItem] = useState<string | undefined>(() =>
+    typeof window !== "undefined" ? sessionStorage.getItem("bh-faq-open") ?? undefined : undefined,
+  );
+
+  useEffect(() => {
+    if (faqOpenItem) sessionStorage.setItem("bh-faq-open", faqOpenItem);
+    else sessionStorage.removeItem("bh-faq-open");
+  }, [faqOpenItem]);
+
+  const [showDetails, setShowDetails] = useState(false);
 
   async function handleAddCategories() {
     try {
@@ -632,8 +651,60 @@ export default function ManageBudget({ plan }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="grid md:grid-cols-3 gap-6 items-start">
-        <div className="md:col-span-2 space-y-6">
+      <div className="flex items-center justify-between md:hidden">
+        <h1 className="text-xl font-semibold">Budgets</h1>
+        <Drawer>
+          <DrawerTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full border"
+              aria-label="Open budget FAQ"
+            >
+              <Info className="h-4 w-4" />
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent
+            className="h-full p-4"
+            aria-labelledby="faq-title-mobile"
+          >
+            <div className="flex justify-end">
+              <DrawerClose asChild>
+                <Button variant="ghost" size="icon" aria-label="Close FAQ">
+                  <X className="h-4 w-4" />
+                </Button>
+              </DrawerClose>
+            </div>
+            <DrawerHeader className="text-left">
+              <DrawerTitle id="faq-title-mobile">BudgetHero FAQ</DrawerTitle>
+            </DrawerHeader>
+            <Accordion
+              type="single"
+              collapsible
+              value={faqOpenItem}
+              onValueChange={setFaqOpenItem}
+              className="w-full text-sm"
+            >
+              {faqItems.map((item) => (
+                <AccordionItem key={item.value} value={item.value}>
+                  <AccordionTrigger className="text-left">{item.title}</AccordionTrigger>
+                  <AccordionContent className="space-y-2">
+                    <p>
+                      <strong>Q:</strong> {item.question}
+                    </p>
+                    <p>
+                      <strong>A:</strong> {item.answer}
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </DrawerContent>
+        </Drawer>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-4 items-start">
+        <div className="space-y-6">
           <section>
             <div className="mb-4">
               <h2 className="text-lg font-semibold text-card-foreground">Budget Basics</h2>
@@ -641,7 +712,7 @@ export default function ManageBudget({ plan }: Props) {
             </div>
             <Card className="shadow-sm">
               <CardContent className="p-0">
-                <div className="overflow-x-auto">
+
                   <table className="w-full caption-bottom text-sm">
                     <thead className="[&_tr]:border-b">
                       <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
@@ -671,7 +742,7 @@ export default function ManageBudget({ plan }: Props) {
 
                     </tbody>
                   </table>
-                </div>
+
               </CardContent>
             </Card>
           </section>
@@ -777,7 +848,7 @@ export default function ManageBudget({ plan }: Props) {
                     </div>
                   </div>
                 )}
-                <div className="overflow-x-auto">
+
                   <table className="w-full caption-bottom text-sm">
                     <thead className="[&_tr]:border-b">
                       <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
@@ -841,54 +912,103 @@ export default function ManageBudget({ plan }: Props) {
                       </tr>
                     </tbody>
                   </table>
-                </div>
+
                 </CardContent>
                     </Card>
                   </section>
-                  <section>
-                    <div className="mb-4">
-                      <h2 className="text-lg font-semibold text-card-foreground">FAQ</h2>
-                      <p className="text-sm text-muted-foreground">Common budgeting questions</p>
-                    </div>
-                    <Card className="shadow-sm">
-                      <CardContent className="p-0">
-                        <Accordion type="single" collapsible className="w-full text-sm">
-                          {faqItems.map((item) => (
-                            <AccordionItem key={item.value} value={item.value}>
-                              <AccordionTrigger className="px-4 text-left">
-                                {item.title}
-                              </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-4 space-y-2">
-                                <p>
-                                  <strong>Q:</strong> {item.question}
-                                </p>
-                                <p>
-                                  <strong>A:</strong> {item.answer}
-                                </p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
-                      </CardContent>
-                    </Card>
-                  </section>
+
                 </div>
         
 
         
-          <div className="md:col-span-1 md:sticky md:top-6">
-          {/* Budget Summary heading OUTSIDE the card */}
-          <h2 id="budget-summary-title" className="text-lg font-semibold text-card-foreground">
-             Budget Summary
-           </h2>
+            <div className="md:col-start-2 md:row-span-1 md:sticky md:top-6">
+            <div className="flex items-center justify-between">
+              <h2 id="budget-summary-title" className="text-lg font-semibold text-card-foreground">
+                 Budget Summary
+               </h2>
+               <Dialog>
+                 <DialogTrigger asChild>
+                   <Button
+                     variant="ghost"
+                     size="icon"
+                     className="hidden md:flex rounded-full border"
+                     aria-label="Open budget FAQ"
+                   >
+                     <Info className="h-4 w-4" />
+                   </Button>
+                 </DialogTrigger>
+                 <DialogContent
+                   className="sm:max-w-[720px]"
+                   aria-labelledby="faq-title-desktop"
+                 >
+                   <DialogHeader>
+                     <DialogTitle id="faq-title-desktop">BudgetHero FAQ</DialogTitle>
+                   </DialogHeader>
+                   <Accordion
+                     type="single"
+                     collapsible
+                     value={faqOpenItem}
+                     onValueChange={setFaqOpenItem}
+                     className="w-full text-sm"
+                   >
+                     {faqItems.map((item) => (
+                       <AccordionItem key={item.value} value={item.value}>
+                         <AccordionTrigger className="text-left">{item.title}</AccordionTrigger>
+                         <AccordionContent className="space-y-2">
+                           <p>
+                             <strong>Q:</strong> {item.question}
+                           </p>
+                           <p>
+                             <strong>A:</strong> {item.answer}
+                           </p>
+                         </AccordionContent>
+                       </AccordionItem>
+                     ))}
+                   </Accordion>
+                 </DialogContent>
+               </Dialog>
+            </div>
            <p className="text-sm text-muted-foreground mb-3">
              Your spending overview for this month
            </p>
-           <Card className="shadow-sm w-full md:max-w-sm">
-            
-             <CardContent className="space-y-6 pt-4">
+               <Card className="shadow-sm w-full">
+                 <CardContent className="p-4 md:p-6 space-y-4 md:space-y-6">
+                  <div className="md:hidden space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Left to Spend</span>
+                      <span>{fmt.format(remaining)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Spending Budget</span>
+                      <span>{fmt.format(spendingBudget)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Current Spend</span>
+                      <span>{fmt.format(currentSpend)}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-1">
+                      <span>Remaining</span>
+                      <span className={ringColor}>{fmt.format(remaining)}</span>
+                    </div>
+                    {daysRemaining > 0 && showDetails && (
+                      <p className="text-center text-xs text-muted-foreground mt-2">
+                        {fmt.format(dailyAllowance)}/day • {daysRemaining} days left
+                      </p>
+                    )}
+                    {daysRemaining > 0 && (
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="h-auto p-0 mt-2"
+                        onClick={() => setShowDetails(!showDetails)}
+                      >
+                        {showDetails ? "Hide details" : "Show details"}
+                      </Button>
+                    )}
+                  </div>
+
               <div
-                className="flex flex-col items-center justify-center"
+                className="hidden md:flex flex-col items-center justify-center"
                 aria-label={`Left to spend: ${fmt.format(remaining)}`}
               >
                 <div className="relative w-48 h-48">
@@ -911,9 +1031,9 @@ export default function ManageBudget({ plan }: Props) {
                       style={{ transition: "stroke-dasharray 0.3s ease" }}
                     />
                   </svg>
-                  <div className="absolute inset-3 sm:inset-4 lg:inset-5 flex flex-col items-center justify-center text-center gap-1">
+                  <div className="absolute inset-4 lg:inset-5 flex flex-col items-center justify-center text-center gap-1">
                     <p className="text-sm font-small text-card-foreground">Left to Spend</p>
-                    <span className="text-2xl md:text-2xl font-extrabold tracking-tight text-card-foreground">
+                    <span className="text-2xl font-extrabold tracking-tight text-card-foreground">
                       
                       {fmt.format(remaining)}
                     </span>
@@ -929,9 +1049,9 @@ export default function ManageBudget({ plan }: Props) {
                 </div>
               </div>
 
-              <Separator />
+                   <Separator className="hidden md:block" />
 
-              <div className="space-y-3">
+                   <div className="hidden md:block space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Spending Budget</span>
                   <span className="text-sm font-medium">{fmt.format(spendingBudget)}</span>
