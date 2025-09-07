@@ -536,7 +536,7 @@ export default function ManageBudget({ plan }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-3 gap-6 items-start">
         <div className="md:col-span-2 space-y-6">
           <section>
             <div className="mb-4">
@@ -719,20 +719,26 @@ export default function ManageBudget({ plan }: Props) {
             </Card>
           </section>
         </div>
+        
 
-         <div className="md:col-span-1 md:sticky md:top-6">
+        
+        <div className="md:col-span-1 md:sticky md:top-6">
+          {/* Budget Summary heading OUTSIDE the card */}
+          <h2 id="budget-summary-title" className="text-lg font-semibold text-card-foreground">
+             Budget Summary
+           </h2>
+           <p className="text-sm text-muted-foreground mb-3">
+             Your spending overview for this month
+           </p>
            <Card className="shadow-sm w-full md:max-w-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">Budget Summary</CardTitle>
-              <p className="text-sm text-muted-foreground">Your spending overview for this month</p>
-            </CardHeader>
-            <CardContent className="space-y-6">
+            
+             <CardContent className="space-y-6 pt-4">
               <div
                 className="flex flex-col items-center justify-center"
                 aria-label={`Left to spend: ${fmt.format(remaining)}`}
               >
-                <div className="relative w-24 h-24">
-                  <svg viewBox="0 0 36 36" className="w-24 h-24" aria-hidden="true">
+                <div className="relative w-48 h-48">
+                  <svg viewBox="0 0 36 36" className="w-48 h-48" aria-hidden="true">
                     <path
                       d="M18 2.0845a 15.9155 15.9155 0 1 1 0 31.831a 15.9155 15.9155 0 1 1 0 -31.831"
                       fill="none"
@@ -751,8 +757,10 @@ export default function ManageBudget({ plan }: Props) {
                       style={{ transition: "stroke-dasharray 0.3s ease" }}
                     />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-sm font-bold text-card-foreground">
+                  <div className="absolute inset-3 sm:inset-4 lg:inset-5 flex flex-col items-center justify-center text-center gap-1">
+                    <p className="text-sm font-small text-card-foreground">Left to Spend</p>
+                    <span className="text-2xl md:text-2xl font-extrabold tracking-tight text-card-foreground">
+                      
                       {fmt.format(remaining)}
                     </span>
                   </div>
