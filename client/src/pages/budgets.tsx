@@ -29,7 +29,7 @@ export default function BudgetsIndex() {
   if (error) return <div className="p-4 text-red-500">{String(error)}</div>;
 
         return (
-          <div className="p-4 space-y-4">
+          <div className="p-4 space-y-4 pb-40 md:pb-4">
             <div className="flex items-center justify-center gap-2">
               <Button variant="outline" onClick={() => changeMonth(-1)}>&larr;</Button>
               <span className="font-medium">{formatMonth(month)}</span>
