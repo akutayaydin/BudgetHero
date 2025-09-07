@@ -281,7 +281,14 @@ export default function ManageBudget({ plan }: Props) {
     let totalExpenses = 0;
     const actualByCat: Record<string, number> = {};
 
-    transactions.forEach((t) => {
+    const [y, m] = month.split("-").map(Number);
+    const rangeStart = new Date(y, m - 1, 1);
+    const rangeEnd = new Date(y, m, 0, 23, 59, 59, 999);
+
+    transactions.forEach(t => {
+      const txDate = new Date(t.date);
+      if (txDate < rangeStart || txDate > rangeEnd) return;
+
       const amt = Number(t.amount) || 0;
       if ((t as any).type === "income") {
         income += amt;
@@ -300,14 +307,15 @@ export default function ManageBudget({ plan }: Props) {
         categoriesMap.set(key, b);
       }
     });
-    const categories = Array.from(categoriesMap.values()).map(b => ({
-      
-      id: (b as any).id,
-      name: (b as any).name as string,
-      budgeted: Number((b as any).limit),
-      actual: actualByCat[((b as any).name || "").toLowerCase()] || 0,
-      icon: getIcon((b as any).name || ""),
-    }));
+    const categories = Array.from(categoriesMap.values())
+      .filter(b => !basicsSet.has((b.name || "").toLowerCase()))
+      .map(b => ({
+        id: (b as any).id,
+        name: (b as any).name as string,
+        budgeted: Number((b as any).limit),
+        actual: actualByCat[((b as any).name || "").toLowerCase()] || 0,
+        icon: getIcon((b as any).name || ""),
+      }));
 
     const allocated = categories.reduce((s, c) => s + c.budgeted, 0);
     const categoriesSpent = categories.reduce((s, c) => s + c.actual, 0);
@@ -347,7 +355,7 @@ export default function ManageBudget({ plan }: Props) {
       remaining: remainingVal,
       validationError: allocated > Number(spendingBudget),
     };
-  }, [transactions, budgets, expectedEarnings, expectedBills, spendingBudget]);
+  }, [transactions, budgets, expectedEarnings, expectedBills, spendingBudget, month]);
 
   const percentLeft =
     Number(spendingBudget) > 0 ? (remaining / Number(spendingBudget)) * 100 : 0;
