@@ -155,13 +155,24 @@ export default function ManageBudget({ plan }: Props) {
     .sort();
 
   async function handleAddCategories() {
+    const created: Budget[] = [];
     for (const name of selectedCats) {
-      await fetch("/api/budgets", {
+      const res = await fetch("/api/budgets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ name, limit: 0, spent: 0 }),
       });
+      if (res.ok) {
+        const budget = (await res.json()) as Budget;
+        created.push(budget);
+      }
+      }
+      if (created.length) {
+      queryClient.setQueryData<Budget[]>(["/api/budgets"], old => [
+        ...(old || []),
+        ...created,
+      ]);
     }
     setSelectedCats(new Set());
     setOpenAdd(false);
