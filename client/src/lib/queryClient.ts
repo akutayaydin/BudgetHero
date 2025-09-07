@@ -1,9 +1,14 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-async function throwIfResNotOk(res: Response) {
+async function throwIfResNotOk(res: Response, info?: { method: string; url: string }) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    console.error(`❌ API request failed`, {
+      method: info?.method,
+      url: info?.url,
+      status: res.status,
+      body: text,
+    });
   }
 }
 
@@ -12,15 +17,21 @@ export async function apiRequest(
   method: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+  try {
+    console.log(`📡 ${method} ${url}`, data ?? "");
+    const res = await fetch(url, {
+      method,
+      headers: data ? { "Content-Type": "application/json" } : {},
+      body: data ? JSON.stringify(data) : undefined,
+      credentials: "include",
+    });
 
-  await throwIfResNotOk(res);
-  return res;
+    await throwIfResNotOk(res, { method, url });
+    return res;
+    } catch (error) {
+    console.error(`🚨 apiRequest error`, { method, url, error });
+    throw error;
+    }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
@@ -37,7 +48,7 @@ export const getQueryFn: <T>(options: {
       return null;
     }
 
-    await throwIfResNotOk(res);
+    await throwIfResNotOk(res, { method: "GET", url: queryKey.join("/") as string });
     return await res.json();
   };
 
