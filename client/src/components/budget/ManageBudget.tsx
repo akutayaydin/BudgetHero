@@ -28,7 +28,12 @@ const fmt = new Intl.NumberFormat("en-US", {
 function Ring({ percent }: { percent: number }) {
   const dash = Math.max(0, Math.min(percent, 100));
   return (
-    <svg viewBox="0 0 36 36" className="w-6 h-6">
+    <svg
+      viewBox="0 0 36 36"
+      className="w-6 h-6"
+      aria-hidden="true"
+      focusable="false"
+    >
       <path
         d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831"
         fill="none"
@@ -79,7 +84,7 @@ function BudgetRow({ name, budgeted, actual, icon: Icon, isIncome }: RowProps) {
   }
 
   return (
-    <tr className="border-t">
+    <tr className="border-t hover:bg-muted/50 odd:bg-muted/30">
       <td className="py-2">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-muted-foreground" />
@@ -272,11 +277,11 @@ export default function ManageBudget({ plan }: Props) {
         </section>
       </div>
 
-      <Card className="md:col-span-1 md:sticky md:top-4 fixed bottom-0 inset-x-0 md:relative rounded-none md:rounded-lg border-t md:border bg-background">
+      <Card className="md:col-span-1 md:sticky md:top-4 fixed bottom-0 inset-x-0 md:relative rounded-none md:rounded-lg border-t md:border bg-background shadow-md">
         <CardContent className="space-y-4 p-4">
           <h2 className="text-lg font-semibold">Summary</h2>
-          <div className="flex flex-col items-center justify-center">
-            <svg viewBox="0 0 36 36" className={`w-24 h-24 ${ringColor}`}>
+          <div className="flex flex-col items-center justify-center" aria-label={`Left to spend ${fmt.format(remaining)}`}>
+            <svg viewBox="0 0 36 36" className={`w-24 h-24 ${ringColor}`} aria-hidden="true">
               <path
                 d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831"
                 fill="none"
@@ -290,11 +295,10 @@ export default function ManageBudget({ plan }: Props) {
                 strokeWidth="3"
                 strokeDasharray={`${Math.max(Math.min(percentLeft, 100), 0)}, 100`}
               />
-              <text x="18" y="20.35" className="text-xs" textAnchor="middle" fill="currentColor">
-                {fmt.format(remaining)}
-              </text>
+
             </svg>
-            <span className="text-sm mt-1">Left to Spend</span>
+            <span className="text-xl font-semibold mt-2">{fmt.format(remaining)}</span>
+            <span className="text-sm">Left to Spend</span>
             <span className="text-xs text-muted-foreground">
               {daysRemaining > 0 ? `${fmt.format(dailyAllowance)}/day` : ""}
             </span>
@@ -311,8 +315,7 @@ export default function ManageBudget({ plan }: Props) {
             </div>
             <div className="flex justify-between font-medium">
               <span>Remaining</span>
-              <span className={remaining < 0 ? "text-red-600" : ""}>
-                {fmt.format(remaining)}
+              <span className={ringColor}>{fmt.format(remaining)}</span>
               </span>
             </div>
           </div>
