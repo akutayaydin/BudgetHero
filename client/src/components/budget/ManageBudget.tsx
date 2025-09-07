@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { BudgetPlan, Transaction, Budget } from "@shared/schema";
+import type { BudgetPlan, Transaction, Budget, AdminCategory } from "@shared/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -13,17 +13,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import type { LucideIcon } from "lucide-react";
-import {
-  Wallet,
-  CreditCard,
-  Car,
-  ShoppingCart,
-  ShoppingBag,
-  Utensils,
-  MoreHorizontal,
-  Tag,
-} from "lucide-react";
+import { getCategoryIcon } from "@/lib/category-icons";
+import { MoreHorizontal, type LucideIcon } from "lucide-react";
 
 interface Props {
   plan: BudgetPlan;
@@ -58,20 +49,6 @@ function Ring({ percent }: { percent: number }) {
       />
     </svg>
   );
-}
-
-const iconMap: Record<string, LucideIcon> = {
-  income: Wallet,
-  "bills & utilities": CreditCard,
-  "auto & transport": Car,
-  groceries: ShoppingCart,
-  shopping: ShoppingBag,
-  dining: Utensils,
-  "everything else": MoreHorizontal,
-};
-
-function getIcon(name: string): LucideIcon {
-  return iconMap[name.toLowerCase()] || Tag;
 }
 
 interface RowProps {
@@ -154,15 +131,19 @@ export default function ManageBudget({ plan }: Props) {
 
   const [openAdd, setOpenAdd] = useState(false);
   const [selectedCats, setSelectedCats] = useState<Set<string>>(new Set());
-  const allCategories = [
-    "Auto & Transport",
-    "Groceries",
-    "Shopping",
-    "Dining",
-  ];
-  const availableCategories = allCategories.filter(
-    c => !budgets.some(b => (b.name || "").toLowerCase() === c.toLowerCase())
-  );
+  const { data: adminCats = [] } = useQuery<AdminCategory[]>({
+    queryKey: ["/api/admin/categories"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/categories", { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch categories");
+      return res.json();
+    },
+  });
+  const availableCategories = adminCats
+    .filter(c => c.ledgerType === "EXPENSE")
+    .map(c => c.name)
+    .filter(c => !budgets.some(b => (b.name || "").toLowerCase() === c.toLowerCase()))
+    .sort();
 
   async function handleAddCategories() {
     for (const name of selectedCats) {
@@ -170,7 +151,7 @@ export default function ManageBudget({ plan }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name, limit: 0 }),
+        body: JSON.stringify({ name, limit: 0, spent: 0 }),
       });
     }
     setSelectedCats(new Set());
