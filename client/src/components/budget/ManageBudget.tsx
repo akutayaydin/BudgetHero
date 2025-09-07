@@ -161,7 +161,8 @@ export default function ManageBudget({ plan }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name, limit: 0, spent: 0 }),
+        // Backend expects decimal values as strings (NUMERIC columns).
+        body: JSON.stringify({ name, limit: "0", spent: "0" }),
       });
       if (res.ok) {
         const budget = (await res.json()) as Budget;
