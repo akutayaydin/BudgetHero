@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getIcon } from "@/lib/category-icons";
 import { Check, X, Trash2, Plus, Wallet, PiggyBank, type LucideIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -878,6 +879,92 @@ export default function ManageBudget({ plan }: Props) {
           </Card>
         </div>
       </div>
+
+      <section>
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">FAQ</h2>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="income">
+            <AccordionTrigger>Income</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-2">
+                <strong>Q:</strong> What does “Income” mean here?
+              </p>
+              <p>
+                <strong>A:</strong> This is your total expected money coming in for the month (e.g., salary,
+                business income). It’s considered fixed and used to calculate your available Spending Budget and
+                Savings.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="bills">
+            <AccordionTrigger>Bills &amp; Utilities</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-2">
+                <strong>Q:</strong> Why are Bills &amp; Utilities separate from other categories?
+              </p>
+              <p>
+                <strong>A:</strong> Bills &amp; Utilities are treated as fixed expenses. They are subtracted first
+                from your income to calculate your Spending Budget.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="spending">
+            <AccordionTrigger>Spending Budget</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-2">
+                <strong>Q:</strong> What is my Spending Budget?
+              </p>
+              <p>
+                <strong>A:</strong> Your Spending Budget is what’s left after subtracting Bills &amp; Utilities and
+                Savings from your Income. This is the pool available for all flexible categories (e.g., Groceries,
+                Pets, Dining, etc.).
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="left-to-spend">
+            <AccordionTrigger>Left to Spend (Budget Summary)</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-2">
+                <strong>Q:</strong> How is ‘Left to Spend’ calculated?
+              </p>
+              <p>
+                <strong>A:</strong> Left to Spend = Spending Budget – Actual Spending. It shows how much of your
+                discretionary money is still available this month.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="savings">
+            <AccordionTrigger>Left for Savings</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-2">
+                <strong>Q:</strong> How is ‘Left for Savings’ calculated?
+              </p>
+              <p>
+                <strong>A:</strong> During Budget Setup, you choose a portion of your income to be reserved for
+                savings. If you don’t have enough left after covering bills, the remaining amount becomes your
+                savings instead. If flexible budgets overshoot, savings are reduced and can go negative.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="everything-else">
+            <AccordionTrigger>Everything Else</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-2">
+                <strong>Q:</strong> What is the ‘Everything Else’ category?
+              </p>
+              <p>
+                <strong>A:</strong> This is a catch-all bucket. Any money not explicitly assigned to a category budget
+                will fall here, so you always account for 100% of spending.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
     </div>
   );
 }
