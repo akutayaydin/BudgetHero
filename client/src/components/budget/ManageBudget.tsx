@@ -139,10 +139,19 @@ export default function ManageBudget({ plan }: Props) {
       return res.json();
     },
   });
-  const availableCategories = adminCats
-    .filter(c => c.ledgerType === "EXPENSE")
-    .map(c => c.name)
-    .filter(c => !budgets.some(b => (b.name || "").toLowerCase() === c.toLowerCase()))
+  const availableCategories = Array.from(
+    new Map(
+      adminCats
+        .filter(c => c.ledgerType === "EXPENSE")
+        .map(c => [c.name.toLowerCase(), c.name] as const)
+    ).values()
+  )
+    .filter(
+      name =>
+        !budgets.some(
+          b => (b.name || "").toLowerCase() === name.toLowerCase()
+        )
+    )
     .sort();
 
   async function handleAddCategories() {
