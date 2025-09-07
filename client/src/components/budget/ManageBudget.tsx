@@ -616,7 +616,6 @@ export default function ManageBudget({ plan }: Props) {
     const {
       basics,
       categoryRows,
-      everythingElse,
       currentSpend,
       remaining,
       validationError,
@@ -690,6 +689,15 @@ export default function ManageBudget({ plan }: Props) {
       icon: getIcon("everything else"),
     };
 
+      const categoriesWithEverythingElse = [...categories];
+      const groceriesIndex = categories.findIndex(
+        (c) => c.name.toLowerCase() === "groceries",
+      );
+      if (groceriesIndex >= 0)
+        categoriesWithEverythingElse.splice(groceriesIndex + 1, 0, everythingElse);
+      else categoriesWithEverythingElse.push(everythingElse);
+
+
     const basicsRows: RowProps[] = [
       {
         id: "income",
@@ -715,8 +723,7 @@ export default function ManageBudget({ plan }: Props) {
 
       return {
         basics: basicsRows,
-        categoryRows: categories,
-        everythingElse,
+        categoryRows: categoriesWithEverythingElse,
         currentSpend: currentSpendVal,
         remaining: remainingVal,
         validationError: savings < 0,
@@ -1014,14 +1021,7 @@ export default function ManageBudget({ plan }: Props) {
                     />
                   ))}
                       <div className="pt-4 space-y-2">
-                        <h3 className="text-sm font-medium text-muted-foreground">Summary</h3>
-                        <BudgetCard
-                          id={everythingElse.id}
-                          name={everythingElse.name}
-                          budgeted={everythingElse.budgeted}
-                          actual={everythingElse.actual}
-                          icon={everythingElse.icon}
-                        />
+
                         <div className="bg-muted/50 rounded-md p-3 space-y-1">
                           <div className="flex items-center gap-2">
                             <Wallet className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
@@ -1033,14 +1033,14 @@ export default function ManageBudget({ plan }: Props) {
                             <span>Remaining {fmt.format(remaining)}</span>
                           </div>
                     </div>
-                      <div className="bg-muted/50 rounded-md p-3">
+                        <div className="bg-muted/50 rounded-md p-3 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <PiggyBank className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
                           <span className="font-medium">Left for Savings</span>
                         </div>
-                        <div className={`mt-2 text-right text-sm font-medium ${leftForSavings < 0 ? 'text-red-600' : ''}`}>
+                          <span className={`text-sm font-medium ${leftForSavings < 0 ? 'text-red-600' : ''}`}>
                           {fmt.format(leftForSavings)}
-                        </div>
+                          </span>
                     </div>
                   </div>
                 </div>
@@ -1075,14 +1075,7 @@ export default function ManageBudget({ plan }: Props) {
                           onDelete={handleBudgetDelete}
                         />
                       ))}
-                      <BudgetRow
-                        key={everythingElse.id}
-                        id={everythingElse.id}
-                        name={everythingElse.name}
-                        budgeted={everythingElse.budgeted}
-                        actual={everythingElse.actual}
-                        icon={everythingElse.icon}
-                      />
+                      
                       <tr className="border-b bg-muted/50">
                         <td className="h-12 px-4 text-left align-middle">
                           <div className="flex items-center gap-2">
