@@ -660,7 +660,8 @@ export default function ManageBudget({ plan }: Props) {
         budgeted: Number((b as any).limit),
         actual: actualByCat[((b as any).name || "").toLowerCase()] || 0,
         icon: getIcon((b as any).name || ""),
-      }));
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     const allocated = categories.reduce((s, c) => s + c.budgeted, 0);
     const categoriesSpent = categories.reduce((s, c) => s + c.actual, 0);
@@ -689,14 +690,10 @@ export default function ManageBudget({ plan }: Props) {
       icon: getIcon("everything else"),
     };
 
-      const categoriesWithEverythingElse = [...categories];
-      const groceriesIndex = categories.findIndex(
-        (c) => c.name.toLowerCase() === "groceries",
+      const categoriesWithEverythingElse = [...categories, everythingElse].sort((a, b) =>
+        a.name.localeCompare(b.name),
       );
-      if (groceriesIndex >= 0)
-        categoriesWithEverythingElse.splice(groceriesIndex + 1, 0, everythingElse);
-      else categoriesWithEverythingElse.push(everythingElse);
-
+    
 
     const basicsRows: RowProps[] = [
       {
@@ -1027,10 +1024,10 @@ export default function ManageBudget({ plan }: Props) {
                             <Wallet className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
                             <span className="font-medium">Spending Budget</span>
                           </div>
-                          <div className="flex justify-between mt-2 text-sm font-medium">
+                          <div className="grid grid-cols-3 mt-2 text-sm font-medium text-center">
                             <span>Budgeted {fmt.format(spendingBudget)}</span>
                             <span>Actual {fmt.format(currentSpend)}</span>
-                            <span>Remaining {fmt.format(remaining)}</span>
+                            <span className={ringColor}>Remaining {fmt.format(remaining)}</span>
                           </div>
                     </div>
                         <div className="bg-muted/50 rounded-md p-3 flex items-center justify-between">
@@ -1170,8 +1167,8 @@ export default function ManageBudget({ plan }: Props) {
                <Card className="shadow-sm w-full">
                  <CardContent className="p-4 md:p-6 space-y-4 md:space-y-6">
                       <div className="md:hidden flex flex-col items-center space-y-2">
-                        <div className="relative w-32 h-32" aria-label={`Left to spend: ${fmt.format(remaining)}` }>
-                          <svg viewBox="0 0 36 36" className="w-32 h-32" aria-hidden="true">
+                        <div className="relative w-40 h-40" aria-label={`Left to spend: ${fmt.format(remaining)}` }>
+                          <svg viewBox="0 0 36 36" className="w-40 h-40" aria-hidden="true">
                             <path
                               d="M18 2.0845a 15.9155 15.9155 0 1 1 0 31.831a 15.9155 15.9155 0 1 1 0 -31.831"
                               fill="none"
@@ -1190,7 +1187,7 @@ export default function ManageBudget({ plan }: Props) {
                               style={{ transition: "stroke-dasharray 0.3s ease" }}
                             />
                           </svg>
-                          <div className="absolute inset-4 flex flex-col items-center justify-center text-center gap-1">
+                          <div className="absolute inset-6 flex flex-col items-center justify-center text-center gap-1">
                             <p className="text-xs">Left to Spend</p>
                             <span className="text-xl font-extrabold">{fmt.format(remaining)}</span>
                           </div>
