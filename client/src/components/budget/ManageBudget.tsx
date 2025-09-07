@@ -509,16 +509,16 @@ export default function ManageBudget({ plan }: Props) {
     const currentSpendVal = categoriesSpent + everythingElse.actual;
       const remainingVal = totalBudgeted - currentSpendVal;
 
-    return {
-      basics: basicsRows,
-      categoryRows: [...categories, everythingElse],
-      currentSpend: currentSpendVal,
-      remaining: remainingVal,
-      validationError: savings < 0,
-      spendingBudget: totalBudgeted,
-      leftForSavings: savings,
-    };
-  }, [transactions, budgets, expectedEarnings, expectedBills, spendingBudget, month]);
+      return {
+        basics: basicsRows,
+        categoryRows: [...categories, everythingElse],
+        currentSpend: currentSpendVal,
+        remaining: remainingVal,
+        validationError: savings < 0,
+        spendingBudget: totalBudgeted,
+        leftForSavings: savings,
+      };
+      }, [transactions, budgets, expectedEarnings, expectedBills, month]);
 
   const percentLeft = useMemo(
     () => (spendingBudget > 0 ? (remaining / spendingBudget) * 100 : 0),
