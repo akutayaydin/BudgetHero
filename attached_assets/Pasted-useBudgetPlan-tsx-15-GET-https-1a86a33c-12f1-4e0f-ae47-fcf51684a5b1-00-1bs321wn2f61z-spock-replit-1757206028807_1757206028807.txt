@@ -1,0 +1,203 @@
+useBudgetPlan.tsx:15  GET https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/api/budget/plan?month=2025-09 404 (Not Found)
+queryFn @ useBudgetPlan.tsx:15
+fetchFn @ @tanstack_react-query.js?v=525e425d:840
+run @ @tanstack_react-query.js?v=525e425d:494
+start @ @tanstack_react-query.js?v=525e425d:536
+fetch @ @tanstack_react-query.js?v=525e425d:926
+executeFetch_fn @ @tanstack_react-query.js?v=525e425d:2211
+onSubscribe @ @tanstack_react-query.js?v=525e425d:1898
+subscribe @ @tanstack_react-query.js?v=525e425d:24
+(anonymous) @ @tanstack_react-query.js?v=525e425d:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=525e425d:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=525e425d:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=525e425d:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=525e425d:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=525e425d:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=525e425d:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=525e425d:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=525e425d:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=525e425d:19416
+commitRoot @ chunk-RPCDYKBN.js?v=525e425d:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=525e425d:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=525e425d:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=525e425d:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=525e425d:555
+flush @ @tanstack_react-query.js?v=525e425d:569
+batch @ @tanstack_react-query.js?v=525e425d:587
+dispatch_fn @ @tanstack_react-query.js?v=525e425d:996
+setData @ @tanstack_react-query.js?v=525e425d:696
+onSuccess @ @tanstack_react-query.js?v=525e425d:897
+resolve @ @tanstack_react-query.js?v=525e425d:456
+Promise.then
+run @ @tanstack_react-query.js?v=525e425d:498
+start @ @tanstack_react-query.js?v=525e425d:536
+fetch @ @tanstack_react-query.js?v=525e425d:926
+executeFetch_fn @ @tanstack_react-query.js?v=525e425d:2211
+onSubscribe @ @tanstack_react-query.js?v=525e425d:1898
+subscribe @ @tanstack_react-query.js?v=525e425d:24
+(anonymous) @ @tanstack_react-query.js?v=525e425d:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=525e425d:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=525e425d:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=525e425d:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=525e425d:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=525e425d:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=525e425d:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=525e425d:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=525e425d:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=525e425d:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=525e425d:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=525e425d:19432
+commitRoot @ chunk-RPCDYKBN.js?v=525e425d:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=525e425d:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=525e425d:18718
+workLoop @ chunk-RPCDYKBN.js?v=525e425d:197
+flushWork @ chunk-RPCDYKBN.js?v=525e425d:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=525e425d:384Understand this error
+useBudgetPlan.tsx:17 📥 GET /api/budget/plan status: 404
+useBudgetPlan.tsx:20 ℹ️ No plan found for month -> returning null
+queryFn @ useBudgetPlan.tsx:20
+await in queryFn
+fetchFn @ @tanstack_react-query.js?v=525e425d:840
+run @ @tanstack_react-query.js?v=525e425d:494
+start @ @tanstack_react-query.js?v=525e425d:536
+fetch @ @tanstack_react-query.js?v=525e425d:926
+executeFetch_fn @ @tanstack_react-query.js?v=525e425d:2211
+onSubscribe @ @tanstack_react-query.js?v=525e425d:1898
+subscribe @ @tanstack_react-query.js?v=525e425d:24
+(anonymous) @ @tanstack_react-query.js?v=525e425d:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=525e425d:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=525e425d:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=525e425d:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=525e425d:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=525e425d:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=525e425d:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=525e425d:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=525e425d:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=525e425d:19416
+commitRoot @ chunk-RPCDYKBN.js?v=525e425d:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=525e425d:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=525e425d:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=525e425d:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=525e425d:555
+flush @ @tanstack_react-query.js?v=525e425d:569
+batch @ @tanstack_react-query.js?v=525e425d:587
+dispatch_fn @ @tanstack_react-query.js?v=525e425d:996
+setData @ @tanstack_react-query.js?v=525e425d:696
+onSuccess @ @tanstack_react-query.js?v=525e425d:897
+resolve @ @tanstack_react-query.js?v=525e425d:456
+Promise.then
+run @ @tanstack_react-query.js?v=525e425d:498
+start @ @tanstack_react-query.js?v=525e425d:536
+fetch @ @tanstack_react-query.js?v=525e425d:926
+executeFetch_fn @ @tanstack_react-query.js?v=525e425d:2211
+onSubscribe @ @tanstack_react-query.js?v=525e425d:1898
+subscribe @ @tanstack_react-query.js?v=525e425d:24
+(anonymous) @ @tanstack_react-query.js?v=525e425d:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=525e425d:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=525e425d:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=525e425d:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=525e425d:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=525e425d:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=525e425d:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=525e425d:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=525e425d:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=525e425d:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=525e425d:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=525e425d:19432
+commitRoot @ chunk-RPCDYKBN.js?v=525e425d:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=525e425d:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=525e425d:18718
+workLoop @ chunk-RPCDYKBN.js?v=525e425d:197
+flushWork @ chunk-RPCDYKBN.js?v=525e425d:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=525e425d:384Understand this warning
+useBudgetPlan.tsx:44 📤 Submitting new budget plan: {month: '2025-09', expectedEarnings: 3002.8133333333335, expectedBills: 100, savingsRate: 15, savingsReserve: 450.422, …}
+queryClient.ts:21 📡 POST /api/budget/plan {month: '2025-09', expectedEarnings: 3002.8133333333335, expectedBills: 100, savingsRate: 15, savingsReserve: 450.422, …}
+queryClient.ts:22  POST https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/api/budget/plan 500 (Internal Server Error)
+apiRequest @ queryClient.ts:22
+mutationFn @ useBudgetPlan.tsx:45
+fn @ @tanstack_react-query.js?v=525e425d:1189
+run @ @tanstack_react-query.js?v=525e425d:494
+start @ @tanstack_react-query.js?v=525e425d:536
+execute @ @tanstack_react-query.js?v=525e425d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=525e425d:2630
+(anonymous) @ @tanstack_react-query.js?v=525e425d:3295
+onSubmit @ budgets-setup.tsx:59
+(anonymous) @ chunk-4BFJKWC4.js?v=525e425d:1465
+await in (anonymous)
+callCallback2 @ chunk-RPCDYKBN.js?v=525e425d:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=525e425d:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=525e425d:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=525e425d:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=525e425d:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=525e425d:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=525e425d:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=525e425d:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=525e425d:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=525e425d:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=525e425d:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=525e425d:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=525e425d:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=525e425d:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=525e425d:5449Understand this error
+queryClient.ts:6 ❌ API request failed {method: 'POST', url: '/api/budget/plan', status: 500, body: '{"message":"Failed to create budget plan","error":"relation \\"budget_plans\\" does not exist"}'}
+throwIfResNotOk @ queryClient.ts:6
+await in throwIfResNotOk
+apiRequest @ queryClient.ts:29
+await in apiRequest
+mutationFn @ useBudgetPlan.tsx:45
+fn @ @tanstack_react-query.js?v=525e425d:1189
+run @ @tanstack_react-query.js?v=525e425d:494
+start @ @tanstack_react-query.js?v=525e425d:536
+execute @ @tanstack_react-query.js?v=525e425d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=525e425d:2630
+(anonymous) @ @tanstack_react-query.js?v=525e425d:3295
+onSubmit @ budgets-setup.tsx:59
+(anonymous) @ chunk-4BFJKWC4.js?v=525e425d:1465
+await in (anonymous)
+callCallback2 @ chunk-RPCDYKBN.js?v=525e425d:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=525e425d:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=525e425d:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=525e425d:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=525e425d:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=525e425d:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=525e425d:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=525e425d:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=525e425d:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=525e425d:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=525e425d:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=525e425d:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=525e425d:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=525e425d:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=525e425d:5449Understand this error
+useBudgetPlan.tsx:46 ✅ Created budget plan: undefined
+useBudgetPlan.tsx:51 ♻️ Invalidating cache for month: 2025-09
+useBudgetPlan.tsx:14 📤 GET budget plan for month: 2025-09
+useBudgetPlan.tsx:15  GET https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/api/budget/plan?month=2025-09 404 (Not Found)
+queryFn @ useBudgetPlan.tsx:15
+fetchFn @ @tanstack_react-query.js?v=525e425d:840
+run @ @tanstack_react-query.js?v=525e425d:494
+start @ @tanstack_react-query.js?v=525e425d:536
+fetch @ @tanstack_react-query.js?v=525e425d:926
+executeFetch_fn @ @tanstack_react-query.js?v=525e425d:2211
+onSubscribe @ @tanstack_react-query.js?v=525e425d:1898
+subscribe @ @tanstack_react-query.js?v=525e425d:24
+(anonymous) @ @tanstack_react-query.js?v=525e425d:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=525e425d:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=525e425d:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=525e425d:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=525e425d:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=525e425d:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=525e425d:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=525e425d:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=525e425d:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=525e425d:19416
+commitRoot @ chunk-RPCDYKBN.js?v=525e425d:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=525e425d:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=525e425d:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=525e425d:18627Understand this error
+useBudgetPlan.tsx:17 📥 GET /api/budget/plan status: 404
+useBudgetPlan.tsx:20 ℹ️ No plan found for month -> returning null
