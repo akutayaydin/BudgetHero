@@ -118,7 +118,7 @@ function BudgetRow({
       </td>
       <td className="py-2 text-right align-top">
         {editable && isEditing ? (
-          <div className="flex items-center justify-end gap-1">
+      <div className="flex items-center justify-end gap-1 w-full">
             <Input
               type="number"
               value={editValue}
@@ -148,7 +148,7 @@ function BudgetRow({
       ) : editable ? (
         <button
           onClick={() => setIsEditing(true)}
-          className="group flex flex-col items-end text-right"
+          className="group flex flex-col items-end w-full text-right"
           title="Click to edit"
         >
           <span
@@ -159,7 +159,7 @@ function BudgetRow({
           
         </button>
         ) : (
-          <div className="text-right">
+      <div className="flex flex-col items-end w-full text-right">
             <div>{fmt.format(budgeted)}</div>
             
               </div>
