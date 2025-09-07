@@ -575,36 +575,7 @@ export default function ManageBudget({ plan }: Props) {
                           onUpdate={handlePlanUpdate}
                         />
                       ))}
-                      <tr className="border-b bg-muted/50">
-                        <td className="h-12 px-4 text-left align-middle">
-                          <div className="flex items-center gap-2">
-                            <Wallet className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
-                            <span className="font-medium">Spending Budget</span>
-                          </div>
-                        </td>
-                        <td className="p-4 align-middle text-right font-medium">
-                          {fmt.format(Number(spendingBudget))}
-                        </td>
-                        <td className="p-4 align-middle text-right font-medium">
-                          {fmt.format(currentSpend)}
-                        </td>
-                        <td className="p-4 align-middle text-right font-medium">
-                          {fmt.format(remaining)}
-                        </td>
-                      </tr>
-                      <tr className="border-b bg-muted/50">
-                        <td className="h-12 px-4 text-left align-middle">
-                          <div className="flex items-center gap-2">
-                            <PiggyBank className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
-                            <span className="font-medium">Left for Savings</span>
-                          </div>
-                        </td>
-                        <td className="p-4 align-middle text-right font-medium">
-                          {fmt.format(leftForSavings)}
-                        </td>
-                        <td className="p-4 align-middle text-right"></td>
-                        <td className="p-4 align-middle text-right"></td>
-                      </tr>
+
                     </tbody>
                   </table>
                 </div>
@@ -745,6 +716,36 @@ export default function ManageBudget({ plan }: Props) {
                           onDelete={c.id !== "everything-else" ? handleBudgetDelete : undefined}
                         />
                       ))}
+                      <tr className="border-b bg-muted/50">
+                        <td className="h-12 px-4 text-left align-middle">
+                          <div className="flex items-center gap-2">
+                            <Wallet className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="font-medium">Spending Budget</span>
+                          </div>
+                        </td>
+                        <td className="p-4 align-middle text-right font-medium">
+                          {fmt.format(Number(spendingBudget))}
+                        </td>
+                        <td className="p-4 align-middle text-right font-medium">
+                          {fmt.format(currentSpend)}
+                        </td>
+                        <td className="p-4 align-middle text-right font-medium">
+                          {fmt.format(remaining)}
+                        </td>
+                      </tr>
+                      <tr className="border-b bg-muted/50">
+                        <td className="h-12 px-4 text-left align-middle">
+                          <div className="flex items-center gap-2">
+                            <PiggyBank className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="font-medium">Left for Savings</span>
+                          </div>
+                        </td>
+                        <td className="p-4 align-middle text-right font-medium">
+                          {fmt.format(leftForSavings)}
+                        </td>
+                        <td className="p-4 align-middle text-right"></td>
+                        <td className="p-4 align-middle text-right"></td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
