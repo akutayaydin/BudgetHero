@@ -226,18 +226,29 @@ function BudgetCard({
   budgeted,
   actual,
   icon: Icon,
+  isIncome,
   editable,
   onUpdate,
   onDelete,
 }: RowProps) {
   const remaining = budgeted - actual;
   const percentUsed = budgeted > 0 ? Math.min((actual / budgeted) * 100, 100) : 0;
-  const color =
-    remaining < 0
-      ? "text-red-500 dark:text-red-400"
-      : remaining > 0
-      ? "text-green-600 dark:text-green-400"
-      : "text-muted-foreground";
+
+  let color = "text-muted-foreground";
+  if (isIncome) {
+    color = remaining < 0 ? "text-green-600 dark:text-green-400" : "text-muted-foreground";
+  } else {
+    color =
+      remaining < 0
+        ? "text-red-500 dark:text-red-400"
+        : remaining > 0
+          ? "text-green-600 dark:text-green-400"
+          : "text-muted-foreground";
+  }
+
+  let label = "left";
+  if (isIncome) label = "surplus";
+  else if (name.toLowerCase() === "bills & utilities") label = "remaining";
 
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(budgeted));
@@ -271,21 +282,15 @@ function BudgetCard({
           <Icon className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
           <span className="font-medium">{name}</span>
         </div>
-        {onDelete && id && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
-            onClick={() => onDelete(id)}
-            aria-label={`Delete ${name} budget`}
-            data-testid={`button-delete-budget-${id}`}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        )}
+        <div className={`flex items-center gap-2 text-right ${color}`}>
+          <span className="text-sm font-medium">
+            {fmt.format(remaining)} {label}
+          </span>
+          <Ring percent={percentUsed} />
+        </div>
       </div>
       <div className="flex items-center justify-between text-sm">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {editable && isEditing ? (
             <>
               <Input
@@ -322,31 +327,34 @@ function BudgetCard({
           ) : editable ? (
             <button
               onClick={() => setIsEditing(true)}
-              className="group flex flex-col items-end text-right cursor-pointer focus:outline-none"
+              className="group cursor-pointer focus:outline-none"
               title="Click to edit budget amount"
               aria-label={`Edit budget for ${name}. Current amount: ${fmt.format(budgeted)}`}
               data-testid={`button-edit-budget-${id}`}
             >
               <span className="px-1 pb-[1px] border-b border-dashed border-muted-foreground/50 hover:border-primary transition-colors font-medium">
-                {fmt.format(budgeted)}
+                Budgeted {fmt.format(budgeted)}
               </span>
-              <span className="text-xs text-muted-foreground mt-1">Budgeted</span>
+
             </button>
           ) : (
-            <div className="flex flex-col">
-              <span className="font-medium">{fmt.format(budgeted)}</span>
-              <span className="text-xs text-muted-foreground">Budgeted</span>
-            </div>
+      <span className="font-medium">Budgeted {fmt.format(budgeted)}</span>
           )}
-          <div className="flex flex-col text-right">
-            <span className="font-medium">{fmt.format(actual)}</span>
-            <span className="text-xs text-muted-foreground">Actual</span>
-          </div>
+          <span>|</span>
+          <span className="font-medium">Actual {fmt.format(actual)}</span>
         </div>
-        <div className={`flex items-center gap-2 text-right ${color}`}>
-          <Ring percent={percentUsed} />
-          <span className="font-medium">{fmt.format(remaining)}</span>
-        </div>
+        {onDelete && id && (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
+            onClick={() => onDelete(id)}
+            aria-label={`Delete ${name} budget`}
+            data-testid={`button-delete-budget-${id}`}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -608,6 +616,7 @@ export default function ManageBudget({ plan }: Props) {
     const {
       basics,
       categoryRows,
+      everythingElse,
       currentSpend,
       remaining,
       validationError,
@@ -706,7 +715,8 @@ export default function ManageBudget({ plan }: Props) {
 
       return {
         basics: basicsRows,
-        categoryRows: [...categories, everythingElse],
+        categoryRows: categories,
+        everythingElse,
         currentSpend: currentSpendVal,
         remaining: remainingVal,
         validationError: savings < 0,
@@ -843,8 +853,18 @@ export default function ManageBudget({ plan }: Props) {
             <Card className="shadow-sm">
               <CardContent className="p-0">
 
-                  <table className="w-full caption-bottom text-sm">
-                    <thead className="[&_tr]:border-b">
+                <div className="md:hidden space-y-2 p-4">
+                  {basics.map((b) => (
+                    <BudgetCard
+                      key={b.id}
+                      {...b}
+                      editable
+                      onUpdate={handlePlanUpdate}
+                    />
+                  ))}
+                </div>
+                <table className="hidden md:table w-full caption-bottom text-sm">
+                  <thead className="[&_tr]:border-b">
                       <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                         <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
                           Category
@@ -988,29 +1008,39 @@ export default function ManageBudget({ plan }: Props) {
                       budgeted={c.budgeted}
                       actual={c.actual}
                       icon={c.icon}
-                      editable={c.id !== "everything-else"}
+                      editable
                       onUpdate={handleBudgetUpdate}
-                      onDelete={c.id !== "everything-else" ? handleBudgetDelete : undefined}
+                      onDelete={handleBudgetDelete}
                     />
                   ))}
-                  <div className="bg-muted/50 rounded-md p-3 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Wallet className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
-                      <span className="font-medium">Spending Budget</span>
+                      <div className="pt-4 space-y-2">
+                        <h3 className="text-sm font-medium text-muted-foreground">Summary</h3>
+                        <BudgetCard
+                          id={everythingElse.id}
+                          name={everythingElse.name}
+                          budgeted={everythingElse.budgeted}
+                          actual={everythingElse.actual}
+                          icon={everythingElse.icon}
+                        />
+                        <div className="bg-muted/50 rounded-md p-3 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Wallet className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="font-medium">Spending Budget</span>
+                          </div>
+                          <div className="flex justify-between mt-2 text-sm font-medium">
+                            <span>Budgeted {fmt.format(spendingBudget)}</span>
+                            <span>Actual {fmt.format(currentSpend)}</span>
+                            <span>Remaining {fmt.format(remaining)}</span>
+                          </div>
                     </div>
-                    <div className="flex justify-between mt-2 text-sm font-medium">
-                      <span>Budgeted {fmt.format(spendingBudget)}</span>
-                      <span>Actual {fmt.format(currentSpend)}</span>
-                      <span>Remaining {fmt.format(remaining)}</span>
-                    </div>
-                  </div>
-                  <div className="bg-muted/50 rounded-md p-3">
-                    <div className="flex items-center gap-2">
-                      <PiggyBank className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
-                      <span className="font-medium">Left for Savings</span>
-                    </div>
-                    <div className={`mt-2 text-right text-sm font-medium ${leftForSavings < 0 ? 'text-red-600' : ''}`}>
-                      {fmt.format(leftForSavings)}
+                      <div className="bg-muted/50 rounded-md p-3">
+                        <div className="flex items-center gap-2">
+                          <PiggyBank className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                          <span className="font-medium">Left for Savings</span>
+                        </div>
+                        <div className={`mt-2 text-right text-sm font-medium ${leftForSavings < 0 ? 'text-red-600' : ''}`}>
+                          {fmt.format(leftForSavings)}
+                        </div>
                     </div>
                   </div>
                 </div>
@@ -1040,11 +1070,19 @@ export default function ManageBudget({ plan }: Props) {
                           budgeted={c.budgeted}
                           actual={c.actual}
                           icon={c.icon}
-                          editable={c.id !== "everything-else"}
+                          editable
                           onUpdate={handleBudgetUpdate}
-                          onDelete={c.id !== "everything-else" ? handleBudgetDelete : undefined}
+                          onDelete={handleBudgetDelete}
                         />
                       ))}
+                      <BudgetRow
+                        key={everythingElse.id}
+                        id={everythingElse.id}
+                        name={everythingElse.name}
+                        budgeted={everythingElse.budgeted}
+                        actual={everythingElse.actual}
+                        icon={everythingElse.icon}
+                      />
                       <tr className="border-b bg-muted/50">
                         <td className="h-12 px-4 text-left align-middle">
                           <div className="flex items-center gap-2">
