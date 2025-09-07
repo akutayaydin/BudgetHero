@@ -154,30 +154,21 @@ function BudgetRow({
                 title="Click to edit"
               >
                 <div>{fmt.format(budgeted)}</div>
-                <div className="text-xs text-muted-foreground">Budgeted</div>
+
               </button>
             ) : (
-              <div>
-                <div>{fmt.format(budgeted)}</div>
-                <div className="text-xs text-muted-foreground">Budgeted</div>
-              </div>
+            <div>{fmt.format(budgeted)}</div>
             )}
           </div>
         )}
       </td>
       <td className="py-2 text-right align-top">
-        <div>
-          <div>{fmt.format(actual)}</div>
-          <div className="text-xs text-muted-foreground">Actual</div>
-        </div>
+        <div>{fmt.format(actual)}</div>
       </td>
       <td className="py-2 text-right">
         <div className={`flex items-center justify-end gap-2 ${color}`}>
           <Ring percent={percent} />
-          <div>
-            <div>{fmt.format(remaining)}</div>
-            <div className="text-xs text-muted-foreground">Remaining</div>
-          </div>
+          <div>{fmt.format(remaining)}</div>
         </div>
       </td>
     </tr>
@@ -379,7 +370,7 @@ export default function ManageBudget({ plan }: Props) {
       <div className="md:col-span-2 space-y-8">
         <section>
           <h2 className="text-lg font-semibold mb-2">Budget Basics</h2>
-          <Separator className="mb-4" />
+          
           <Card>
             <CardContent className="overflow-x-auto p-0">
               <table className="w-full text-sm">
@@ -457,7 +448,7 @@ export default function ManageBudget({ plan }: Props) {
               </DialogContent>
             </Dialog>
           </div>
-          <Separator className="mb-4" />
+          
           <Card>
             <CardContent className="overflow-x-auto p-0">
               {validationError && (
