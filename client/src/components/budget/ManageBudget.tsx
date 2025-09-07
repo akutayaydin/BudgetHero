@@ -220,6 +220,138 @@ function BudgetRow({
   );
 }
 
+function BudgetCard({
+  id,
+  name,
+  budgeted,
+  actual,
+  icon: Icon,
+  editable,
+  onUpdate,
+  onDelete,
+}: RowProps) {
+  const remaining = budgeted - actual;
+  const percentUsed = budgeted > 0 ? Math.min((actual / budgeted) * 100, 100) : 0;
+  const color =
+    remaining < 0
+      ? "text-red-500 dark:text-red-400"
+      : remaining > 0
+      ? "text-green-600 dark:text-green-400"
+      : "text-muted-foreground";
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(String(budgeted));
+
+  useEffect(() => {
+    if (!isEditing) setEditValue(String(budgeted));
+  }, [budgeted, isEditing]);
+
+  const handleSave = async () => {
+    const val = parseFloat(editValue);
+    if (!isNaN(val) && onUpdate && id) {
+      await onUpdate(id, val);
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditValue(String(budgeted));
+    setIsEditing(false);
+  };
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSave();
+    if (e.key === "Escape") handleCancel();
+  };
+
+  return (
+    <div className="border rounded-md p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Icon className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+          <span className="font-medium">{name}</span>
+        </div>
+        {onDelete && id && (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
+            onClick={() => onDelete(id)}
+            aria-label={`Delete ${name} budget`}
+            data-testid={`button-delete-budget-${id}`}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        )}
+      </div>
+      <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center gap-2">
+          {editable && isEditing ? (
+            <>
+              <Input
+                type="number"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={handleKey}
+                className="w-20 h-8 text-right text-sm"
+                step="0.01"
+                autoFocus
+                data-testid={`input-edit-budget-${id}`}
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-6 w-6 p-0 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                onClick={handleSave}
+                aria-label="Save changes"
+                data-testid={`button-save-budget-${id}`}
+              >
+                <Check className="w-4 h-4" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                onClick={handleCancel}
+                aria-label="Cancel changes"
+                data-testid={`button-cancel-budget-${id}`}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </>
+          ) : editable ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="group flex flex-col items-end text-right cursor-pointer focus:outline-none"
+              title="Click to edit budget amount"
+              aria-label={`Edit budget for ${name}. Current amount: ${fmt.format(budgeted)}`}
+              data-testid={`button-edit-budget-${id}`}
+            >
+              <span className="px-1 pb-[1px] border-b border-dashed border-muted-foreground/50 hover:border-primary transition-colors font-medium">
+                {fmt.format(budgeted)}
+              </span>
+              <span className="text-xs text-muted-foreground mt-1">Budgeted</span>
+            </button>
+          ) : (
+            <div className="flex flex-col">
+              <span className="font-medium">{fmt.format(budgeted)}</span>
+              <span className="text-xs text-muted-foreground">Budgeted</span>
+            </div>
+          )}
+          <div className="flex flex-col text-right">
+            <span className="font-medium">{fmt.format(actual)}</span>
+            <span className="text-xs text-muted-foreground">Actual</span>
+          </div>
+        </div>
+        <div className={`flex items-center gap-2 text-right ${color}`}>
+          <Ring percent={percentUsed} />
+          <span className="font-medium">{fmt.format(remaining)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ManageBudget({ plan }: Props) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -330,8 +462,6 @@ export default function ManageBudget({ plan }: Props) {
     if (faqOpenItem) sessionStorage.setItem("bh-faq-open", faqOpenItem);
     else sessionStorage.removeItem("bh-faq-open");
   }, [faqOpenItem]);
-
-  const [showDetails, setShowDetails] = useState(false);
 
   async function handleAddCategories() {
     try {
@@ -849,7 +979,42 @@ export default function ManageBudget({ plan }: Props) {
                   </div>
                 )}
 
-                  <table className="w-full caption-bottom text-sm">
+                <div className="md:hidden space-y-2">
+                  {categoryRows.map((c) => (
+                    <BudgetCard
+                      key={c.id}
+                      id={c.id}
+                      name={c.name}
+                      budgeted={c.budgeted}
+                      actual={c.actual}
+                      icon={c.icon}
+                      editable={c.id !== "everything-else"}
+                      onUpdate={handleBudgetUpdate}
+                      onDelete={c.id !== "everything-else" ? handleBudgetDelete : undefined}
+                    />
+                  ))}
+                  <div className="bg-muted/50 rounded-md p-3 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Wallet className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                      <span className="font-medium">Spending Budget</span>
+                    </div>
+                    <div className="flex justify-between mt-2 text-sm font-medium">
+                      <span>Budgeted {fmt.format(spendingBudget)}</span>
+                      <span>Actual {fmt.format(currentSpend)}</span>
+                      <span>Remaining {fmt.format(remaining)}</span>
+                    </div>
+                  </div>
+                  <div className="bg-muted/50 rounded-md p-3">
+                    <div className="flex items-center gap-2">
+                      <PiggyBank className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                      <span className="font-medium">Left for Savings</span>
+                    </div>
+                    <div className={`mt-2 text-right text-sm font-medium ${leftForSavings < 0 ? 'text-red-600' : ''}`}>
+                      {fmt.format(leftForSavings)}
+                    </div>
+                  </div>
+                </div>
+                <table className="hidden md:table w-full caption-bottom text-sm">
                     <thead className="[&_tr]:border-b">
                       <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                         <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
@@ -973,38 +1138,51 @@ export default function ManageBudget({ plan }: Props) {
            </p>
                <Card className="shadow-sm w-full">
                  <CardContent className="p-4 md:p-6 space-y-4 md:space-y-6">
-                  <div className="md:hidden space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Left to Spend</span>
-                      <span>{fmt.format(remaining)}</span>
+                      <div className="md:hidden flex flex-col items-center space-y-2">
+                        <div className="relative w-32 h-32" aria-label={`Left to spend: ${fmt.format(remaining)}` }>
+                          <svg viewBox="0 0 36 36" className="w-32 h-32" aria-hidden="true">
+                            <path
+                              d="M18 2.0845a 15.9155 15.9155 0 1 1 0 31.831a 15.9155 15.9155 0 1 1 0 -31.831"
+                              fill="none"
+                              stroke="currentColor"
+                              className="text-gray-300 dark:text-gray-700"
+                              strokeWidth="3"
+                            />
+                            <path
+                              d="M18 2.0845a 15.9155 15.9155 0 1 1 0 31.831a 15.9155 15.9155 0 1 1 0 -31.831"
+                              fill="none"
+                              stroke="currentColor"
+                              className={ringColor}
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeDasharray={`${Math.max(Math.min(percentLeft, 100), 0)}, 100`}
+                              style={{ transition: "stroke-dasharray 0.3s ease" }}
+                            />
+                          </svg>
+                          <div className="absolute inset-4 flex flex-col items-center justify-center text-center gap-1">
+                            <p className="text-xs">Left to Spend</p>
+                            <span className="text-xl font-extrabold">{fmt.format(remaining)}</span>
+                          </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Spending Budget</span>
-                      <span>{fmt.format(spendingBudget)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Current Spend</span>
-                      <span>{fmt.format(currentSpend)}</span>
-                    </div>
-                    <div className="flex justify-between border-t pt-1">
-                      <span>Remaining</span>
-                      <span className={ringColor}>{fmt.format(remaining)}</span>
-                    </div>
-                    {daysRemaining > 0 && showDetails && (
-                      <p className="text-center text-xs text-muted-foreground mt-2">
+                        {daysRemaining > 0 && (
+                          <p className="text-xs text-muted-foreground">
                         {fmt.format(dailyAllowance)}/day • {daysRemaining} days left
                       </p>
                     )}
-                    {daysRemaining > 0 && (
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="h-auto p-0 mt-2"
-                        onClick={() => setShowDetails(!showDetails)}
-                      >
-                        {showDetails ? "Hide details" : "Show details"}
-                      </Button>
-                    )}
+                        <div className="w-full space-y-1 text-sm">
+                          <div className="flex justify-between">
+                            <span>Spending Budget</span>
+                            <span>{fmt.format(spendingBudget)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Current Spend</span>
+                            <span>{fmt.format(currentSpend)}</span>
+                          </div>
+                          <div className="flex justify-between border-t pt-1">
+                            <span>Remaining</span>
+                            <span className={ringColor}>{fmt.format(remaining)}</span>
+                          </div>
+                        </div>
                   </div>
 
               <div
