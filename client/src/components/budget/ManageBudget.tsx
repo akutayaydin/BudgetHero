@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { getIcon } from "@/lib/category-icons";
-import { Check, X, type LucideIcon } from "lucide-react";
+import { Check, X, Trash2, type LucideIcon } from "lucide-react";
 
 interface Props {
   plan: BudgetPlan;
@@ -62,6 +61,7 @@ interface RowProps {
   isIncome?: boolean;
   editable?: boolean;
   onUpdate?: (id: string, value: number) => Promise<void> | void;
+  onDelete?: (id: string) => Promise<void> | void;
 }
 
 function BudgetRow({
@@ -73,6 +73,7 @@ function BudgetRow({
   isIncome,
   editable,
   onUpdate,
+  onDelete,
 }: RowProps) {
   const remaining = budgeted - actual;
   const percent = budgeted > 0 ? (Math.max(remaining, 0) / budgeted) * 100 : 0;
@@ -113,7 +114,18 @@ function BudgetRow({
       <td className="py-2">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-muted-foreground" />
-          <span>{name}</span>
+          <span className={onDelete ? "flex-1" : undefined}>{name}</span>
+          {onDelete && id && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-5 w-5 p-0 text-muted-foreground hover:text-red-600"
+              onClick={() => onDelete(id)}
+              aria-label={`Delete ${name}`}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       </td>
       <td className="py-2 text-right align-top">
@@ -234,7 +246,7 @@ export default function ManageBudget({ plan }: Props) {
 
   async function handleAddCategories() {
     const created: Budget[] = [];
-    for (const name of selectedCats) {
+    for (const name of Array.from(selectedCats)) {
       const res = await fetch("/api/budgets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -272,6 +284,34 @@ export default function ManageBudget({ plan }: Props) {
         ),
       );
       await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+    }
+  }
+
+  async function handleBudgetDelete(id: string) {
+    const res = await fetch(`/api/budgets/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (res.ok) {
+      queryClient.setQueryData<Budget[]>(["/api/budgets"], old =>
+        (old || []).filter(b => (b as any).id !== id),
+      );
+      await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+    }
+  }
+
+  async function handlePlanUpdate(id: string, value: number) {
+    const field = id === "income" ? "expectedEarnings" : "expectedBills";
+    const res = await fetch(`/api/budget/plan/${plan.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ [field]: value }),
+    });
+    if (res.ok) {
+      await queryClient.invalidateQueries({
+        queryKey: ["/api/budget/plan", plan.month],
+      });
     }
   }
   
@@ -331,6 +371,7 @@ export default function ManageBudget({ plan }: Props) {
 
     const basicsRows: RowProps[] = [
       {
+        id: "income",
         name: "Income",
         budgeted: Number(expectedEarnings),
         actual: income,
@@ -338,6 +379,7 @@ export default function ManageBudget({ plan }: Props) {
         isIncome: true,
       },
       {
+        id: "bills",
         name: "Bills & Utilities",
         budgeted: Number(expectedBills),
         actual: billsActual,
@@ -394,8 +436,13 @@ export default function ManageBudget({ plan }: Props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {basics.map((b) => (
-                    <BudgetRow key={b.name} {...b} />
+                  {basics.map(b => (
+                    <BudgetRow
+                      key={b.name}
+                      {...b}
+                      editable
+                      onUpdate={handlePlanUpdate}
+                    />
                   ))}
                 </tbody>
               </table>
@@ -477,16 +524,17 @@ export default function ManageBudget({ plan }: Props) {
                   </tr>
                 </thead>
                 <tbody>
-                      {categoryRows.map((c) => (
-                        <BudgetRow
-                          key={c.id}
-                          id={c.id}
-                          name={c.name}
-                          budgeted={c.budgeted}
-                          actual={c.actual}
-                          icon={c.icon}
-                          editable={c.id !== "everything-else"}
-                          onUpdate={handleBudgetUpdate}
+                          {categoryRows.map(c => (
+                            <BudgetRow
+                              key={c.id}
+                              id={c.id}
+                              name={c.name}
+                              budgeted={c.budgeted}
+                              actual={c.actual}
+                              icon={c.icon}
+                              editable={c.id !== "everything-else"}
+                              onUpdate={handleBudgetUpdate}
+                              onDelete={c.id !== "everything-else" ? handleBudgetDelete : undefined}
                     />
                   ))}
                 </tbody>
