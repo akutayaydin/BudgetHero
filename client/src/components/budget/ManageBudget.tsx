@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useMemo, useState, useEffect } from "react";
 import type { BudgetPlan, Transaction, Budget, AdminCategory } from "@shared/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { getIcon } from "@/lib/category-icons";
-import { MoreHorizontal, type LucideIcon } from "lucide-react";
+import { Check, X, type LucideIcon } from "lucide-react";
 
 interface Props {
   plan: BudgetPlan;
@@ -52,14 +53,26 @@ function Ring({ percent }: { percent: number }) {
 }
 
 interface RowProps {
+  id?: string;
   name: string;
   budgeted: number;
   actual: number;
   icon: LucideIcon;
   isIncome?: boolean;
+  editable?: boolean;
+  onUpdate?: (id: string, value: number) => Promise<void> | void;
 }
 
-function BudgetRow({ name, budgeted, actual, icon: Icon, isIncome }: RowProps) {
+function BudgetRow({
+  id,
+  name,
+  budgeted,
+  actual,
+  icon: Icon,
+  isIncome,
+  editable,
+  onUpdate,
+}: RowProps) {
   const remaining = budgeted - actual;
   const percent = budgeted > 0 ? (Math.max(remaining, 0) / budgeted) * 100 : 0;
   let color = "text-gray-500";
@@ -69,8 +82,33 @@ function BudgetRow({ name, budgeted, actual, icon: Icon, isIncome }: RowProps) {
     color = remaining < 0 ? "text-red-500" : remaining > 0 ? "text-green-600" : "text-gray-500";
   }
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(String(budgeted));
+
+  useEffect(() => {
+    if (!isEditing) setEditValue(String(budgeted));
+  }, [budgeted, isEditing]);
+
+  const handleSave = async () => {
+    const val = parseFloat(editValue);
+    if (!isNaN(val) && onUpdate && id) {
+      await onUpdate(id, val);
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditValue(String(budgeted));
+    setIsEditing(false);
+  };
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSave();
+    if (e.key === "Escape") handleCancel();
+  };
+
   return (
-      <tr className="border-b last:border-b-0 hover:bg-muted/50 odd:bg-muted/30">
+    <tr className="border-b last:border-b-0 hover:bg-muted/50 odd:bg-muted/30">
       <td className="py-2">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-muted-foreground" />
@@ -78,10 +116,53 @@ function BudgetRow({ name, budgeted, actual, icon: Icon, isIncome }: RowProps) {
         </div>
       </td>
       <td className="py-2 text-right align-top">
-        <div>
-          <div>{fmt.format(budgeted)}</div>
-          <div className="text-xs text-muted-foreground">Budgeted</div>
-        </div>
+        {editable && isEditing ? (
+          <div className="flex items-center justify-end gap-1">
+            <Input
+              type="number"
+              value={editValue}
+              onChange={e => setEditValue(e.target.value)}
+              onKeyDown={handleKey}
+              className="w-24 h-7 text-right text-sm"
+              step="0.01"
+              autoFocus
+            />
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 w-7 p-0 text-green-600 hover:text-green-700"
+              onClick={handleSave}
+            >
+              <Check className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
+              onClick={handleCancel}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        ) : (
+          <div>
+            {editable ? (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="group text-right"
+                title="Click to edit"
+              >
+                <div>{fmt.format(budgeted)}</div>
+                <div className="text-xs text-muted-foreground">Budgeted</div>
+              </button>
+            ) : (
+              <div>
+                <div>{fmt.format(budgeted)}</div>
+                <div className="text-xs text-muted-foreground">Budgeted</div>
+              </div>
+            )}
+          </div>
+        )}
       </td>
       <td className="py-2 text-right align-top">
         <div>
@@ -181,7 +262,23 @@ export default function ManageBudget({ plan }: Props) {
     setOpenAdd(false);
     await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
   }
-
+  
+  async function handleBudgetUpdate(id: string, value: number) {
+    const res = await fetch(`/api/budgets/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ limit: String(value) }),
+    });
+    if (res.ok) {
+      queryClient.setQueryData<Budget[]>(["/api/budgets"], old =>
+        (old || []).map(b =>
+          (b as any).id === id ? { ...b, limit: String(value) } : b,
+        ),
+      );
+      await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+    }
+  }
   
   const { basics, categoryRows, currentSpend, remaining, validationError } = useMemo(() => {
     let income = 0;
@@ -377,13 +474,16 @@ export default function ManageBudget({ plan }: Props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {categoryRows.map((c) => (
-                    <BudgetRow
-                      key={c.id}
-                      name={c.name}
-                      budgeted={c.budgeted}
-                      actual={c.actual}
-                      icon={c.icon}
+                      {categoryRows.map((c) => (
+                        <BudgetRow
+                          key={c.id}
+                          id={c.id}
+                          name={c.name}
+                          budgeted={c.budgeted}
+                          actual={c.actual}
+                          icon={c.icon}
+                          editable={c.id !== "everything-else"}
+                          onUpdate={handleBudgetUpdate}
                     />
                   ))}
                 </tbody>
