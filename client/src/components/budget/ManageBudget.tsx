@@ -1,10 +1,11 @@
+// client/src/components/budget/ManageBudget.tsx
 import React, { useMemo, useState, useEffect } from "react";
 import type { BudgetPlan, Transaction, Budget, AdminCategory } from "@shared/schema";
-import { useQuery } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -14,8 +15,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 import { getIcon } from "@/lib/category-icons";
-import { Check, X, Trash2, type LucideIcon } from "lucide-react";
+import { Check, X, Trash2, Plus, type LucideIcon } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Props {
   plan: BudgetPlan;
@@ -38,7 +41,8 @@ function Ring({ percent }: { percent: number }) {
       <path
         d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831"
         fill="none"
-        stroke="#e5e7eb"
+        stroke="currentColor"
+        className="text-muted-foreground/20"
         strokeWidth="3"
       />
       <path
@@ -46,7 +50,9 @@ function Ring({ percent }: { percent: number }) {
         fill="none"
         stroke="currentColor"
         strokeWidth="3"
+        strokeLinecap="round"
         strokeDasharray={`${dash}, 100`}
+        style={{ transition: "stroke-dasharray 0.3s ease" }}
       />
     </svg>
   );
@@ -77,11 +83,17 @@ function BudgetRow({
 }: RowProps) {
   const remaining = budgeted - actual;
   const percent = budgeted > 0 ? (Math.max(remaining, 0) / budgeted) * 100 : 0;
-  let color = "text-gray-500";
+
+  let color = "text-muted-foreground";
   if (isIncome) {
-    color = remaining < 0 ? "text-green-600" : "text-gray-500";
+    color = remaining < 0 ? "text-green-600 dark:text-green-400" : "text-muted-foreground";
   } else {
-    color = remaining < 0 ? "text-red-500" : remaining > 0 ? "text-green-600" : "text-gray-500";
+    color =
+      remaining < 0
+        ? "text-red-500 dark:text-red-400"
+        : remaining > 0
+          ? "text-green-600 dark:text-green-400"
+          : "text-muted-foreground";
   }
 
   const [isEditing, setIsEditing] = useState(false);
@@ -110,80 +122,89 @@ function BudgetRow({
   };
 
   return (
-    <tr className="border-b last:border-b-0 hover:bg-muted/50 odd:bg-muted/30">
-      <td className="py-2">
+    <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted odd:bg-muted/30">
+      <td className="h-12 px-4 text-left align-middle">
         <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 text-muted-foreground" />
-          <span className={onDelete ? "flex-1" : undefined}>{name}</span>
+          <Icon className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+          <span className={`font-medium ${onDelete ? "flex-1" : ""}`}>{name}</span>
           {onDelete && id && (
             <Button
               size="sm"
               variant="ghost"
-              className="h-5 w-5 p-0 text-muted-foreground hover:text-red-600"
+              className="h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
               onClick={() => onDelete(id)}
-              aria-label={`Delete ${name}`}
+              aria-label={`Delete ${name} budget`}
+              data-testid={`button-delete-budget-${id}`}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
           )}
         </div>
       </td>
-      <td className="py-2 text-right align-top">
+      <td className="p-4 align-middle text-right">
         {editable && isEditing ? (
-      <div className="flex items-center justify-end gap-1 w-full">
+          <div className="flex items-center justify-end gap-1 w-full">
             <Input
               type="number"
               value={editValue}
-              onChange={e => setEditValue(e.target.value)}
+              onChange={(e) => setEditValue(e.target.value)}
               onKeyDown={handleKey}
-              className="w-24 h-7 text-right text-sm"
+              className="w-24 h-8 text-right text-sm"
               step="0.01"
               autoFocus
+              data-testid={`input-edit-budget-${id}`}
             />
             <Button
               size="sm"
               variant="ghost"
-              className="h-7 w-7 p-0 text-green-600 hover:text-green-700"
+              className="h-8 w-8 p-0 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
               onClick={handleSave}
+              aria-label="Save changes"
+              data-testid={`button-save-budget-${id}`}
             >
               <Check className="w-4 h-4" />
             </Button>
             <Button
               size="sm"
               variant="ghost"
-              className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
+              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
               onClick={handleCancel}
+              aria-label="Cancel changes"
+              data-testid={`button-cancel-budget-${id}`}
             >
               <X className="w-4 h-4" />
             </Button>
           </div>
-      ) : editable ? (
-        <button
-          onClick={() => setIsEditing(true)}
-          className="group flex flex-col items-end w-full text-right"
-          title="Click to edit"
-        >
-          <span
-            className="px-1 pb-[1px] group-hover:border-b group-hover:border-dashed group-hover:border-gray-300 dark:group-hover:border-gray-600"
+        ) : editable ? (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="group flex flex-col items-end w-full text-right cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            title="Click to edit budget amount"
+            aria-label={`Edit budget for ${name}. Current amount: ${fmt.format(budgeted)}`}
+            data-testid={`button-edit-budget-${id}`}
           >
-            {fmt.format(budgeted)}
-          </span>
-          
-        </button>
+            <span className="px-1 pb-[1px] border-b border-dashed border-muted-foreground/50 hover:border-primary transition-colors font-medium">
+              {fmt.format(budgeted)}
+            </span>
+            <span className="text-xs text-muted-foreground mt-1">Click to edit</span>
+          </button>
         ) : (
-      <div className="flex flex-col items-end w-full text-right">
-            <div>{fmt.format(budgeted)}</div>
-            
-              </div>
-            )}
+          <div className="flex flex-col items-end w-full text-right">
+            <div className="font-medium">{fmt.format(budgeted)}</div>
+          </div>
+        )}
       </td>
-      <td className="py-2 text-right align-top">
-        <div>{fmt.format(actual)}</div>
+      <td className="p-4 align-middle text-right">
+        <div className="font-medium">{fmt.format(actual)}</div>
+        <div className="text-xs text-muted-foreground">actual</div>
       </td>
-      <td className="py-2 text-right">
+      <td className="p-4 align-middle text-right">
         <div className={`flex items-center justify-end gap-2 ${color}`}>
           <Ring percent={percent} />
-          <div>{fmt.format(remaining)}</div>
+          <div className="font-medium">{fmt.format(remaining)}</div>
+        </div>
+        <div className="text-xs text-muted-foreground text-right mt-1">
+          {isIncome ? "surplus" : "remaining"}
         </div>
       </td>
     </tr>
@@ -192,6 +213,7 @@ function BudgetRow({
 
 export default function ManageBudget({ plan }: Props) {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const { month, expectedEarnings, expectedBills, spendingBudget } = plan;
 
   const { data: transactions = [] } = useQuery<Transaction[]>({
@@ -200,9 +222,10 @@ export default function ManageBudget({ plan }: Props) {
       const [y, m] = month.split("-").map(Number);
       const start = new Date(y, m - 1, 1).toISOString().slice(0, 10);
       const end = new Date(y, m, 0).toISOString().slice(0, 10);
-      const res = await fetch(`/api/transactions?startDate=${start}&endDate=${end}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `/api/transactions?startDate=${start}&endDate=${end}`,
+        { credentials: "include" }
+      );
       if (!res.ok) throw new Error("Failed to fetch transactions");
       return res.json();
     },
@@ -219,6 +242,7 @@ export default function ManageBudget({ plan }: Props) {
 
   const [openAdd, setOpenAdd] = useState(false);
   const [selectedCats, setSelectedCats] = useState<Set<string>>(new Set());
+
   const { data: adminCats = [] } = useQuery<AdminCategory[]>({
     queryKey: ["/api/admin/categories"],
     queryFn: async () => {
@@ -227,94 +251,144 @@ export default function ManageBudget({ plan }: Props) {
       return res.json();
     },
   });
+
   const basicsSet = new Set(["income", "bills & utilities"]);
+
   const availableCategories = Array.from(
     new Map(
       adminCats
-        .filter(c => c.ledgerType === "EXPENSE")
-        .map(c => [c.name.toLowerCase(), c.name] as const)
-    ).values()
+        .filter((c) => c.ledgerType === "EXPENSE")
+        .map((c) => [c.name.toLowerCase(), c.name] as const),
+    ).values(),
   )
     .filter(
-      name =>
+      (name) =>
         !basicsSet.has(name.toLowerCase()) &&
-        !budgets.some(
-          b => (b.name || "").toLowerCase() === name.toLowerCase()
-        )
+        !budgets.some((b) => (b.name || "").toLowerCase() === name.toLowerCase()),
     )
     .sort();
 
   async function handleAddCategories() {
-    const created: Budget[] = [];
-    for (const name of Array.from(selectedCats)) {
-      const res = await fetch("/api/budgets", {
-        method: "POST",
+    try {
+      const created: Budget[] = [];
+      for (const name of Array.from(selectedCats)) {
+        const res = await fetch("/api/budgets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          // Backend expects decimal values as strings (NUMERIC columns).
+          body: JSON.stringify({ name, limit: "0", spent: "0" }),
+        });
+        if (res.ok) {
+          const budget = (await res.json()) as Budget;
+          created.push(budget);
+        }
+      }
+      if (created.length) {
+        queryClient.setQueryData<Budget[]>(["/api/budgets"], (old) => [
+          ...(old || []),
+          ...created,
+        ]);
+        toast({
+          title: "Budget Categories Added",
+          description: `Successfully added ${created.length} budget ${created.length === 1 ? 'category' : 'categories'}.`,
+        });
+      }
+      setSelectedCats(new Set());
+      setOpenAdd(false);
+      await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add budget categories. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }
+
+  async function handleBudgetUpdate(id: string, value: number) {
+    try {
+      const res = await fetch(`/api/budgets/${id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        // Backend expects decimal values as strings (NUMERIC columns).
-        body: JSON.stringify({ name, limit: "0", spent: "0" }),
+        body: JSON.stringify({ limit: String(value) }),
       });
       if (res.ok) {
-        const budget = (await res.json()) as Budget;
-        created.push(budget);
+        queryClient.setQueryData<Budget[]>(["/api/budgets"], (old) =>
+          (old || []).map((b) => ((b as any).id === id ? { ...b, limit: String(value) } : b)),
+        );
+        await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+        toast({
+          title: "Budget Updated",
+          description: "Budget amount has been successfully updated.",
+        });
+      } else {
+        throw new Error('Failed to update budget');
       }
-    }
-    if (created.length) {
-      queryClient.setQueryData<Budget[]>(["/api/budgets"], old => [
-        ...(old || []),
-        ...created,
-      ]);
-    }
-    setSelectedCats(new Set());
-    setOpenAdd(false);
-    await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
-  }
-  
-  async function handleBudgetUpdate(id: string, value: number) {
-    const res = await fetch(`/api/budgets/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ limit: String(value) }),
-    });
-    if (res.ok) {
-      queryClient.setQueryData<Budget[]>(["/api/budgets"], old =>
-        (old || []).map(b =>
-          (b as any).id === id ? { ...b, limit: String(value) } : b,
-        ),
-      );
-      await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update budget. Please try again.",
+        variant: "destructive",
+      });
     }
   }
 
   async function handleBudgetDelete(id: string) {
-    const res = await fetch(`/api/budgets/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    if (res.ok) {
-      queryClient.setQueryData<Budget[]>(["/api/budgets"], old =>
-        (old || []).filter(b => (b as any).id !== id),
-      );
-      await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+    try {
+      const res = await fetch(`/api/budgets/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.ok) {
+        queryClient.setQueryData<Budget[]>(["/api/budgets"], (old) =>
+          (old || []).filter((b) => (b as any).id !== id),
+        );
+        await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+        toast({
+          title: "Budget Deleted",
+          description: "Budget category has been successfully removed.",
+        });
+      } else {
+        throw new Error('Failed to delete budget');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete budget. Please try again.",
+        variant: "destructive",
+      });
     }
   }
 
   async function handlePlanUpdate(id: string, value: number) {
-    const field = id === "income" ? "expectedEarnings" : "expectedBills";
-    const res = await fetch(`/api/budget/plan/${plan.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ [field]: value }),
-    });
-    if (res.ok) {
-      await queryClient.invalidateQueries({
-        queryKey: ["/api/budget/plan", plan.month],
+    try {
+      const field = id === "income" ? "expectedEarnings" : "expectedBills";
+      const res = await fetch(`/api/budget/plan/${plan.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ [field]: value }),
+      });
+      if (res.ok) {
+        await queryClient.invalidateQueries({ queryKey: ["/api/budget/plan", plan.month] });
+        toast({
+          title: "Plan Updated",
+          description: `${field === 'expectedEarnings' ? 'Expected earnings' : 'Expected bills'} has been updated.`,
+        });
+      } else {
+        throw new Error('Failed to update plan');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update budget plan. Please try again.",
+        variant: "destructive",
       });
     }
   }
-  
+
   const { basics, categoryRows, currentSpend, remaining, validationError } = useMemo(() => {
     let income = 0;
     let billsActual = 0;
@@ -325,7 +399,7 @@ export default function ManageBudget({ plan }: Props) {
     const rangeStart = new Date(y, m - 1, 1);
     const rangeEnd = new Date(y, m, 0, 23, 59, 59, 999);
 
-    transactions.forEach(t => {
+    transactions.forEach((t) => {
       const txDate = new Date(t.date);
       if (txDate < rangeStart || txDate > rangeEnd) return;
 
@@ -341,15 +415,14 @@ export default function ManageBudget({ plan }: Props) {
     });
 
     const categoriesMap = new Map<string, Budget>();
-    budgets.forEach(b => {
+    budgets.forEach((b) => {
       const key = (b.name || "").toLowerCase();
-      if (!categoriesMap.has(key)) {
-        categoriesMap.set(key, b);
-      }
+      if (!categoriesMap.has(key)) categoriesMap.set(key, b);
     });
+
     const categories = Array.from(categoriesMap.values())
-      .filter(b => !basicsSet.has((b.name || "").toLowerCase()))
-      .map(b => ({
+      .filter((b) => !basicsSet.has((b.name || "").toLowerCase()))
+      .map((b) => ({
         id: (b as any).id,
         name: (b as any).name as string,
         budgeted: Number((b as any).limit),
@@ -403,11 +476,7 @@ export default function ManageBudget({ plan }: Props) {
     Number(spendingBudget) > 0 ? (remaining / Number(spendingBudget)) * 100 : 0;
 
   const ringColor =
-    remaining < 0
-      ? "text-red-500"
-      : percentLeft < 10
-      ? "text-orange-500"
-      : "text-green-600";
+    remaining < 0 ? "text-red-500" : percentLeft <= 10 ? "text-orange-500" : "text-green-600";
 
   const [yy, mm] = month.split("-").map(Number);
   const endOfMonth = new Date(yy, mm, 0);
@@ -418,176 +487,308 @@ export default function ManageBudget({ plan }: Props) {
   }
   const dailyAllowance = daysRemaining > 0 ? remaining / daysRemaining : 0;
 
-  return (
-    <div className="grid md:grid-cols-3 gap-4 pb-40 md:pb-0">
-      <div className="md:col-span-2 space-y-8">
-        <section>
-          <h2 className="text-lg font-semibold mb-2">Budget Basics</h2>
-          
-          <Card>
-            <CardContent className="overflow-x-auto p-0">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-xs text-muted-foreground border-b">
-                    <th className="py-2 text-left">Category</th>
-                    <th className="py-2 text-right">Budgeted</th>
-                    <th className="py-2 text-right">Actual</th>
-                    <th className="py-2 text-right">Remaining</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {basics.map(b => (
-                    <BudgetRow
-                      key={b.name}
-                      {...b}
-                      editable
-                      onUpdate={handlePlanUpdate}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        </section>
+  const isLoading = transactions.length === 0 && budgets.length === 0;
 
-        <section>
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-semibold">Budget Categories</h2>
-            <Dialog open={openAdd} onOpenChange={setOpenAdd}>
-              <DialogTrigger asChild>
-                <Button size="sm" variant="outline">Add Budget</Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Add Budget</DialogTitle>
-                </DialogHeader>
-                <div className="max-h-60 overflow-y-auto space-y-2 py-2">
-                  {availableCategories.map(name => {
-                    const Icon = getIcon(name);
-                    const checked = selectedCats.has(name);
-                    return (
-                      <div key={name} className="flex items-center justify-between py-1">
-                        <div className="flex items-center gap-2">
-                          <Icon className="w-4 h-4 text-muted-foreground" />
-                          <span>{name}</span>
-                        </div>
-                        <Switch
-                          checked={checked}
-                          onCheckedChange={val => {
-                            const next = new Set(selectedCats);
-                            if (val) next.add(name);
-                            else next.delete(name);
-                            setSelectedCats(next);
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedCats(new Set());
-                      setOpenAdd(false);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleAddCategories}
-                    disabled={selectedCats.size === 0}
-                  >
-                    Add
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 space-y-6">
+            <div className="space-y-3">
+              <Skeleton className="h-6 w-32" />
+              <Card>
+                <CardContent className="p-0">
+                  <div className="space-y-3 p-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="space-y-3">
+              <Skeleton className="h-6 w-40" />
+              <Card>
+                <CardContent className="p-0">
+                  <div className="space-y-3 p-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-          
           <Card>
-            <CardContent className="overflow-x-auto p-0">
-              {validationError && (
-                <div className="text-red-500 text-sm p-4 pb-2">
-                  Category budgets exceed spending budget
-                </div>
-              )}
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-xs text-muted-foreground border-b">
-                    <th className="py-2 text-left">Category</th>
-                    <th className="py-2 text-right">Budgeted</th>
-                    <th className="py-2 text-right">Actual</th>
-                    <th className="py-2 text-right">Remaining</th>
-                  </tr>
-                </thead>
-                <tbody>
-                          {categoryRows.map(c => (
-                            <BudgetRow
-                              key={c.id}
-                              id={c.id}
-                              name={c.name}
-                              budgeted={c.budgeted}
-                              actual={c.actual}
-                              icon={c.icon}
-                              editable={c.id !== "everything-else"}
-                              onUpdate={handleBudgetUpdate}
-                              onDelete={c.id !== "everything-else" ? handleBudgetDelete : undefined}
-                    />
-                  ))}
-                </tbody>
-              </table>
+            <CardContent className="p-4 space-y-4">
+              <Skeleton className="h-6 w-20" />
+              <Skeleton className="h-24 w-24 rounded-full mx-auto" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+              </div>
             </CardContent>
           </Card>
-        </section>
+        </div>
       </div>
+    );
+  }
 
-      <Card className="md:col-span-1 md:sticky md:top-4 fixed bottom-0 inset-x-0 md:relative rounded-none md:rounded-lg border-t md:border bg-background shadow-md">
-        <CardContent className="space-y-4 p-4">
-          <h2 className="text-lg font-semibold">Summary</h2>
-          <div className="flex flex-col items-center justify-center" aria-label={`Left to spend ${fmt.format(remaining)}`}>
-            <svg viewBox="0 0 36 36" className={`w-24 h-24 ${ringColor}`} aria-hidden="true">
-              <path
-                d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831"
-                fill="none"
-                stroke="#e5e7eb"
-                strokeWidth="3"
-              />
-              <path
-                d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeDasharray={`${Math.max(Math.min(percentLeft, 100), 0)}, 100`}
-              />
+  return (
+    <div className="space-y-6">
+      <div className="grid md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 space-y-6">
+          <section>
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-card-foreground">Budget Basics</h2>
+              <p className="text-sm text-muted-foreground">Your core income and expense categories</p>
+            </div>
+            <Card className="shadow-sm">
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full caption-bottom text-sm">
+                    <thead className="[&_tr]:border-b">
+                      <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                          Category
+                        </th>
+                        <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+                          Budgeted
+                        </th>
+                        <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+                          Actual
+                        </th>
+                        <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+                          Remaining
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="[&_tr:last-child]:border-0">
+                      {basics.map((b) => (
+                        <BudgetRow
+                          key={b.name}
+                          {...b}
+                          editable
+                          onUpdate={handlePlanUpdate}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
 
-            </svg>
-            <span className="text-xl font-semibold mt-2">{fmt.format(remaining)}</span>
-            <span className="text-sm">Left to Spend</span>
-            <span className="text-xs text-muted-foreground">
-              {daysRemaining > 0 ? `${fmt.format(dailyAllowance)}/day` : ""}
-            </span>
-          </div>
+          <Separator className="my-6" />
 
-          <div className="text-sm space-y-1">
-            <div className="flex justify-between">
-              <span>Spending Budget</span>
-              <span>{fmt.format(Number(spendingBudget))}</span>
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold text-card-foreground">Budget Categories</h2>
+                <p className="text-sm text-muted-foreground">Track spending by category</p>
+              </div>
+              <Dialog open={openAdd} onOpenChange={setOpenAdd}>
+                <DialogTrigger asChild>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="gap-2"
+                    data-testid="button-add-budget"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Budget
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Add Budget Categories</DialogTitle>
+                  </DialogHeader>
+
+                  {availableCategories.length === 0 ? (
+                    <div className="text-center py-6">
+                      <p className="text-sm text-muted-foreground">
+                        All available categories have been added to your budget.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="max-h-60 overflow-y-auto space-y-2 py-2">
+                      {availableCategories.map((name) => {
+                        const Icon = getIcon(name);
+                        const checked = selectedCats.has(name);
+                        return (
+                          <div key={name} className="flex items-center justify-between py-2 px-1 rounded hover:bg-muted/50">
+                            <div className="flex items-center gap-3">
+                              <Icon className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                              <span className="text-sm font-medium">{name}</span>
+                            </div>
+                            <Switch
+                              checked={checked}
+                              onCheckedChange={(val) => {
+                                const next = new Set(selectedCats);
+                                if (val) next.add(name);
+                                else next.delete(name);
+                                setSelectedCats(next);
+                              }}
+                              aria-label={`${checked ? 'Remove' : 'Add'} ${name} budget`}
+                              data-testid={`switch-budget-${name.toLowerCase().replace(/\s+/g, '-')}`}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <DialogFooter>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedCats(new Set());
+                        setOpenAdd(false);
+                      }}
+                      data-testid="button-cancel-add-budget"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleAddCategories}
+                      disabled={selectedCats.size === 0}
+                      data-testid="button-confirm-add-budget"
+                    >
+                      Add {selectedCats.size > 0 ? `(${selectedCats.size})` : ''}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
-            <div className="flex justify-between">
-              <span>Current Spend</span>
-              <span>{fmt.format(currentSpend)}</span>
-            </div>
-            <div className="flex justify-between font-medium">
-              <span>Remaining</span>
-              <span className={ringColor}>{fmt.format(remaining)}</span>
-            
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+
+            <Card className="shadow-sm">
+              <CardContent className="p-0">
+                {validationError && (
+                  <div className="bg-destructive/10 border-l-4 border-destructive p-4 mb-0">
+                    <div className="flex items-start gap-2">
+                      <X className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-destructive">
+                          Budget Validation Error
+                        </p>
+                        <p className="text-sm text-destructive/80">
+                          Your category budgets exceed your available spending budget. Please adjust your allocations.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="overflow-x-auto">
+                  <table className="w-full caption-bottom text-sm">
+                    <thead className="[&_tr]:border-b">
+                      <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                          Category
+                        </th>
+                        <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+                          Budgeted
+                        </th>
+                        <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+                          Actual
+                        </th>
+                        <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+                          Remaining
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="[&_tr:last-child]:border-0">
+                      {categoryRows.map((c) => (
+                        <BudgetRow
+                          key={c.id}
+                          id={c.id}
+                          name={c.name}
+                          budgeted={c.budgeted}
+                          actual={c.actual}
+                          icon={c.icon}
+                          editable={c.id !== "everything-else"}
+                          onUpdate={handleBudgetUpdate}
+                          onDelete={c.id !== "everything-else" ? handleBudgetDelete : undefined}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+        </div>
+
+        <div className="md:col-span-1">
+          <Card className="shadow-sm sticky top-6">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg">Budget Summary</CardTitle>
+              <p className="text-sm text-muted-foreground">Your spending overview for this month</p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div
+                className="flex flex-col items-center justify-center"
+                aria-label={`Left to spend: ${fmt.format(remaining)}`}
+              >
+                <div className="relative w-28 h-28">
+                  <svg viewBox="0 0 36 36" className="w-28 h-28" aria-hidden="true">
+                    <path
+                      d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831"
+                      fill="none"
+                      stroke="currentColor"
+                      className="text-muted-foreground/20"
+                      strokeWidth="3"
+                    />
+                    <path
+                      d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831"
+                      fill="none"
+                      stroke="currentColor"
+                      className={ringColor}
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeDasharray={`${Math.max(Math.min(percentLeft, 100), 0)}, 100`}
+                      style={{ transition: "stroke-dasharray 0.3s ease" }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-lg font-bold text-card-foreground">
+                      {fmt.format(remaining)}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-center mt-3">
+                  <p className="text-sm font-medium text-card-foreground">Left to Spend</p>
+                  {daysRemaining > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {fmt.format(dailyAllowance)}/day • {daysRemaining} days left
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Spending Budget</span>
+                  <span className="text-sm font-medium">{fmt.format(Number(spendingBudget))}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Current Spend</span>
+                  <span className="text-sm">{fmt.format(currentSpend)}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t">
+                  <span className="text-sm font-medium">Remaining</span>
+                  <span className={`text-sm font-semibold ${ringColor}`}>
+                    {fmt.format(remaining)}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
