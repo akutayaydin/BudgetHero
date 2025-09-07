@@ -82,7 +82,7 @@ function BudgetRow({
   onDelete,
 }: RowProps) {
   const remaining = budgeted - actual;
-  const percent = budgeted > 0 ? (Math.max(remaining, 0) / budgeted) * 100 : 0;
+  const percentUsed = budgeted > 0 ? Math.min((actual / budgeted) * 100, 100) : 0;
 
   let color = "text-muted-foreground";
   if (isIncome) {
@@ -200,7 +200,7 @@ function BudgetRow({
       </td>
       <td className="p-4 align-middle text-right">
         <div className={`flex items-center justify-end gap-2 ${color}`}>
-          <Ring percent={percent} />
+          <Ring percent={percentUsed} />
           <div className="font-medium">{fmt.format(remaining)}</div>
         </div>
         <div className="text-xs text-muted-foreground text-right mt-1">
