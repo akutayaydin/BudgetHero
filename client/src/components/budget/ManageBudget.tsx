@@ -132,14 +132,26 @@ function BudgetRow({
 
   return (
     <tr className="group border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted odd:bg-muted/30">
-      <td className="h-12 px-4 text-left align-middle">
-        <div className="flex items-center gap-2">
+      <td className="h-12 px-4 text-left align-middle relative">
+        <div className="flex items-center gap-2 pr-6">
           <Icon className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
           <span className="font-medium">{name}</span>
         </div>
+        {onDelete && id && !isEditing && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"
+            onClick={() => onDelete(id)}
+            aria-label={`Delete ${name} budget`}
+            data-testid={`button-delete-budget-${id}`}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        )}
       </td>
       <td className="p-4 align-middle text-right">
-        <div className="flex items-center justify-end gap-1 relative pr-6">
+        <div className="flex items-center justify-end gap-1">
           {editable && isEditing ? (
             <>
               <Input
@@ -191,18 +203,7 @@ function BudgetRow({
               <div className="font-medium">{fmt.format(budgeted)}</div>
             </div>
           )}
-          {onDelete && id && !isEditing && (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="absolute right-0 h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"
-              onClick={() => onDelete(id)}
-              aria-label={`Delete ${name} budget`}
-              data-testid={`button-delete-budget-${id}`}
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          )}
+          
         </div>
       </td>
      
@@ -854,8 +855,9 @@ export default function ManageBudget({ plan }: Props) {
         <div className="space-y-6">
           <section>
             <div className="mb-4">
-              <h2 className="text-lg font-semibold text-card-foreground">Budget Basics</h2>
-              <p className="text-sm text-muted-foreground">Your core income and expense categories</p>
+              <h4 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Budget Basics
+              </h4>
             </div>
             <Card className="shadow-sm">
               <CardContent className="p-0">
@@ -909,8 +911,9 @@ export default function ManageBudget({ plan }: Props) {
           <section>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-lg font-semibold text-card-foreground">Budget Categories</h2>
-                <p className="text-sm text-muted-foreground">Track spending by category</p>
+                <h4 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                  Budget Categories
+                </h4>
               </div>
               <Dialog open={openAdd} onOpenChange={setOpenAdd}>
                 <DialogTrigger asChild>
@@ -1119,9 +1122,9 @@ export default function ManageBudget({ plan }: Props) {
         
             <div className="md:col-start-2 md:row-span-1 md:sticky md:top-6">
             <div className="flex items-center justify-between">
-              <h2 id="budget-summary-title" className="text-lg font-semibold text-card-foreground">
-                 Budget Summary
-               </h2>
+              <h4 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Budget Summary
+              </h4>
                <Dialog>
                  <DialogTrigger asChild>
                    <Button
@@ -1164,9 +1167,7 @@ export default function ManageBudget({ plan }: Props) {
                  </DialogContent>
                </Dialog>
             </div>
-           <p className="text-sm text-muted-foreground mb-3">
-             Your spending overview for this month
-           </p>
+
                <Card className="shadow-sm w-full">
                  <CardContent className="p-4 md:p-6 space-y-4 md:space-y-6">
                       <div className="md:hidden flex flex-col items-center space-y-2">
