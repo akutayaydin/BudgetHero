@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { getCategoryIcon } from "@/lib/category-icons";
+import { getIcon } from "@/lib/category-icons";
 import { MoreHorizontal, type LucideIcon } from "lucide-react";
 
 interface Props {
