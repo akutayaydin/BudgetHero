@@ -38,6 +38,9 @@ export default function ManageBudget({ plan }: Props) {
     updateMutation.mutate({
       id: plan.id,
       ...values,
+      // React Hook Form only returns registered fields in `values`,
+      // so ensure `month` is included for cache invalidation.
+      month: plan.month,
       savingsReserve,
       spendingBudget,
     });

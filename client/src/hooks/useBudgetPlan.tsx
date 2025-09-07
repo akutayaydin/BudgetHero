@@ -42,9 +42,10 @@ export function useCreateBudgetPlan() {
   return useMutation({
     mutationFn: async (plan: InsertBudgetPlan) => {
       console.log("📤 Submitting new budget plan:", plan);
-      const { data } = await apiRequest("/api/budget/plan", "POST", plan);
+      const res = await apiRequest("/api/budget/plan", "POST", plan);
+      const data = (await res.json()) as BudgetPlan;
       console.log("✅ Created budget plan:", data);
-      return data as BudgetPlan;
+      return data;
     },
     onSuccess: (_data, variables) => {
       // Invalidate the specific month that was created
@@ -68,9 +69,10 @@ export function useUpdateBudgetPlan() {
     mutationFn: async (plan: Partial<InsertBudgetPlan> & { id: string; month: string }) => {
       const { id, month, ...data } = plan;
       console.log("✏️ Updating budget plan:", { id, month, data });
-      const { data: updated } = await apiRequest(`/api/budget/plan/${id}`, "PATCH", data);
+      const res = await apiRequest(`/api/budget/plan/${id}`, "PATCH", data);
+      const updated = (await res.json()) as BudgetPlan;
       console.log("✅ Updated budget plan:", updated);
-      return updated as BudgetPlan;
+      return updated;
     },
     onSuccess: (_data, variables) => {
       console.log("♻️ Invalidating cache for month:", variables.month);
