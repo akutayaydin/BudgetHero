@@ -131,16 +131,71 @@ function BudgetRow({
   };
 
   return (
-    <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted odd:bg-muted/30">
+    <tr className="group border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted odd:bg-muted/30">
       <td className="h-12 px-4 text-left align-middle">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
-          <span className={`font-medium ${onDelete ? "flex-1" : ""}`}>{name}</span>
-          {onDelete && id && (
+          <span className="font-medium">{name}</span>
+        </div>
+      </td>
+      <td className="p-4 align-middle text-right">
+        <div className="flex items-center justify-end gap-1 relative pr-6">
+          {editable && isEditing ? (
+            <>
+              <Input
+                type="number"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={handleKey}
+                className="w-24 h-8 text-right text-sm"
+                step="0.01"
+                autoFocus
+                data-testid={`input-edit-budget-${id}`}
+              />
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                onClick={handleSave}
+                aria-label="Save changes"
+                data-testid={`button-save-budget-${id}`}
+              >
+                <Check className="w-4 h-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                onClick={handleCancel}
+                aria-label="Cancel changes"
+                data-testid={`button-cancel-budget-${id}`}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </>
+          ) : editable ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="group flex flex-col items-end w-full text-right cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              title="Click to edit budget amount"
+              aria-label={`Edit budget for ${name}. Current amount: ${fmt.format(budgeted)}`}
+              data-testid={`button-edit-budget-${id}`}
+            >
+              <span className="px-1 pb-[1px] border-b border-dashed border-muted-foreground/50 hover:border-primary transition-colors font-medium">
+                {fmt.format(budgeted)}
+              </span>
+              <span className="text-xs text-muted-foreground mt-1">Click to edit</span>
+            </button>
+          ) : (
+            <div className="flex flex-col items-end w-full text-right">
+              <div className="font-medium">{fmt.format(budgeted)}</div>
+            </div>
+          )}
+          {onDelete && id && !isEditing && (
             <Button
               size="sm"
               variant="ghost"
-              className="h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
+              className="absolute right-0 h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"
               onClick={() => onDelete(id)}
               aria-label={`Delete ${name} budget`}
               data-testid={`button-delete-budget-${id}`}
@@ -150,59 +205,7 @@ function BudgetRow({
           )}
         </div>
       </td>
-      <td className="p-4 align-middle text-right">
-        {editable && isEditing ? (
-          <div className="flex items-center justify-end gap-1 w-full">
-            <Input
-              type="number"
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onKeyDown={handleKey}
-              className="w-24 h-8 text-right text-sm"
-              step="0.01"
-              autoFocus
-              data-testid={`input-edit-budget-${id}`}
-            />
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-              onClick={handleSave}
-              aria-label="Save changes"
-              data-testid={`button-save-budget-${id}`}
-            >
-              <Check className="w-4 h-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-              onClick={handleCancel}
-              aria-label="Cancel changes"
-              data-testid={`button-cancel-budget-${id}`}
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
-        ) : editable ? (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="group flex flex-col items-end w-full text-right cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-            title="Click to edit budget amount"
-            aria-label={`Edit budget for ${name}. Current amount: ${fmt.format(budgeted)}`}
-            data-testid={`button-edit-budget-${id}`}
-          >
-            <span className="px-1 pb-[1px] border-b border-dashed border-muted-foreground/50 hover:border-primary transition-colors font-medium">
-              {fmt.format(budgeted)}
-            </span>
-            <span className="text-xs text-muted-foreground mt-1">Click to edit</span>
-          </button>
-        ) : (
-          <div className="flex flex-col items-end w-full text-right">
-            <div className="font-medium">{fmt.format(budgeted)}</div>
-          </div>
-        )}
-      </td>
+     
       <td className="p-4 align-middle text-right">
         <div className="font-medium">{fmt.format(actual)}</div>
         <div className="text-xs text-muted-foreground">actual</div>
