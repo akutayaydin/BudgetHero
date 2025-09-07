@@ -1,9 +1,18 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { BudgetPlan, Transaction, Budget } from "@shared/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import type { LucideIcon } from "lucide-react";
 import {
   Wallet,
@@ -117,6 +126,7 @@ function BudgetRow({ name, budgeted, actual, icon: Icon, isIncome }: RowProps) {
 }
 
 export default function ManageBudget({ plan }: Props) {
+  const queryClient = useQueryClient();
   const { month, expectedEarnings, expectedBills, spendingBudget } = plan;
 
   const { data: transactions = [] } = useQuery<Transaction[]>({
@@ -142,6 +152,33 @@ export default function ManageBudget({ plan }: Props) {
     },
   });
 
+  const [openAdd, setOpenAdd] = useState(false);
+  const [selectedCats, setSelectedCats] = useState<Set<string>>(new Set());
+  const allCategories = [
+    "Auto & Transport",
+    "Groceries",
+    "Shopping",
+    "Dining",
+  ];
+  const availableCategories = allCategories.filter(
+    c => !budgets.some(b => (b.name || "").toLowerCase() === c.toLowerCase())
+  );
+
+  async function handleAddCategories() {
+    for (const name of selectedCats) {
+      await fetch("/api/budgets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name, limit: 0 }),
+      });
+    }
+    setSelectedCats(new Set());
+    setOpenAdd(false);
+    await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+  }
+
+  
   const { basics, categoryRows, currentSpend, remaining, validationError } = useMemo(() => {
     let income = 0;
     let billsActual = 0;
@@ -249,7 +286,58 @@ export default function ManageBudget({ plan }: Props) {
         <section>
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-semibold">Budget Categories</h2>
-            <Button size="sm" variant="outline">Add Budget</Button>
+            <Dialog open={openAdd} onOpenChange={setOpenAdd}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline">Add Budget</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Add Budget</DialogTitle>
+                </DialogHeader>
+                <div className="max-h-60 overflow-y-auto space-y-2 py-2">
+                  {availableCategories.map(name => {
+                    const Icon = getIcon(name);
+                    const checked = selectedCats.has(name);
+                    return (
+                      <div key={name} className="flex items-center justify-between py-1">
+                        <div className="flex items-center gap-2">
+                          <Icon className="w-4 h-4 text-muted-foreground" />
+                          <span>{name}</span>
+                        </div>
+                        <Switch
+                          checked={checked}
+                          onCheckedChange={val => {
+                            const next = new Set(selectedCats);
+                            if (val) next.add(name);
+                            else next.delete(name);
+                            setSelectedCats(next);
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedCats(new Set());
+                      setOpenAdd(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleAddCategories}
+                    disabled={selectedCats.size === 0}
+                  >
+                    Add
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
           <Separator className="mb-4" />
           <Card>
@@ -316,7 +404,7 @@ export default function ManageBudget({ plan }: Props) {
             <div className="flex justify-between font-medium">
               <span>Remaining</span>
               <span className={ringColor}>{fmt.format(remaining)}</span>
-              </span>
+            
             </div>
           </div>
         </CardContent>
