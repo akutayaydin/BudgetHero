@@ -209,15 +209,11 @@ function BudgetRow({
      
       <td className="p-4 align-middle text-right">
         <div className="font-medium">{fmt.format(actual)}</div>
-        <div className="text-xs text-muted-foreground">actual</div>
       </td>
       <td className="p-4 align-middle text-right">
         <div className={`flex items-center justify-end gap-2 ${color}`}>
           <Ring percent={percentUsed} />
           <div className="font-medium">{fmt.format(remaining)}</div>
-        </div>
-        <div className="text-xs text-muted-foreground text-right mt-1">
-          {isIncome ? "surplus" : "remaining"}
         </div>
       </td>
     </tr>
@@ -249,10 +245,6 @@ function BudgetCard({
           ? "text-green-600 dark:text-green-400"
           : "text-muted-foreground";
   }
-
-  let label = "left";
-  if (isIncome) label = "surplus";
-  else if (name.toLowerCase() === "bills & utilities") label = "remaining";
 
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(budgeted));
@@ -286,12 +278,10 @@ function BudgetCard({
           <Icon className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
           <span className="font-medium">{name}</span>
         </div>
-        <div className={`flex items-center gap-2 text-right ${color}`}>
-          <span className="text-sm font-medium">
-            {fmt.format(remaining)} {label}
-          </span>
-          <Ring percent={percentUsed} />
-        </div>
+          <div className={`flex items-center gap-2 text-right ${color}`}>
+            <span className="text-sm font-medium">{fmt.format(remaining)}</span>
+            <Ring percent={percentUsed} />
+          </div>
       </div>
       <div className="flex items-center justify-between text-sm">
         <div className="flex items-center gap-1">
@@ -336,16 +326,16 @@ function BudgetCard({
               aria-label={`Edit budget for ${name}. Current amount: ${fmt.format(budgeted)}`}
               data-testid={`button-edit-budget-${id}`}
             >
-              <span className="px-1 pb-[1px] border-b border-dashed border-muted-foreground/50 hover:border-primary transition-colors font-medium">
-                Budgeted {fmt.format(budgeted)}
-              </span>
+                <span className="px-1 pb-[1px] border-b border-dashed border-muted-foreground/50 hover:border-primary transition-colors font-medium">
+                  {fmt.format(budgeted)}
+                </span>
 
             </button>
           ) : (
-      <span className="font-medium">Budgeted {fmt.format(budgeted)}</span>
+        <span className="font-medium">{fmt.format(budgeted)}</span>
           )}
           <span>|</span>
-          <span className="font-medium">Actual {fmt.format(actual)}</span>
+        <span className="font-medium">{fmt.format(actual)}</span>
         </div>
         {onDelete && id && (
           <Button
