@@ -54,9 +54,9 @@ export default {
         sidebar: {
           DEFAULT: "var(--sidebar-background)",
           foreground: "var(--sidebar-foreground)",
-          primary: "var(--sidebar-primary)",
+          primary: "var(--sidebar-primary-background)",
           "primary-foreground": "var(--sidebar-primary-foreground)",
-          accent: "var(--sidebar-accent)",
+          accent: "var(--sidebar-accent-background)",
           "accent-foreground": "var(--sidebar-accent-foreground)",
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
