@@ -659,12 +659,9 @@ export default function ManageBudget({ plan }: Props) {
       const summarySet = new Set(["spending budget", "left for savings"]);
 
 
-    const categories = Array.from(categoriesMap.values())
-      .filter(
-        (b) =>
-          !basicsSet.has((b.name || "").toLowerCase()) &&
-          !summarySet.has((b.name || "").toLowerCase()),
-      )
+      const allCategories = Array.from(categoriesMap.values())
+        .filter((b) => !basicsSet.has((b.name || "").toLowerCase()))
+        
       .map((b) => ({
         id: (b as any).id,
         name: (b as any).name as string,
@@ -674,6 +671,13 @@ export default function ManageBudget({ plan }: Props) {
         editable: true,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
+
+      const summaryRows = allCategories.filter((c) =>
+        summarySet.has(c.name.toLowerCase()),
+      );
+      const categories = allCategories.filter(
+        (c) => !summarySet.has(c.name.toLowerCase()),
+      );
 
     const allocated = categories.reduce((s, c) => s + c.budgeted, 0);
     const categoriesSpent = categories.reduce((s, c) => s + c.actual, 0);
@@ -702,7 +706,11 @@ export default function ManageBudget({ plan }: Props) {
       icon: getIcon("everything else"),
     };
 
-      const categoriesWithEverythingElse = [...categories, everythingElse];
+      const categoriesWithEverythingElse = [
+        ...categories,
+        everythingElse,
+        ...summaryRows,
+      ];
     
 
     const basicsRows: RowProps[] = [
@@ -728,34 +736,12 @@ export default function ManageBudget({ plan }: Props) {
     const currentSpendVal = categoriesSpent + everythingElse.actual;
       const remainingVal = totalBudgeted - currentSpendVal;
 
-      const spendingRow: RowProps = {
-        id: "spending-budget",
-        name: "Spending Budget",
-        budgeted: totalBudgeted,
-        actual: currentSpendVal,
-        icon: getIcon("spending budget"),
-        editable: false,
-      };
-
-      const savingsPlanned = Math.max(
-        Number(expectedEarnings) - Number(expectedBills) - totalBudgeted,
-        0,
-      );
-      const savingsActual = Math.max(income - totalExpenses, 0);
-
-      const savingsRow: RowProps = {
-        id: "left-for-savings",
-        name: "Left for Savings",
-        budgeted: savingsPlanned,
-        actual: savingsActual,
-        icon: getIcon("left for savings"),
-        editable: false,
-      };
+     
 
       
       return {
         basics: basicsRows,
-        categoryRows: [...categoriesWithEverythingElse, spendingRow, savingsRow],
+        categoryRows: categoriesWithEverythingElse,
         currentSpend: currentSpendVal,
         remaining: remainingVal,
         validationError: savings < 0,
