@@ -166,6 +166,7 @@ for (day of next60days) {
 ## 5) “Where Your Money Goes” — Sankey Flow — *Medium→Higher (big wow)*
 **Why it wows:** Visual storytelling: income streams → categories → merchants, with interactive drilldown.
 
+![ChatGPT Image Sep 7, 2025 at 07_47_24 PM](ChatGPT%20Image%20Sep%207,%202025%20at%2007_47_24%20PM.png)
 ### UX spec
 - Sankey with **Income** on the left; **Categories/Subcategories/Merchants** to the right.
 - Hover highlights flows + tooltip shows amount and % of income.
