@@ -656,14 +656,22 @@ export default function ManageBudget({ plan }: Props) {
       if (!categoriesMap.has(key)) categoriesMap.set(key, b);
     });
 
+      const summarySet = new Set(["spending budget", "left for savings"]);
+
+
     const categories = Array.from(categoriesMap.values())
-      .filter((b) => !basicsSet.has((b.name || "").toLowerCase()))
+      .filter(
+        (b) =>
+          !basicsSet.has((b.name || "").toLowerCase()) &&
+          !summarySet.has((b.name || "").toLowerCase()),
+      )
       .map((b) => ({
         id: (b as any).id,
         name: (b as any).name as string,
         budgeted: Number((b as any).limit),
         actual: actualByCat[((b as any).name || "").toLowerCase()] || 0,
         icon: getIcon((b as any).name || ""),
+        editable: true,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -722,9 +730,34 @@ export default function ManageBudget({ plan }: Props) {
     const currentSpendVal = categoriesSpent + everythingElse.actual;
       const remainingVal = totalBudgeted - currentSpendVal;
 
+      const spendingRow: RowProps = {
+        id: "spending-budget",
+        name: "Spending Budget",
+        budgeted: Number(spendingBudget),
+        actual: currentSpendVal,
+        icon: getIcon("spending budget"),
+        editable: false,
+      };
+
+      const savingsPlanned = Math.max(
+        Number(expectedEarnings) - Number(expectedBills) - Number(spendingBudget),
+        0,
+      );
+      const savingsActual = Math.max(income - totalExpenses, 0);
+
+      const savingsRow: RowProps = {
+        id: "left-for-savings",
+        name: "Left for Savings",
+        budgeted: savingsPlanned,
+        actual: savingsActual,
+        icon: getIcon("left for savings"),
+        editable: false,
+      };
+
+      
       return {
         basics: basicsRows,
-        categoryRows: categoriesWithEverythingElse,
+        categoryRows: [...categories, everythingElse, spendingRow, savingsRow],
         currentSpend: currentSpendVal,
         remaining: remainingVal,
         validationError: savings < 0,
