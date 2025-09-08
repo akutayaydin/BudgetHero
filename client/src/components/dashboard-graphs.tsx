@@ -352,7 +352,7 @@ export function DashboardGraphs() {
       <CardContent>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-3xl font-bold text-gray-900 dark:text-white font-mono">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {formatFullCurrency(currentNetWorth)}
             </p>
             <div className="flex items-center gap-2 mt-1">
@@ -369,7 +369,7 @@ export function DashboardGraphs() {
                 }`}
               >
                 {netWorthChange >= 0 ? "Up " : "Down "}
-                <span className="font-mono">{formatFullCurrency(netWorthChange)}</span> over the <br />
+                <span >{formatFullCurrency(netWorthChange)}</span> over the <br />
                 {netWorthPeriod === "1M"
                   ? "last month"
                   : netWorthPeriod === "3M"
@@ -464,7 +464,7 @@ export function DashboardGraphs() {
                           <span className="text-xs text-gray-500 dark:text-gray-300">
                             Net Worth
                           </span>
-                          <span className="text-xs font-medium text-gray-900 dark:text-white font-mono">
+                          <span className="text-xs font-medium text-gray-900 dark:text-white ">
                             {formatFullCurrency(value)}
                           </span>
                         </div>
@@ -519,7 +519,7 @@ export function DashboardGraphs() {
       <CardContent>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-3xl font-bold text-gray-900 dark:text-white font-mono">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white ">
               ${(totalSpending || 0).toLocaleString()}
             </p>
             <div className="flex items-center gap-2 mt-1">
@@ -536,7 +536,7 @@ export function DashboardGraphs() {
                 }`}
               >
                 {spendingChange >= 0 ? "You've spent" : "You've spent"} $
-                <span className="font-mono">{Math.abs(spendingChange || 0).toLocaleString()}</span>{" "}
+                <span>{Math.abs(spendingChange || 0).toLocaleString()}</span>{" "}
                 {spendingChange >= 0 ? "more" : "less"} than last month
               </span>
             </div>
@@ -617,7 +617,7 @@ export function DashboardGraphs() {
                                     ? "This Month"
                                     : "Last Month"}
                                 </span>
-                                <span className="font-mono">
+                                <span>
                                   {formatFullCurrency(entry.value as number)}
                                 </span>
                               </div>
@@ -628,7 +628,7 @@ export function DashboardGraphs() {
                         // ✅ After today → only the last month sentence, no header
                         <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
                           Last month, by {dp.previousLabel}, you <br />
-                          spent <b className="font-mono">{formatFullCurrency(dp.previous)}</b>.
+                          spent <b>{formatFullCurrency(dp.previous)}</b>.
                         </p>
                       )}
                     </div>

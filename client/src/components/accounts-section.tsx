@@ -228,7 +228,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     />
                   ) : (
                     <>
-                      <span className="font-semibold text-gray-900 dark:text-white font-mono">
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         ${totalChecking.toLocaleString()}
                       </span>
                       {isExpanded("checking") ? (
@@ -260,14 +260,15 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
                           {account.mask && (
-                            <span className="font-mono">{`• • ${account.mask}`}</span>
+
+                      <span>{`• • ${account.mask}`}</span>
                           )}
                           {account.mask && account.officialName ? " | " : ""}
                           {account.officialName || ""}
                         </div>
                       </div>
 
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right font-mono">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
                         $
                         {(
                           (typeof account.currentBalance === "string"
@@ -308,7 +309,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     />
                   ) : (
                     <>
-                      <span className="font-semibold text-gray-900 dark:text-white font-mono">
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         ${totalCredit.toLocaleString()}
                       </span>
                       {isExpanded("credit") ? (
@@ -340,14 +341,15 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
                           {account.mask && (
-                            <span className="font-mono">{`• • ${account.mask}`}</span>
+
+                      <span>{`• • ${account.mask}`}</span>
                           )}
                           {account.mask && account.officialName ? " | " : ""}
                           {account.officialName || ""}
                         </div>
                       </div>
 
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right font-mono">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
                         $
                         {(
                           (typeof account.currentBalance === "string"
@@ -385,7 +387,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     netCash >= 0
                       ? "text-green-600 dark:text-green-400"
                       : "text-red-600 dark:text-red-400"
-                  } font-mono`}
+                  } `}
                 >
                   ${netCash.toLocaleString()}
                 </span>
@@ -419,7 +421,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     />
                   ) : (
                     <>
-                      <span className="font-semibold text-gray-900 dark:text-white font-mono">
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         ${totalSavings.toLocaleString()}
                       </span>
                       {isExpanded("savings") ? (
@@ -451,14 +453,15 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
                           {account.mask && (
-                            <span className="font-mono">{`• • ${account.mask}`}</span>
+
+                      <span>{`• • ${account.mask}`}</span>
                           )}
                           {account.mask && account.officialName ? " | " : ""}
                           {account.officialName || ""}
                         </div>
                       </div>
 
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right font-mono">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
                         $
                         {(
                           (typeof account.currentBalance === "string"
@@ -507,7 +510,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-900 dark:text-white font-mono">
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         ${totalInvestments.toLocaleString()}
                       </span>
                       {isExpanded("investments") ? (
@@ -537,14 +540,15 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                             </div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
                               {account.mask && (
-                                <span className="font-mono">{`• • ${account.mask}`}</span>
+
+                          <span>{`• • ${account.mask}`}</span>
                               )}
                               {account.mask && account.officialName ? " | " : ""}
                               {account.officialName || ""}
                             </div>
                           </div>
 
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white text-right font-mono">
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
                             $
                             {(
                               (typeof account.currentBalance === "string"
