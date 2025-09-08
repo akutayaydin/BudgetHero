@@ -228,7 +228,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     />
                   ) : (
                     <>
-                      <span className="font-semibold text-gray-900 dark:text-white">
+                      <span className="font-semibold text-gray-900 dark:text-white font-mono">
                         ${totalChecking.toLocaleString()}
                       </span>
                       {isExpanded("checking") ? (
@@ -267,7 +267,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                         </div>
                       </div>
 
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right font-mono">
                         $
                         {(
                           (typeof account.currentBalance === "string"
@@ -308,7 +308,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     />
                   ) : (
                     <>
-                      <span className="font-semibold text-gray-900 dark:text-white">
+                      <span className="font-semibold text-gray-900 dark:text-white font-mono">
                         ${totalCredit.toLocaleString()}
                       </span>
                       {isExpanded("credit") ? (
@@ -347,7 +347,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                         </div>
                       </div>
 
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right font-mono">
                         $
                         {(
                           (typeof account.currentBalance === "string"
@@ -385,7 +385,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     netCash >= 0
                       ? "text-green-600 dark:text-green-400"
                       : "text-red-600 dark:text-red-400"
-                  }`}
+                  } font-mono`}
                 >
                   ${netCash.toLocaleString()}
                 </span>
@@ -419,7 +419,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                     />
                   ) : (
                     <>
-                      <span className="font-semibold text-gray-900 dark:text-white">
+                      <span className="font-semibold text-gray-900 dark:text-white font-mono">
                         ${totalSavings.toLocaleString()}
                       </span>
                       {isExpanded("savings") ? (
@@ -458,7 +458,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                         </div>
                       </div>
 
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white text-right font-mono">
                         $
                         {(
                           (typeof account.currentBalance === "string"
@@ -507,7 +507,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-900 dark:text-white">
+                      <span className="font-semibold text-gray-900 dark:text-white font-mono">
                         ${totalInvestments.toLocaleString()}
                       </span>
                       {isExpanded("investments") ? (
@@ -544,7 +544,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
                             </div>
                           </div>
 
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white text-right font-mono">
                             $
                             {(
                               (typeof account.currentBalance === "string"

@@ -81,25 +81,25 @@ export function BudgetSection() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                 <div className="text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400">Budgeted</p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white font-mono">
                     ${(totalBudgeted || 0).toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400">Spent</p>
-                  <p className="text-lg font-semibold text-red-600 dark:text-red-400">
+                  <p className="text-lg font-semibold text-red-600 dark:text-red-400 font-mono">
                     ${(totalSpent || 0).toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400">Remaining</p>
-                  <p className={`text-lg font-semibold ${totalRemaining >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <p className={`text-lg font-semibold ${totalRemaining >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} font-mono`}>
                     ${Math.abs(totalRemaining || 0).toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400">Progress</p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white font-mono">
                     {spentPercentage.toFixed(0)}%
                   </p>
                 </div>
@@ -108,7 +108,7 @@ export function BudgetSection() {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">Overall Progress</span>
-                  <span className="font-medium">{spentPercentage.toFixed(1)}%</span>
+                  <span className="font-medium font-mono">{spentPercentage.toFixed(1)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                   <div 
@@ -140,11 +140,11 @@ export function BudgetSection() {
                           </Badge>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold text-gray-900 dark:text-white">
+                          <p className="font-semibold text-gray-900 dark:text-white font-mono">
                             ${(budget.spent || 0).toLocaleString()} / ${(budget.budgeted || 0).toLocaleString()}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            ${Math.abs(budget.remaining || 0).toLocaleString()} {(budget.remaining || 0) >= 0 ? 'left' : 'over'}
+                            <span className="font-mono">${Math.abs(budget.remaining || 0).toLocaleString()}</span> {(budget.remaining || 0) >= 0 ? 'left' : 'over'}
                           </p>
                         </div>
                       </div>
@@ -152,7 +152,7 @@ export function BudgetSection() {
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600 dark:text-gray-400">{budget.period}</span>
-                          <span className="font-medium">{percentage.toFixed(1)}%</span>
+                          <span className="font-medium font-mono">{percentage.toFixed(1)}%</span>
                         </div>
                         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                           <div 

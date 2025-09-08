@@ -44,7 +44,7 @@ export function SavingsInvestmentsSection() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center py-6">
-            <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2 font-mono">
               ${(totalSavings || 0).toLocaleString()}
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
@@ -62,7 +62,7 @@ export function SavingsInvestmentsSection() {
                     </div>
                     <span className="font-medium text-gray-900 dark:text-white">{asset.name}</span>
                   </div>
-                  <span className="font-semibold text-gray-900 dark:text-white">
+                  <span className="font-semibold text-gray-900 dark:text-white font-mono">
                     ${(parseFloat(asset.currentValue || '0') || 0).toLocaleString()}
                   </span>
                 </div>
@@ -100,7 +100,7 @@ export function SavingsInvestmentsSection() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center py-6">
-            <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2 font-mono">
               ${(totalInvestments || 0).toLocaleString()}
             </p>
             <div className="flex items-center justify-center gap-2">
@@ -122,13 +122,13 @@ export function SavingsInvestmentsSection() {
                     <div>
                       <span className="font-medium text-gray-900 dark:text-white block">{asset.name}</span>
                       {asset.return && (
-                        <span className={`text-xs ${asset.return >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <span className={`text-xs ${asset.return >= 0 ? 'text-green-600' : 'text-red-600'} font-mono`}>
                           {asset.return >= 0 ? '+' : ''}{asset.return.toFixed(2)}%
                         </span>
                       )}
                     </div>
                   </div>
-                  <span className="font-semibold text-gray-900 dark:text-white">
+                  <span className="font-semibold text-gray-900 dark:text-white font-mono">
                     ${(parseFloat(asset.currentValue || '0') || 0).toLocaleString()}
                   </span>
                 </div>
