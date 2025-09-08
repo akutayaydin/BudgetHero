@@ -702,9 +702,7 @@ export default function ManageBudget({ plan }: Props) {
       icon: getIcon("everything else"),
     };
 
-      const categoriesWithEverythingElse = [...categories, everythingElse].sort((a, b) =>
-        a.name.localeCompare(b.name),
-      );
+      const categoriesWithEverythingElse = [...categories, everythingElse];
     
 
     const basicsRows: RowProps[] = [
@@ -733,14 +731,14 @@ export default function ManageBudget({ plan }: Props) {
       const spendingRow: RowProps = {
         id: "spending-budget",
         name: "Spending Budget",
-        budgeted: Number(spendingBudget),
+        budgeted: totalBudgeted,
         actual: currentSpendVal,
         icon: getIcon("spending budget"),
         editable: false,
       };
 
       const savingsPlanned = Math.max(
-        Number(expectedEarnings) - Number(expectedBills) - Number(spendingBudget),
+        Number(expectedEarnings) - Number(expectedBills) - totalBudgeted,
         0,
       );
       const savingsActual = Math.max(income - totalExpenses, 0);
@@ -757,7 +755,7 @@ export default function ManageBudget({ plan }: Props) {
       
       return {
         basics: basicsRows,
-        categoryRows: [...categories, everythingElse, spendingRow, savingsRow],
+        categoryRows: [...categoriesWithEverythingElse, spendingRow, savingsRow],
         currentSpend: currentSpendVal,
         remaining: remainingVal,
         validationError: savings < 0,
