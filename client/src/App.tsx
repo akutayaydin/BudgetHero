@@ -12,7 +12,7 @@ import Landing from "@/pages/landing";
 import Privacy from "@/pages/privacy";
 import Home from "@/pages/home";
 import Upload from "@/pages/upload";
-import OverviewV2 from "@/pages/overview-v2";
+import OverviewV2 from "@/pages/dashboard";
 import Transactions from "@/pages/transactions";
 import BudgetsIndex from "@/pages/budgets";
 import BudgetSetup from "@/pages/budgets-setup";
