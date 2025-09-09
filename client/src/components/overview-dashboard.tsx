@@ -18,6 +18,7 @@ import {
   Bell,
   MoreHorizontal,
   GripVertical,
+  ArrowRight,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -34,6 +35,7 @@ import { cn } from "@/lib/utils";
 import { NetWorthGraph, SpendingGraph } from "@/components/dashboard-graphs";
 import AccountsCard from "@/components/accounts-card";
 import WidgetDrawer from "@/components/widget-drawer";
+import { Link } from "wouter";
 
 // --- Basic UI primitives using theme variables ---
 const Card = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
@@ -502,12 +504,23 @@ export default function OverviewDashboard() {
               }
               subtitle="Monthly spending overview"
               action={
-                <button
-                  onClick={() => removeCard("spending")}
-                  className="text-xs px-2 py-1 rounded-md border border-border"
-                >
-                  Remove
-                </button>
+                <>
+                  <Link href="/spending">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium"
+                    >
+                      View Spending <ArrowRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </Link>
+                  <button
+                    onClick={() => removeCard("spending")}
+                    className="text-xs px-2 py-1 rounded-md border border-border"
+                  >
+                    Remove
+                  </button>
+                </>
               }
             />
             <CardBody>
@@ -526,12 +539,23 @@ export default function OverviewDashboard() {
               }
               subtitle="Net worth over time"
               action={
-                <button
-                  onClick={() => removeCard("netWorth")}
-                  className="text-xs px-2 py-1 rounded-md border border-border"
-                >
-                  Remove
-                </button>
+                <>
+                  <Link href="/wealth-management">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-medium"
+                    >
+                      View Net Worth <ArrowRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </Link>
+                  <button
+                    onClick={() => removeCard("netWorth")}
+                    className="text-xs px-2 py-1 rounded-md border border-border"
+                  >
+                    Remove
+                  </button>
+                </>
               }
             />
             <CardBody>
