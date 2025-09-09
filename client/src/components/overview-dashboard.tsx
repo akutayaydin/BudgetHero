@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   BarChart2,
   PieChart,
@@ -358,20 +358,43 @@ export default function OverviewDashboard() {
   // Load saved layout when data is available
   useEffect(() => {
     if (savedLayout && savedLayout.layoutData) {
+      setIsLoadingLayout(true);
       setColumns(savedLayout.layoutData);
+      previousColumnsRef.current = JSON.stringify(savedLayout.layoutData);
+      // Allow saving again after layout is loaded
+      setTimeout(() => setIsLoadingLayout(false), 100);
     }
   }, [savedLayout]);
 
-  // Save layout changes with debouncing
+  // Track if we're loading a saved layout to prevent immediate save
+  const [isLoadingLayout, setIsLoadingLayout] = useState(false);
+  const previousColumnsRef = useRef<string>('');
+  
+  // Initialize the ref once
   useEffect(() => {
+    if (previousColumnsRef.current === '') {
+      previousColumnsRef.current = JSON.stringify(getInitialColumns());
+    }
+  }, []);
+
+  // Save layout changes with debouncing (only when layout actually changes)
+  useEffect(() => {
+    const currentColumnsString = JSON.stringify(columns);
+    
+    // Don't save if we're loading a layout or if nothing changed
+    if (isLoadingLayout || currentColumnsString === previousColumnsRef.current) {
+      return;
+    }
+
     const timeoutId = setTimeout(() => {
       if (user && !saveLayoutMutation.isPending) {
         saveLayoutMutation.mutate(columns);
+        previousColumnsRef.current = currentColumnsString;
       }
     }, 1000); // Debounce for 1 second
 
     return () => clearTimeout(timeoutId);
-  }, [columns, user, saveLayoutMutation]);
+  }, [columns, user]); // Removed saveLayoutMutation from dependencies
   
   const used = [
     ...columns.left,
