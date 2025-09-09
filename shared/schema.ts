@@ -932,3 +932,22 @@ export const insertRecurringMerchantSchema = createInsertSchema(recurringMerchan
 
 export type InsertRecurringMerchant = z.infer<typeof insertRecurringMerchantSchema>;
 export type RecurringMerchant = typeof recurringMerchants.$inferSelect;
+
+// Widget Layout storage table.
+export const widgetLayouts = pgTable("widget_layouts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  deviceId: varchar("device_id"), // For device-specific layouts
+  layoutData: jsonb("layout_data").notNull(), // Store column layout and widget positions
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertWidgetLayoutSchema = createInsertSchema(widgetLayouts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type WidgetLayout = typeof widgetLayouts.$inferSelect;
+export type InsertWidgetLayout = z.infer<typeof insertWidgetLayoutSchema>;
