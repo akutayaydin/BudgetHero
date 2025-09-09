@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -214,6 +215,8 @@ export default function OverviewDashboard() {
   const { data: user } = useQuery<{ name?: string }>({
     queryKey: ["/api/auth/user"],
   });
+  
+  const { toast } = useToast();
 
   // Real data queries
   const { data: netWorthData } = useQuery<NetWorthData>({
@@ -236,50 +239,22 @@ export default function OverviewDashboard() {
     queryKey: ["/api/financial-health"],
   });
 
-  // Generate stable device-specific ID for layout persistence  
-  const getDeviceId = () => {
-    // Check if device ID exists in localStorage first (most stable)
-    let deviceId = localStorage.getItem('budgethero_device_id');
-    if (deviceId) return deviceId;
-    
-    // Detect device type for different layout configurations
+  // Simple device type detection
+  const getDeviceType = () => {
     const isMobile = window.innerWidth <= 768;
     const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
     
-    let deviceType = 'desktop';
-    if (isMobile) deviceType = 'mobile';
-    else if (isTablet) deviceType = 'tablet';
-    
-    // Create more stable fingerprint
-    const fingerprint = [
-      deviceType,
-      navigator.language || 'en-US',
-      screen.width,
-      screen.height,
-      navigator.platform || 'unknown'
-    ].join('|');
-    
-    // Create hash
-    let hash = 0;
-    for (let i = 0; i < fingerprint.length; i++) {
-      const char = fingerprint.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    
-    deviceId = `${deviceType}_${Math.abs(hash).toString(36)}`;
-    
-    // Store for future sessions
-    localStorage.setItem('budgethero_device_id', deviceId);
-    return deviceId;
+    if (isMobile) return 'mobile';
+    if (isTablet) return 'tablet';
+    return 'desktop';
   };
 
-  const deviceId = useMemo(() => getDeviceId(), []);
+  const deviceType = useMemo(() => getDeviceType(), []);
 
   // Load saved widget layout
   const { data: savedLayout } = useQuery({
-    queryKey: ["/api/widget-layout", deviceId],
-    queryFn: () => apiRequest(`/api/widget-layout?deviceId=${deviceId}`, "GET"),
+    queryKey: ["/api/widget-layout", deviceType],
+    queryFn: () => apiRequest(`/api/widget-layout?deviceId=${deviceType}`, "GET"),
     retry: false,
   });
 
@@ -288,12 +263,30 @@ export default function OverviewDashboard() {
   // Save widget layout mutation
   const saveLayoutMutation = useMutation({
     mutationFn: async (layoutData: any) => {
-      return await apiRequest("/api/widget-layout", "POST", { layoutData, deviceId });
+      return await apiRequest("/api/widget-layout", "POST", { layoutData, deviceId: deviceType });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Layout Saved",
+        description: "Your widget layout has been saved successfully.",
+      });
     },
     onError: (error) => {
       console.error("Failed to save widget layout:", error);
+      toast({
+        title: "Save Failed", 
+        description: "Could not save your widget layout. Please try again.",
+        variant: "destructive",
+      });
     },
   });
+
+  // Manual save function for the save button
+  const handleSaveLayout = () => {
+    if (user) {
+      saveLayoutMutation.mutate(columns);
+    }
+  };
 
   const allWidgets = [
     "spending",
@@ -377,24 +370,8 @@ export default function OverviewDashboard() {
     }
   }, []);
 
-  // Save layout changes with debouncing (only when layout actually changes)
-  useEffect(() => {
-    const currentColumnsString = JSON.stringify(columns);
-    
-    // Don't save if we're loading a layout or if nothing changed
-    if (isLoadingLayout || currentColumnsString === previousColumnsRef.current) {
-      return;
-    }
-
-    const timeoutId = setTimeout(() => {
-      if (user && !saveLayoutMutation.isPending) {
-        saveLayoutMutation.mutate(columns);
-        previousColumnsRef.current = currentColumnsString;
-      }
-    }, 1000); // Debounce for 1 second
-
-    return () => clearTimeout(timeoutId);
-  }, [columns, user]); // Removed saveLayoutMutation from dependencies
+  // Disable auto-save - user now controls when to save with the save button
+  // This prevents the infinite loop and gives users more control
   
   const used = [
     ...columns.left,
@@ -1019,6 +996,15 @@ export default function OverviewDashboard() {
               <Bell className="h-5 w-5" />
             </Button>
             {user?.name && <span className="px-2">{user.name}</span>}
+            <Button 
+              onClick={handleSaveLayout}
+              variant="outline" 
+              size="sm"
+              disabled={saveLayoutMutation.isPending}
+              className="text-xs"
+            >
+              {saveLayoutMutation.isPending ? "Saving..." : "Save Layout"}
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -1028,7 +1014,9 @@ export default function OverviewDashboard() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>Personal</DropdownMenuItem>
                 <DropdownMenuItem>Household</DropdownMenuItem>
-                <DropdownMenuItem>Customize Layout</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSaveLayout}>
+                  Save Layout ({deviceType})
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -1081,8 +1069,8 @@ export default function OverviewDashboard() {
           {/* Draggable card layout */}
           <div className={cn(
             "grid gap-4",
-            deviceId.startsWith('mobile_') ? "grid-cols-1" : 
-            deviceId.startsWith('tablet_') ? "grid-cols-1 lg:grid-cols-2" :
+            deviceType === 'mobile' ? "grid-cols-1" : 
+            deviceType === 'tablet' ? "grid-cols-1 lg:grid-cols-2" :
             "grid-cols-1 lg:grid-cols-2"
           )}>
             <div
@@ -1115,7 +1103,7 @@ export default function OverviewDashboard() {
               className="space-y-4"
             >
               {columns.left.map((id) => (
-                <React.Fragment key={id}>
+                <div key={id}>
                   {dragging && overId === id && (
                     <div className="h-32 border-2 border-dashed rounded-xl" />
                   )}
@@ -1136,7 +1124,7 @@ export default function OverviewDashboard() {
                       }
                     }}
                   />
-                </React.Fragment>
+                </div>
               ))}
               {dragging && overContainer === "left" && (
                 <div className="h-32 border-2 border-dashed rounded-xl" />
@@ -1173,7 +1161,7 @@ export default function OverviewDashboard() {
               className="space-y-4"
             >
               {columns.right.map((id) => (
-                <React.Fragment key={id}>
+                <div key={id}>
                   {dragging && overId === id && (
                     <div className="h-32 border-2 border-dashed rounded-xl" />
                   )}
@@ -1194,7 +1182,7 @@ export default function OverviewDashboard() {
                       }
                     }}
                   />
-                </React.Fragment>
+                </div>
               ))}
               {dragging && overContainer === "right" && (
                 <div className="h-32 border-2 border-dashed rounded-xl" />
@@ -1232,7 +1220,7 @@ export default function OverviewDashboard() {
             className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4"
           >
             {columns.bottom.map((id) => (
-              <React.Fragment key={id}>
+              <div key={id}>
                 {dragging && overId === id && (
                   <div className="h-32 border-2 border-dashed rounded-xl" />
                 )}
@@ -1253,7 +1241,7 @@ export default function OverviewDashboard() {
                     }
                   }}
                 />
-              </React.Fragment>
+              </div>
             ))}
             {dragging && overContainer === "bottom" && (
               <div className="h-32 border-2 border-dashed rounded-xl" />

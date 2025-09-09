@@ -1,0 +1,66 @@
+overview-dashboard.tsx:1235 Warning: Invalid prop `data-replit-metadata` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.
+    at OverviewDashboard (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/overview-dashboard.tsx?t=1757403169294:264:26)
+    at div
+    at Dashboard (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/pages/dashboard.tsx?t=1757403169294:34:21)
+    at Route (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7d84ce55:323:16)
+    at Switch (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7d84ce55:379:17)
+    at div
+    at div
+    at div
+    at Router (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/App.tsx?t=1757403169294&v=Uj4aXh-yWH7R7MyhMX1-0:76:42)
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…unner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=7d84ce55:38:15)
+    at TooltipProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…kspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=7d84ce55:968:5)
+    at ThemeProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/contexts/ThemeContext.tsx:20:33)
+    at QueryClientProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=7d84ce55:2805:3)
+    at App
+
+3
+overview-dashboard.tsx:1118 Warning: Invalid prop `data-replit-metadata` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.
+    at OverviewDashboard (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/overview-dashboard.tsx?t=1757403169294:264:26)
+    at div
+    at Dashboard (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/pages/dashboard.tsx?t=1757403169294:34:21)
+    at Route (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7d84ce55:323:16)
+    at Switch (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7d84ce55:379:17)
+    at div
+    at div
+    at div
+    at Router (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/App.tsx?t=1757403169294&v=Uj4aXh-yWH7R7MyhMX1-0:76:42)
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…unner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=7d84ce55:38:15)
+    at TooltipProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…kspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=7d84ce55:968:5)
+    at ThemeProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/contexts/ThemeContext.tsx:20:33)
+    at QueryClientProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=7d84ce55:2805:3)
+    at App
+3
+overview-dashboard.tsx:1176 Warning: Invalid prop `data-replit-metadata` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.
+    at OverviewDashboard (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/overview-dashboard.tsx?t=1757403169294:264:26)
+    at div
+    at Dashboard (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/pages/dashboard.tsx?t=1757403169294:34:21)
+    at Route (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7d84ce55:323:16)
+    at Switch (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7d84ce55:379:17)
+    at div
+    at div
+    at div
+    at Router (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/App.tsx?t=1757403169294&v=Uj4aXh-yWH7R7MyhMX1-0:76:42)
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…unner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=7d84ce55:38:15)
+    at TooltipProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…kspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=7d84ce55:968:5)
+    at ThemeProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/contexts/ThemeContext.tsx:20:33)
+    at QueryClientProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=7d84ce55:2805:3)
+    at App
+5
+overview-dashboard.tsx:1235 Warning: Invalid prop `data-replit-metadata` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.
+    at OverviewDashboard (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/components/overview-dashboard.tsx?t=1757403169294:264:26)
+    at div
+    at Dashboard (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/pages/dashboard.tsx?t=1757403169294:34:21)
+    at Route (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7d84ce55:323:16)
+    at Switch (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7d84ce55:379:17)
+    at div
+    at div
+    at div
+    at Router (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/App.tsx?t=1757403169294&v=Uj4aXh-yWH7R7MyhMX1-0:76:42)
+    at Provider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…unner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=7d84ce55:38:15)
+    at TooltipProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…kspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=7d84ce55:968:5)
+    at ThemeProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.dev/src/contexts/ThemeContext.tsx:20:33)
+    at QueryClientProvider (https://1a86a33c-12f1-4e0f-ae47-fcf51684a5b1-00-1bs321wn2f61z.spock.replit.…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=7d84ce55:2805:3)
+    at App
+(anonymous)	@	overview-dashboard.tsx:1235
+OverviewDashboard	@	overview-dashboard.tsx:1234
