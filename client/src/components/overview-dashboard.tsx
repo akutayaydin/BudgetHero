@@ -236,31 +236,42 @@ export default function OverviewDashboard() {
     queryKey: ["/api/financial-health"],
   });
 
-  // Generate device-specific ID for layout persistence
+  // Generate stable device-specific ID for layout persistence  
   const getDeviceId = () => {
-    // Use a combination of screen dimensions, user agent hash, and timezone as device fingerprint
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx?.fillText('device-fingerprint', 0, 0);
-    const canvasData = canvas.toDataURL();
+    // Check if device ID exists in localStorage first (most stable)
+    let deviceId = localStorage.getItem('budgethero_device_id');
+    if (deviceId) return deviceId;
     
+    // Detect device type for different layout configurations
+    const isMobile = window.innerWidth <= 768;
+    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+    
+    let deviceType = 'desktop';
+    if (isMobile) deviceType = 'mobile';
+    else if (isTablet) deviceType = 'tablet';
+    
+    // Create more stable fingerprint
     const fingerprint = [
-      navigator.userAgent,
-      navigator.language,
+      deviceType,
+      navigator.language || 'en-US',
       screen.width,
       screen.height,
-      Intl.DateTimeFormat().resolvedOptions().timeZone,
-      canvasData.slice(-50) // Last 50 chars of canvas data
+      navigator.platform || 'unknown'
     ].join('|');
     
-    // Create a simple hash
+    // Create hash
     let hash = 0;
     for (let i = 0; i < fingerprint.length; i++) {
       const char = fingerprint.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash; // Convert to 32bit integer
     }
-    return `device_${Math.abs(hash).toString(36)}`;
+    
+    deviceId = `${deviceType}_${Math.abs(hash).toString(36)}`;
+    
+    // Store for future sessions
+    localStorage.setItem('budgethero_device_id', deviceId);
+    return deviceId;
   };
 
   const deviceId = useMemo(() => getDeviceId(), []);
@@ -312,21 +323,49 @@ export default function OverviewDashboard() {
     bills: "Upcoming Bills",
   };
 
-  const initialColumns: Record<string, string[]> = {
-    left: ["netWorth", "accounts", "transactions"],
-    right: ["bills", "budgets", "spending"],
-    bottom: ["cashflow", "tracker", "goals", "netIncome", "insights"],
+  // Device-specific default layouts
+  const getInitialColumns = () => {
+    const isMobile = window.innerWidth <= 768;
+    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+    
+    if (isMobile) {
+      // Mobile: Single column, most important widgets first
+      return {
+        left: ["netWorth", "spending", "transactions", "accounts"],
+        right: [],
+        bottom: ["bills", "budgets", "cashflow", "tracker", "goals", "netIncome", "insights"],
+      };
+    } else if (isTablet) {
+      // Tablet: Two columns, balanced layout
+      return {
+        left: ["netWorth", "accounts", "bills"],
+        right: ["spending", "transactions", "budgets"],
+        bottom: ["cashflow", "tracker", "goals", "netIncome", "insights"],
+      };
+    } else {
+      // Desktop: Three columns, full layout
+      return {
+        left: ["netWorth", "accounts", "transactions"],
+        right: ["bills", "budgets", "spending"],
+        bottom: ["cashflow", "tracker", "goals", "netIncome", "insights"],
+      };
+    }
   };
 
-  const [columns, setColumns] = useState<Record<string, string[]>>(initialColumns);
+  const [columns, setColumns] = useState<Record<string, string[]>>(getInitialColumns);
   const [drawerExpanded, setDrawerExpanded] = useState(false);
 
   // Load saved layout when data is available
   useEffect(() => {
     if (savedLayout && savedLayout.layoutData) {
+      console.log("Restoring saved layout:", savedLayout.layoutData);
+      console.log("Current device ID:", deviceId);
       setColumns(savedLayout.layoutData);
+    } else {
+      console.log("No saved layout found for device:", deviceId);
+      console.log("Using default layout:", getInitialColumns());
     }
-  }, [savedLayout]);
+  }, [savedLayout, deviceId]);
 
   // Save layout changes with debouncing
   useEffect(() => {
