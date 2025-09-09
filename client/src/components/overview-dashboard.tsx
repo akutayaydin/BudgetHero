@@ -107,19 +107,23 @@ function DraggableCard({
       draggable
       onDragStart={(e) => {
         e.dataTransfer.setData("text/plain", id);
+        e.dataTransfer.effectAllowed = "move";
         onDragStart?.(id);
       }}
       onDragEnter={(e) => {
         e.preventDefault();
         onDragEnter?.(id);
       }}
-      onDragOver={(e) => e.preventDefault()}
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+      }}
       onDrop={(e) => {
         e.preventDefault();
+        e.stopPropagation(); // Prevent event bubbling to container
         const dragId = e.dataTransfer.getData("text/plain");
         if (!dragId || dragId === id) return;
         onMove(dragId, id, "");
-        onDragEnd?.();
       }}
       onDragEnd={() => onDragEnd?.()}
     >
@@ -886,6 +890,7 @@ export default function OverviewDashboard() {
             <div
               onDragOver={(e) => {
                 e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
                 if (dragging) {
                   setOverContainer("left");
                   setOverId(null);
@@ -894,7 +899,10 @@ export default function OverviewDashboard() {
               onDrop={(e) => {
                 e.preventDefault();
                 const dragId = e.dataTransfer.getData("text/plain");
-                if (dragId) moveCard(dragId, null, "left");
+                // Only move if dropping on empty container space (not on another widget)
+                if (dragId && e.target === e.currentTarget) {
+                  moveCard(dragId, null, "left");
+                }
                 setDragging(null);
                 setOverId(null);
                 setOverContainer(null);
@@ -933,6 +941,7 @@ export default function OverviewDashboard() {
             <div
               onDragOver={(e) => {
                 e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
                 if (dragging) {
                   setOverContainer("right");
                   setOverId(null);
@@ -941,7 +950,10 @@ export default function OverviewDashboard() {
               onDrop={(e) => {
                 e.preventDefault();
                 const dragId = e.dataTransfer.getData("text/plain");
-                if (dragId) moveCard(dragId, null, "right");
+                // Only move if dropping on empty container space (not on another widget)
+                if (dragId && e.target === e.currentTarget) {
+                  moveCard(dragId, null, "right");
+                }
                 setDragging(null);
                 setOverId(null);
                 setOverContainer(null);
