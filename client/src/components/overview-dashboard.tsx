@@ -262,8 +262,8 @@ export default function OverviewDashboard() {
 
   // Save widget layout mutation
   const saveLayoutMutation = useMutation({
-    mutationFn: async (layoutData: any) => {
-      return await apiRequest("/api/widget-layout", "POST", { layoutData, deviceId: deviceType });
+    mutationFn: async (payload: { layoutData: any; deviceId: string }) => {
+      return await apiRequest("/api/widget-layout", "POST", payload);
     },
     onSuccess: () => {
       toast({
@@ -284,7 +284,11 @@ export default function OverviewDashboard() {
   // Manual save function for the save button
   const handleSaveLayout = () => {
     if (user) {
-      saveLayoutMutation.mutate(columns);
+      const layoutPayload = {
+        layoutData: columns,
+        deviceId: deviceType
+      };
+      saveLayoutMutation.mutate(layoutPayload);
     }
   };
 
