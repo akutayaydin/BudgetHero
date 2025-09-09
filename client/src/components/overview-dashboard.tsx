@@ -254,7 +254,13 @@ export default function OverviewDashboard() {
   // Load saved widget layout
   const { data: savedLayout } = useQuery({
     queryKey: ["/api/widget-layout", deviceType],
-    queryFn: () => apiRequest(`/api/widget-layout?deviceId=${deviceType}`, "GET"),
+    queryFn: async () => {
+      const res = await apiRequest(
+        `/api/widget-layout?deviceId=${deviceType}`,
+        "GET",
+      );
+      return await res.json();
+    },
     retry: false,
   });
 
@@ -265,7 +271,10 @@ export default function OverviewDashboard() {
     mutationFn: async (payload: { layoutData: any; deviceId: string }) => {
       return await apiRequest("/api/widget-layout", "POST", payload);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["/api/widget-layout", deviceType],
+      });
       toast({
         title: "Layout Saved",
         description: "Your widget layout has been saved successfully.",
@@ -274,7 +283,7 @@ export default function OverviewDashboard() {
     onError: (error) => {
       console.error("Failed to save widget layout:", error);
       toast({
-        title: "Save Failed", 
+        title: "Save Failed",
         description: "Could not save your widget layout. Please try again.",
         variant: "destructive",
       });
