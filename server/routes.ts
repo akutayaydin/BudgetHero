@@ -1352,7 +1352,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const accounts = await storage.getAccounts(userId);
       
       // Group accounts by type and create overview structure
-      const groups = [];
+      let groups: any[] = [];
 
       // Group checking accounts
       const checkingAccounts = accounts.filter(
@@ -1468,19 +1468,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
       const netCash = totalChecking + totalSavings - Math.abs(totalCredit);
 
-      // Assemble groups in desired order
-      if (checkingGroup) groups.push(checkingGroup);
-      if (creditGroup) groups.push(creditGroup);
-      if (accounts.length > 0) {
-        groups.push({
-          id: "netCash",
-          label: "Net Cash",
-          total: netCash,
-          tone: netCash >= 0 ? "positive" : "negative",
-        });
-      }
-      if (savingsGroup) groups.push(savingsGroup);
-      groups.push(investmentsGroup);
+      // Assemble groups in the required order
+      groups = [
+        checkingGroup,
+        creditGroup,
+        accounts.length > 0
+          ? {
+              id: "netCash",
+              label: "Net Cash",
+              total: netCash,
+              tone: netCash >= 0 ? "positive" : "negative",
+            }
+          : null,
+        savingsGroup,
+        investmentsGroup,
+      ].filter(Boolean);
 
       res.json({ groups });
     } catch (error) {
