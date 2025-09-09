@@ -266,6 +266,9 @@ export default function OverviewDashboard() {
 
   const queryClient = useQueryClient();
 
+  const [layoutChanged, setLayoutChanged] = useState(false);
+  const [savePromptShown, setSavePromptShown] = useState(false);
+
   // Save widget layout mutation
   const saveLayoutMutation = useMutation({
     mutationFn: async (payload: { layoutData: any; deviceId: string }) => {
@@ -275,6 +278,8 @@ export default function OverviewDashboard() {
       await queryClient.invalidateQueries({
         queryKey: ["/api/widget-layout", deviceType],
       });
+      setLayoutChanged(false);
+      setSavePromptShown(false);
       toast({
         title: "Layout Saved",
         description: "Your widget layout has been saved successfully.",
@@ -298,6 +303,22 @@ export default function OverviewDashboard() {
         deviceId: deviceType
       };
       saveLayoutMutation.mutate(layoutPayload);
+    }
+  };
+
+  const markLayoutChanged = () => {
+    setLayoutChanged(true);
+    if (!savePromptShown) {
+      const { dismiss } = toast({
+        description: "Layout updated. Don't forget to save.",
+        action: (
+          <div className="flex gap-2">
+            <Button size="sm" onClick={() => { dismiss(); handleSaveLayout(); }}>Save now</Button>
+            <Button size="sm" variant="outline" onClick={() => dismiss()}>Dismiss</Button>
+          </div>
+        ) as any,
+      });
+      setSavePromptShown(true);
     }
   };
 
@@ -457,6 +478,7 @@ export default function OverviewDashboard() {
       next[to] = toItems;
       return next;
     });
+    markLayoutChanged();
   };
 
   const removeCard = (id: string) => {
@@ -467,6 +489,7 @@ export default function OverviewDashboard() {
       next[from] = next[from].filter((w) => w !== id);
       return next;
     });
+    markLayoutChanged();
   };
 
   const addCard = (id: string, targetColumn: string = "left") => {
@@ -474,6 +497,7 @@ export default function OverviewDashboard() {
       ...prev,
       [targetColumn]: [...prev[targetColumn], id],
     }));
+    markLayoutChanged();
   };
 
   const renderCard = (id: string) => {
@@ -1009,11 +1033,11 @@ export default function OverviewDashboard() {
               <Bell className="h-5 w-5" />
             </Button>
             {user?.name && <span className="px-2">{user.name}</span>}
-            <Button 
+            <Button
               onClick={handleSaveLayout}
-              variant="outline" 
+              variant="outline"
               size="sm"
-              disabled={saveLayoutMutation.isPending}
+              disabled={saveLayoutMutation.isPending || !layoutChanged}
               className="text-xs"
             >
               {saveLayoutMutation.isPending ? "Saving..." : "Save Layout"}
