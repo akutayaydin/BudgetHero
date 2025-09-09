@@ -173,7 +173,7 @@ export function UpcomingBillsDesktop() {
           UPCOMING BILLS
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="border-t border-border pt-6 space-y-4">
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
             <div className="text-gray-500 dark:text-gray-400">Loading bills...</div>

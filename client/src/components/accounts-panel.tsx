@@ -147,7 +147,7 @@ export function AccountsPanel({ onAddAccount }: AccountsPanelProps) {
         </div>
       )}
 
-      <CardContent className="p-0">
+      <CardContent className="p-0 border-t border-border">
         {isLoading ? (
           <div className="divide-y">
             {Array.from({ length: 5 }).map((_, i) => (

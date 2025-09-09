@@ -185,7 +185,7 @@ export function AccountsSection({ className }: AccountsSectionProps) {
         </div>
       )}
 
-      <CardContent className="p-4 space-y-6">
+      <CardContent className="border-t border-border p-4 space-y-6">
         {isLoading ? (
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (

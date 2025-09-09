@@ -96,7 +96,7 @@ export function UpcomingBillsMobile() {
           UPCOMING
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="border-t border-border pt-6 space-y-2">
         {isLoading ? (
           <div className="flex items-center justify-center h-24">
             <div className="text-gray-500 dark:text-gray-400 text-sm">Loading...</div>

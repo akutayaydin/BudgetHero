@@ -119,7 +119,7 @@ export function RecentTransactionsSection() {
             </Link>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="border-t border-border pt-6 space-y-3">
           {recentTransactions.length > 0 ? (
             recentTransactions.map((transaction) => {
               const isIncome = transaction.type === 'income';
@@ -194,7 +194,7 @@ export function RecentTransactionsSection() {
             Review Latest Transactions
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="border-t border-border pt-6 space-y-4">
           <div className="text-center py-6">
             <div className="w-16 h-16 bg-blue-100 dark:bg-blue-950/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <Receipt className="w-8 h-8 text-blue-600 dark:text-blue-400" />
