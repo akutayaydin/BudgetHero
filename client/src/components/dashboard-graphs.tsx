@@ -618,6 +618,8 @@ export function DashboardGraphs() {
                 fill="#93C5FD"
                 stroke="#93C5FD"
                 fillOpacity={0.1}
+                strokeWidth={4}
+                strokeDasharray="4 4"
               />
 
               <Line
@@ -626,7 +628,9 @@ export function DashboardGraphs() {
                 name="This Month"
                 stroke="#3B82F6"
                 strokeWidth={4}
+                strokeDasharray="4 4"
                 dot={false}
+                
               />
             </ComposedChart>
           </ResponsiveContainer>
