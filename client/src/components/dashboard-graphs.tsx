@@ -257,7 +257,15 @@ export function DashboardGraphs() {
     const max = Math.max(curDays, prevDays);
     const today = now.getDate();
 
-    const data: { date: string; current?: number; previous: number }[] = [];
+    const data: { 
+      date: string; 
+      day?: string;
+      current?: number; 
+      previous: number;
+      currentLabel?: string;
+      previousLabel?: string;
+      index?: number;
+    }[] = [];
     let curRun = 0;
     let prevRun = 0;
 
@@ -287,6 +295,7 @@ export function DashboardGraphs() {
       if (i < prevDays) prevRun += prevDaily[i];
 
       data.push({
+        date: currentDateLabel || previousDateLabel || `Day ${i + 1}`,
         day: currentDateLabel || previousDateLabel || `Day ${i + 1}`,
         current: i < today ? Math.round(curRun) : undefined,
         previous: Math.round(prevRun),
@@ -438,8 +447,8 @@ export function DashboardGraphs() {
                 tickLine={false}
                 tick={{ fill: "#6B7280", fontSize: 12 }}
                 domain={[
-                  (dataMin) => dataMin * 0.99,
-                  (dataMax) => dataMax * 1.01,
+                  (dataMin: number) => dataMin * 0.99,
+                  (dataMax: number) => dataMax * 1.01,
                 ]}
                 tickFormatter={(v) => {
                   return new Intl.NumberFormat("en-US", {
