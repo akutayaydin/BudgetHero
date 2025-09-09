@@ -268,6 +268,7 @@ export default function OverviewDashboard() {
   // Load saved widget layout
   const { data: savedLayout } = useQuery({
     queryKey: ["/api/widget-layout", deviceId],
+    queryFn: () => apiRequest(`/api/widget-layout?deviceId=${deviceId}`, "GET"),
     retry: false,
   });
 
