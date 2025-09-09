@@ -298,15 +298,16 @@ export default function OverviewDashboard() {
     }
   }, [savedLayout]);
 
-  // Save layout changes with debouncing
+  // Save layout changes with debouncing - temporarily disabled for debugging
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (user && !saveLayoutMutation.isPending) {
-        saveLayoutMutation.mutate(columns);
-      }
-    }, 1000); // Debounce for 1 second
+    // Temporarily disable auto-save to debug other issues
+    // const timeoutId = setTimeout(() => {
+    //   if (user && !saveLayoutMutation.isPending) {
+    //     saveLayoutMutation.mutate(columns);
+    //   }
+    // }, 1000); // Debounce for 1 second
 
-    return () => clearTimeout(timeoutId);
+    // return () => clearTimeout(timeoutId);
   }, [columns, user, saveLayoutMutation]);
   
   const used = [
@@ -329,8 +330,11 @@ export default function OverviewDashboard() {
       const next = { ...prev };
       const from = findContainer(dragId, next);
       if (!from) return prev;
+      
+      // Remove item from source first
       const fromItems = [...next[from]];
       const dragIndex = fromItems.indexOf(dragId);
+      if (dragIndex === -1) return prev; // Item not found, avoid duplication
       fromItems.splice(dragIndex, 1);
 
       let to: string;
@@ -338,19 +342,41 @@ export default function OverviewDashboard() {
 
       if (dropId) {
         to = findContainer(dropId, next) || from;
-        toItems = [...next[to]];
-        const dropIndex = toItems.indexOf(dropId);
-        toItems.splice(dropIndex, 0, dragId);
+        if (to === from) {
+          // Dropping in same container, use updated fromItems
+          toItems = [...fromItems];
+          const originalDropIndex = toItems.indexOf(dropId);
+          if (originalDropIndex !== -1) {
+            toItems.splice(originalDropIndex, 0, dragId);
+          } else {
+            toItems.push(dragId);
+          }
+        } else {
+          // Dropping in different container
+          toItems = [...next[to]];
+          const dropIndex = toItems.indexOf(dropId);
+          if (dropIndex !== -1) {
+            toItems.splice(dropIndex, 0, dragId);
+          } else {
+            toItems.push(dragId);
+          }
+        }
       } else if (container) {
         to = container;
-        toItems = [...next[to]];
-        toItems.push(dragId);
+        if (to === from) {
+          // Adding to same container, use updated fromItems
+          toItems = [...fromItems, dragId];
+        } else {
+          // Adding to different container
+          toItems = [...next[to], dragId];
+        }
       } else {
+        // Default case - keep in same container
         to = from;
-        toItems = [...fromItems];
-        toItems.push(dragId);
+        toItems = [...fromItems, dragId];
       }
 
+      // Update state
       next[from] = fromItems;
       next[to] = toItems;
       return next;
