@@ -377,9 +377,53 @@ export default function OverviewDashboard() {
   const renderCard = (id: string) => {
     switch (id) {
       case "spending":
-        return <SpendingGraph />;
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <PieChart className="w-4 h-4" />Current Spend This Month
+                </span>
+              }
+              subtitle="Monthly spending overview"
+              action={
+                <button
+                  onClick={() => removeCard("spending")}
+                  className="text-xs px-2 py-1 rounded-md border border-border"
+                >
+                  Remove
+                </button>
+              }
+            />
+            <CardBody>
+              <SpendingGraph />
+            </CardBody>
+          </Card>
+        );
       case "netWorth":
-        return <NetWorthGraph />;
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <LineChart className="w-4 h-4" />Total Net Worth
+                </span>
+              }
+              subtitle="Net worth over time"
+              action={
+                <button
+                  onClick={() => removeCard("netWorth")}
+                  className="text-xs px-2 py-1 rounded-md border border-border"
+                >
+                  Remove
+                </button>
+              }
+            />
+            <CardBody>
+              <NetWorthGraph />
+            </CardBody>
+          </Card>
+        );
       case "transactions":
         // Get the 6 most recent transactions
         const recentTransactions = transactionsData

@@ -4426,7 +4426,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const validatedData = insertWidgetLayoutSchema.parse(req.body);
+      // Add userId to the request body before validation
+      const dataWithUserId = { ...req.body, userId };
+      const validatedData = insertWidgetLayoutSchema.parse(dataWithUserId);
       const layout = await storage.saveWidgetLayout(validatedData, userId);
       
       res.json(layout);
