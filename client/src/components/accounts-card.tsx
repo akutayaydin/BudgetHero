@@ -8,11 +8,11 @@ import { PlaidLink } from "@/components/PlaidLink";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { Link } from "wouter";
-import { 
-  ArrowRight, 
-  GripVertical, 
-  X, 
-  CreditCard, 
+import {
+  ArrowRight,
+  GripVertical,
+  X,
+  CreditCard,
   PiggyBank, 
   Landmark,
   TrendingUp,
@@ -24,13 +24,6 @@ import {
   Building2,
   Wallet
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { formatCurrency } from "@/lib/financial-utils";
 
 // Account type icons mapping
@@ -51,13 +44,6 @@ const getAccountIcon = (groupId: string) => {
   }
 };
 
-// Account type options for the Add dropdown
-const accountTypeOptions = [
-  { id: 'checking', label: 'Checking Account', icon: Building2 },
-  { id: 'savings', label: 'Savings Account', icon: PiggyBank },
-  { id: 'creditCards', label: 'Credit Card', icon: CreditCard },
-  { id: 'investments', label: 'Investment Account', icon: TrendingUp },
-];
 
 interface AccountsCardProps {
   onRemove?: () => void;
@@ -90,13 +76,6 @@ export default function AccountsCard({ onRemove, isDragging }: AccountsCardProps
       description: "Your bank account has been linked successfully",
     });
     refetch();
-  };
-
-  const handleAddAccount = (type: string) => {
-    toast({
-      title: "Add Account",
-      description: `Adding ${type} account functionality coming soon!`,
-    });
   };
 
   if (isLoading) {
@@ -242,51 +221,12 @@ export default function AccountsCard({ onRemove, isDragging }: AccountsCardProps
             </Button>
           </div>
           
-          {/* Add Account Dropdown */}
-          <div className="flex items-center gap-1">
-            <PlaidLink
-              onSuccess={handlePlaidSuccess}
-              className="h-7 px-2 text-xs"
-            >
-              <Plus className="h-3 w-3 mr-1" />
-              Connect Bank
-            </PlaidLink>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                >
-                  <Plus className="h-3 w-3 mr-1" />
-                  Add
-                  <ChevronDown className="h-3 w-3 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {accountTypeOptions.map((option) => {
-                  const Icon = option.icon;
-                  return (
-                    <DropdownMenuItem
-                      key={option.id}
-                      onClick={() => handleAddAccount(option.label)}
-                    >
-                      <Icon className="h-4 w-4 mr-2" />
-                      {option.label}
-                    </DropdownMenuItem>
-                  );
-                })}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <PlaidLink onSuccess={handlePlaidSuccess}>
-                    <Building2 className="h-4 w-4 mr-2" />
-                    Connect Bank Account
-                  </PlaidLink>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+        <div className="flex items-center gap-1">
+          <PlaidLink onSuccess={handlePlaidSuccess} className="h-7 px-2 text-xs">
+            <Plus className="h-3 w-3 mr-1" />
+            Connect Bank
+          </PlaidLink>
+        </div>
         </div>
       </CardHeader>
       <CardContent className="pt-0">

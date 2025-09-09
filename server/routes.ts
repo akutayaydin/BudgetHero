@@ -1353,105 +1353,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Group accounts by type and create overview structure
       const groups = [];
-      
-      // Group checking accounts
-      const checkingAccounts = accounts.filter(acc => 
-        acc.type === 'depository' && acc.subtype === 'checking'
-      );
-      if (checkingAccounts.length > 0) {
-        groups.push({
-          id: 'checking',
-          label: 'Checking',
-          total: checkingAccounts.reduce((sum, acc) => sum + parseFloat(acc.availableBalance || '0'), 0),
-          children: checkingAccounts.map(acc => ({
-            id: acc.id,
-            name: acc.name,
-            subtitle: acc.institutionName,
-            amount: parseFloat(acc.availableBalance || '0'),
-            mask: acc.mask,
-            officialName: acc.officialName,
-            institutionName: acc.institutionName
-          })),
-          tone: 'default'
-        });
-      }
 
-      // Group savings accounts  
-      const savingsAccounts = accounts.filter(acc => 
-        acc.type === 'depository' && acc.subtype === 'savings'
+      // Group checking accounts
+      const checkingAccounts = accounts.filter(
+        (acc) => acc.type === "depository" && acc.subtype === "checking"
       );
-      if (savingsAccounts.length > 0) {
-        groups.push({
-          id: 'savings',
-          label: 'Savings',
-          total: savingsAccounts.reduce((sum, acc) => sum + parseFloat(acc.availableBalance || '0'), 0),
-          children: savingsAccounts.map(acc => ({
+      let checkingGroup: any | undefined = undefined;
+      if (checkingAccounts.length > 0) {
+        checkingGroup = {
+          id: "checking",
+          label: "Checking",
+          total: checkingAccounts.reduce(
+            (sum, acc) => sum + parseFloat(acc.availableBalance || "0"),
+            0
+          ),
+          children: checkingAccounts.map((acc) => ({
             id: acc.id,
             name: acc.name,
             subtitle: acc.institutionName,
-            amount: parseFloat(acc.availableBalance || '0'),
+            amount: parseFloat(acc.availableBalance || "0"),
             mask: acc.mask,
             officialName: acc.officialName,
-            institutionName: acc.institutionName
+            institutionName: acc.institutionName,
           })),
-          tone: 'positive'
-        });
+          tone: "default",
+        };
       }
 
       // Group credit cards
-      const creditCards = accounts.filter(acc => acc.type === 'credit');
+      const creditCards = accounts.filter((acc) => acc.type === "credit");
+      let creditGroup: any | undefined = undefined;
       if (creditCards.length > 0) {
-        groups.push({
-          id: 'creditCards',
-          label: 'Credit Cards',
-          total: creditCards.reduce((sum, acc) => sum + parseFloat(acc.currentBalance || '0'), 0),
-          children: creditCards.map(acc => ({
+        creditGroup = {
+          id: "creditCards",
+          label: "Credit Cards",
+          total: creditCards.reduce(
+            (sum, acc) => sum + parseFloat(acc.currentBalance || "0"),
+            0
+          ),
+          children: creditCards.map((acc) => ({
             id: acc.id,
             name: acc.name,
             subtitle: acc.institutionName,
-            amount: parseFloat(acc.currentBalance || '0'),
+            amount: parseFloat(acc.currentBalance || "0"),
             mask: acc.mask,
             officialName: acc.officialName,
-            institutionName: acc.institutionName
+            institutionName: acc.institutionName,
           })),
-          tone: 'negative'
-        });
+          tone: "negative",
+        };
       }
 
-      // Group investment accounts
-      const investmentAccounts = accounts.filter(acc => acc.type === 'investment');
-      if (investmentAccounts.length > 0) {
-        groups.push({
-          id: 'investments',
-          label: 'Investments',
-          total: investmentAccounts.reduce((sum, acc) => sum + parseFloat(acc.currentBalance || '0'), 0),
-          children: investmentAccounts.map(acc => ({
+      // Group savings accounts
+      const savingsAccounts = accounts.filter(
+        (acc) => acc.type === "depository" && acc.subtype === "savings"
+      );
+      let savingsGroup: any | undefined = undefined;
+      if (savingsAccounts.length > 0) {
+        savingsGroup = {
+          id: "savings",
+          label: "Savings",
+          total: savingsAccounts.reduce(
+            (sum, acc) => sum + parseFloat(acc.availableBalance || "0"),
+            0
+          ),
+          children: savingsAccounts.map((acc) => ({
             id: acc.id,
             name: acc.name,
             subtitle: acc.institutionName,
-            amount: parseFloat(acc.currentBalance || '0'),
+            amount: parseFloat(acc.availableBalance || "0"),
             mask: acc.mask,
             officialName: acc.officialName,
-            institutionName: acc.institutionName
+            institutionName: acc.institutionName,
           })),
-          tone: 'positive'
-        });
+          tone: "positive",
+        };
       }
+
+      // Group investment accounts (always include even if empty)
+      const investmentAccounts = accounts.filter(
+        (acc) => acc.type === "investment"
+      );
+      const investmentsGroup = {
+        id: "investments",
+        label: "Investments",
+        total: investmentAccounts.reduce(
+          (sum, acc) => sum + parseFloat(acc.currentBalance || "0"),
+          0
+        ),
+        children: investmentAccounts.map((acc) => ({
+          id: acc.id,
+          name: acc.name,
+          subtitle: acc.institutionName,
+          amount: parseFloat(acc.currentBalance || "0"),
+          mask: acc.mask,
+          officialName: acc.officialName,
+          institutionName: acc.institutionName,
+        })),
+        tone: "positive",
+      };
 
       // Calculate net cash
-      const totalChecking = checkingAccounts.reduce((sum, acc) => sum + parseFloat(acc.availableBalance || '0'), 0);
-      const totalSavings = savingsAccounts.reduce((sum, acc) => sum + parseFloat(acc.availableBalance || '0'), 0);
-      const totalCredit = creditCards.reduce((sum, acc) => sum + parseFloat(acc.currentBalance || '0'), 0);
+      const totalChecking = checkingAccounts.reduce(
+        (sum, acc) => sum + parseFloat(acc.availableBalance || "0"),
+        0
+      );
+      const totalSavings = savingsAccounts.reduce(
+        (sum, acc) => sum + parseFloat(acc.availableBalance || "0"),
+        0
+      );
+      const totalCredit = creditCards.reduce(
+        (sum, acc) => sum + parseFloat(acc.currentBalance || "0"),
+        0
+      );
       const netCash = totalChecking + totalSavings - Math.abs(totalCredit);
 
+      // Assemble groups in desired order
+      if (checkingGroup) groups.push(checkingGroup);
+      if (creditGroup) groups.push(creditGroup);
       if (accounts.length > 0) {
-        groups.unshift({
-          id: 'netCash',
-          label: 'Net Cash',
+        groups.push({
+          id: "netCash",
+          label: "Net Cash",
           total: netCash,
-          tone: netCash >= 0 ? 'positive' : 'negative'
+          tone: netCash >= 0 ? "positive" : "negative",
         });
       }
+      if (savingsGroup) groups.push(savingsGroup);
+      groups.push(investmentsGroup);
 
       res.json({ groups });
     } catch (error) {
