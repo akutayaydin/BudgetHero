@@ -982,30 +982,38 @@ export default function ProgressiveDisclosureOverview({ className }: Progressive
             </CollapsibleTrigger>
 
             <CollapsibleContent className="space-y-4 mt-4">
-              <div className="space-y-3">
+              <div className="divide-y divide-border">
                 {recentTransactions.map((transaction) => (
-                  <Card key={transaction.id} className="bg-white/50">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">{transaction.description}</p>
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <span>{transaction.category}</span>
-                            <span>•</span>
-                            <span>{formatDate(transaction.date)}</span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className={`font-bold ${
-                            transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Math.abs(parseFloat(transaction.amount)))}
-                          </p>
-                          <p className="text-xs text-gray-500">{transaction.source || 'manual'}</p>
-                        </div>
+                  <div
+                    key={transaction.id}
+                    className="flex items-center justify-between py-4"
+                  >
+                    <div>
+                      <p className="font-medium">{transaction.description}</p>
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <span>{transaction.category}</span>
+                        <span>•</span>
+                        <span>{formatDate(transaction.date)}</span>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <div className="text-right">
+                      <p
+                        className={`font-bold ${
+                          transaction.type === 'income'
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }`}
+                      >
+                        {transaction.type === 'income' ? '+' : '-'}
+                        {formatCurrency(
+                          Math.abs(parseFloat(transaction.amount))
+                        )}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {transaction.source || 'manual'}
+                      </p>
+                    </div>
+                  </div>
                 ))}
               </div>
               
