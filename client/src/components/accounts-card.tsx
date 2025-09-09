@@ -1,6 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { useAccountsOverview } from "@/hooks/useAccountsOverview";
+import { useLastSynced } from "@/hooks/useLastSynced";
+import { useSyncAccounts } from "@/hooks/useSyncAccounts";
+import { PlaidLink } from "@/components/PlaidLink";
+import { useToast } from "@/hooks/use-toast";
+import { formatDistanceToNow } from "date-fns";
 import { Link } from "wouter";
 import { 
   ArrowRight, 
@@ -10,25 +16,48 @@ import {
   PiggyBank, 
   Landmark,
   TrendingUp,
-  Plus
+  Plus,
+  ChevronDown,
+  ChevronRight,
+  RefreshCw,
+  Loader2,
+  Building2,
+  Wallet
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { formatCurrency } from "@/lib/financial-utils";
 
 // Account type icons mapping
 const getAccountIcon = (groupId: string) => {
   switch (groupId) {
     case 'checking':
-      return <Landmark className="h-4 w-4 text-blue-600" />;
+      return <Building2 className="h-4 w-4 text-blue-600" />;
     case 'savings':
       return <PiggyBank className="h-4 w-4 text-green-600" />;
     case 'creditCards':
       return <CreditCard className="h-4 w-4 text-red-600" />;
     case 'investments':
       return <TrendingUp className="h-4 w-4 text-purple-600" />;
+    case 'netCash':
+      return <Wallet className="h-4 w-4 text-blue-600" />;
     default:
       return <Landmark className="h-4 w-4 text-gray-600" />;
   }
 };
+
+// Account type options for the Add dropdown
+const accountTypeOptions = [
+  { id: 'checking', label: 'Checking Account', icon: Building2 },
+  { id: 'savings', label: 'Savings Account', icon: PiggyBank },
+  { id: 'creditCards', label: 'Credit Card', icon: CreditCard },
+  { id: 'investments', label: 'Investment Account', icon: TrendingUp },
+];
 
 interface AccountsCardProps {
   onRemove?: () => void;
@@ -36,7 +65,39 @@ interface AccountsCardProps {
 }
 
 export default function AccountsCard({ onRemove, isDragging }: AccountsCardProps) {
-  const { data: accountsData, isLoading, error } = useAccountsOverview();
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const { data: accountsData, isLoading, error, refetch } = useAccountsOverview();
+  const { data: lastSynced, isLoading: lastSyncedLoading } = useLastSynced();
+  const syncMutation = useSyncAccounts();
+  const { toast } = useToast();
+
+  const toggle = (id: string) =>
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  const lastSyncedText = lastSynced?.lastSyncedAt
+    ? `Last synced ${formatDistanceToNow(new Date(lastSynced.lastSyncedAt), {
+        addSuffix: true,
+      })}`
+    : "Never synced";
+
+  const handleSync = () => {
+    syncMutation.mutate();
+  };
+
+  const handlePlaidSuccess = () => {
+    toast({
+      title: "Account Connected!",
+      description: "Your bank account has been linked successfully",
+    });
+    refetch();
+  };
+
+  const handleAddAccount = (type: string) => {
+    toast({
+      title: "Add Account",
+      description: `Adding ${type} account functionality coming soon!`,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -155,6 +216,78 @@ export default function AccountsCard({ onRemove, isDragging }: AccountsCardProps
             )}
           </div>
         </div>
+        
+        {/* Sync Status and Controls */}
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            {lastSyncedLoading ? (
+              <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            ) : (
+              <span>{lastSyncedText}</span>
+            )}
+            <span>|</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSync}
+              disabled={syncMutation.isPending}
+              className="h-auto p-0 text-xs text-purple-600 hover:text-purple-700"
+            >
+              {syncMutation.isPending ? (
+                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+              ) : (
+                <RefreshCw className="h-3 w-3 mr-1" />
+              )}
+              Sync now
+            </Button>
+          </div>
+          
+          {/* Add Account Dropdown */}
+          <div className="flex items-center gap-1">
+            <PlaidLink
+              onSuccess={handlePlaidSuccess}
+              className="h-7 px-2 text-xs"
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Connect Bank
+            </PlaidLink>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add
+                  <ChevronDown className="h-3 w-3 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {accountTypeOptions.map((option) => {
+                  const Icon = option.icon;
+                  return (
+                    <DropdownMenuItem
+                      key={option.id}
+                      onClick={() => handleAddAccount(option.label)}
+                    >
+                      <Icon className="h-4 w-4 mr-2" />
+                      {option.label}
+                    </DropdownMenuItem>
+                  );
+                })}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <PlaidLink onSuccess={handlePlaidSuccess}>
+                    <Building2 className="h-4 w-4 mr-2" />
+                    Connect Bank Account
+                  </PlaidLink>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="mb-4">
@@ -170,57 +303,86 @@ export default function AccountsCard({ onRemove, isDragging }: AccountsCardProps
           </div>
         </div>
 
-        <div className="space-y-3">
-          {accountsData.groups.slice(0, 4).map((group) => (
-            <div key={group.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-              <div className="flex items-center gap-3">
-                {getAccountIcon(group.id)}
-                <div>
-                  <p className="font-medium text-gray-900 dark:text-white text-sm">
-                    {group.label}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {group.children?.length || 0} account{group.children?.length !== 1 ? 's' : ''}
-                  </p>
-                </div>
+        <div className="space-y-2">
+          {accountsData.groups.map((group) => {
+            const hasChildren = Boolean(group.children && group.children.length > 0);
+            const isOpen = !!expanded[group.id];
+            
+            return (
+              <div key={group.id} className="border border-gray-200 dark:border-gray-700 rounded-lg">
+                <button
+                  className="flex w-full items-center justify-between p-3 focus:outline-none hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg"
+                  onClick={hasChildren ? () => toggle(group.id) : undefined}
+                  aria-expanded={hasChildren ? isOpen : undefined}
+                >
+                  <div className="flex items-center gap-3">
+                    {getAccountIcon(group.id)}
+                    <div className="text-left">
+                      <p className="font-medium text-gray-900 dark:text-white text-sm">
+                        {group.label}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {group.children?.length || 0} account{group.children?.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p className={`font-semibold text-sm ${
+                      group.id === 'creditCards' 
+                        ? 'text-red-600 dark:text-red-400' 
+                        : 'text-gray-900 dark:text-white'
+                    }`}>
+                      {group.id === 'creditCards' && group.total 
+                        ? `-${formatCurrency(Math.abs(group.total))}`
+                        : formatCurrency(group.total || 0)
+                      }
+                    </p>
+                    {hasChildren && (
+                      isOpen ? (
+                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      )
+                    )}
+                  </div>
+                </button>
+
+                {hasChildren && isOpen && (
+                  <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
+                    {group.children!.map((child) => (
+                      <div
+                        key={child.id}
+                        className="flex items-center justify-between px-4 py-3 border-b last:border-b-0 border-gray-200 dark:border-gray-600"
+                      >
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                          <p className="font-medium">{child.name}</p>
+                          {child.mask && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              •••• {child.mask}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white text-right">
+                          {formatCurrency(child.amount)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="text-right">
-                <p className={`font-semibold text-sm ${
-                  group.id === 'creditCards' 
-                    ? 'text-red-600 dark:text-red-400' 
-                    : 'text-gray-900 dark:text-white'
-                }`}>
-                  {group.id === 'creditCards' && group.total 
-                    ? `-${formatCurrency(Math.abs(group.total))}`
-                    : formatCurrency(group.total || 0)
-                  }
-                </p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {accountsData.groups.length === 0 && (
           <div className="text-center py-6">
             <p className="text-gray-500 dark:text-gray-400 mb-4">
-              No accounts found
+              No accounts connected
             </p>
-            <Link href="/connect-bank">
-              <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Connect Bank Account
-              </Button>
-            </Link>
-          </div>
-        )}
-
-        {accountsData.groups.length > 4 && (
-          <div className="mt-4 text-center">
-            <Link href="/wealth-management?tab=accounts">
-              <Button variant="outline" size="sm" className="w-full">
-                View {accountsData.groups.length - 4} More Account{accountsData.groups.length - 4 !== 1 ? 's' : ''}
-              </Button>
-            </Link>
+            <PlaidLink onSuccess={handlePlaidSuccess}>
+              <Plus className="h-4 w-4 mr-2" />
+              Connect Your First Account
+            </PlaidLink>
           </div>
         )}
       </CardContent>
