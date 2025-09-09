@@ -236,9 +236,38 @@ export default function OverviewDashboard() {
     queryKey: ["/api/financial-health"],
   });
 
+  // Generate device-specific ID for layout persistence
+  const getDeviceId = () => {
+    // Use a combination of screen dimensions, user agent hash, and timezone as device fingerprint
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx?.fillText('device-fingerprint', 0, 0);
+    const canvasData = canvas.toDataURL();
+    
+    const fingerprint = [
+      navigator.userAgent,
+      navigator.language,
+      screen.width,
+      screen.height,
+      Intl.DateTimeFormat().resolvedOptions().timeZone,
+      canvasData.slice(-50) // Last 50 chars of canvas data
+    ].join('|');
+    
+    // Create a simple hash
+    let hash = 0;
+    for (let i = 0; i < fingerprint.length; i++) {
+      const char = fingerprint.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return `device_${Math.abs(hash).toString(36)}`;
+  };
+
+  const deviceId = useMemo(() => getDeviceId(), []);
+
   // Load saved widget layout
   const { data: savedLayout } = useQuery({
-    queryKey: ["/api/widget-layout"],
+    queryKey: ["/api/widget-layout", deviceId],
     retry: false,
   });
 
@@ -247,7 +276,7 @@ export default function OverviewDashboard() {
   // Save widget layout mutation
   const saveLayoutMutation = useMutation({
     mutationFn: async (layoutData: any) => {
-      return await apiRequest("/api/widget-layout", "POST", { layoutData });
+      return await apiRequest("/api/widget-layout", "POST", { layoutData, deviceId });
     },
     onError: (error) => {
       console.error("Failed to save widget layout:", error);
@@ -1122,8 +1151,18 @@ export default function OverviewDashboard() {
             }}
             onDrop={(e) => {
               e.preventDefault();
+              e.stopPropagation();
               const dragId = e.dataTransfer.getData("text/plain");
-              if (dragId) moveCard(dragId, null, "bottom");
+              const isFromDrawer = e.dataTransfer.getData("application/x-widget-source") === "drawer";
+              
+              // Allow drops when overContainer is set (indicating drop zone is active)
+              if (dragId && overContainer === "bottom") {
+                if (isFromDrawer) {
+                  addCard(dragId, "bottom");
+                } else {
+                  moveCard(dragId, null, "bottom");
+                }
+              }
               setDragging(null);
               setOverId(null);
               setOverContainer(null);
