@@ -625,7 +625,7 @@ export function DashboardGraphs() {
                 dataKey="current"
                 name="This Month"
                 stroke="#3B82F6"
-                strokeWidth={3}
+                strokeWidth={4}
                 dot={false}
               />
             </ComposedChart>
@@ -1068,7 +1068,7 @@ export function SpendingGraph() {
                 dataKey="current"
                 name="This Month"
                 stroke="#3B82F6"
-                strokeWidth={3}
+                strokeWidth={4}
                 dot={false}
               />
             </ComposedChart>
