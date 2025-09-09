@@ -617,7 +617,7 @@ export function DashboardGraphs() {
                 name="Last Month"
                 fill="#BFDBFE"
                 stroke="#BFDBFE"
-                fillOpacity={0.4}
+                fillOpacity={0.1}
               />
 
               <Line
