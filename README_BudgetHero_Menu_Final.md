@@ -188,6 +188,13 @@ This document outlines the **BudgetHero** web application menu structure and fea
 - Billing & invoices
 
 ---
+## 10. Notifications ▾
+
+### Notifications Overview
+<img src="./assets/FinanceProgressAlerts.png" width="300" />
+
+
+
 
 ## ✅ Differentiators vs Rocket Money / Monarch
 - **AI Spend Coach** – nudges & insights (not just raw data)
