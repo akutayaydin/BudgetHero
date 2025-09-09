@@ -1009,8 +1009,8 @@ export default function OverviewDashboard() {
                 const dragId = e.dataTransfer.getData("text/plain");
                 const isFromDrawer = e.dataTransfer.getData("application/x-widget-source") === "drawer";
                 
-                // Only move if dropping on empty container space (not on another widget)
-                if (dragId && e.target === e.currentTarget) {
+                // Allow drops when overContainer is set (indicating drop zone is active)
+                if (dragId && overContainer === "left") {
                   if (isFromDrawer) {
                     addCard(dragId, "left");
                   } else {
@@ -1067,8 +1067,8 @@ export default function OverviewDashboard() {
                 const dragId = e.dataTransfer.getData("text/plain");
                 const isFromDrawer = e.dataTransfer.getData("application/x-widget-source") === "drawer";
                 
-                // Only move if dropping on empty container space (not on another widget)
-                if (dragId && e.target === e.currentTarget) {
+                // Allow drops when overContainer is set (indicating drop zone is active)
+                if (dragId && overContainer === "right") {
                   if (isFromDrawer) {
                     addCard(dragId, "right");
                   } else {
