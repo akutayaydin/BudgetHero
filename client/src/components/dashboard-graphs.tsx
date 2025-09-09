@@ -335,74 +335,95 @@ export function DashboardGraphs() {
     <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
             Total Net Worth
           </CardTitle>
           <Link href="/wealth-management">
             <Button
               variant="ghost"
               size="sm"
-              className="text-purple-600 hover:text-purple-700 dark:text-purple-400"
+              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-medium"
             >
               View Net Worth <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </Link>
         </div>
       </CardHeader>
-      <CardContent className="border-t border-border pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-3xl font-bold text-gray-900 dark:text-white">
-              {formatFullCurrency(currentNetWorth)}
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              {netWorthChange >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
-              ) : (
-                <TrendingDown className="h-4 w-4 text-red-500" />
-              )}
-              <span
-                className={`text-sm font-medium ${
-                  netWorthChange >= 0
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
-                }`}
-              >
-                {netWorthChange >= 0 ? "Up " : "Down "}
-                <span >{formatFullCurrency(netWorthChange)}</span> over the <br />
-                {netWorthPeriod === "1M"
-                  ? "last month"
-                  : netWorthPeriod === "3M"
-                    ? "previous 3 months"
-                    : netWorthPeriod === "6M"
-                      ? "previous 6 months"
-                      : "last year"}
-              </span>
+      <CardContent className="pt-0">
+        <div className="mb-6">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <p className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
+                {formatFullCurrency(currentNetWorth)}
+              </p>
+              <div className="flex items-center gap-2">
+                {netWorthChange >= 0 ? (
+                  <TrendingUp className="h-4 w-4 text-green-500" />
+                ) : (
+                  <TrendingDown className="h-4 w-4 text-red-500" />
+                )}
+                <span
+                  className={`text-sm font-medium ${
+                    netWorthChange >= 0
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {netWorthChange >= 0 ? "Up " : "Down "}
+                  {formatFullCurrency(Math.abs(netWorthChange))} over the{" "}
+                  {netWorthPeriod === "1M"
+                    ? "last month"
+                    : netWorthPeriod === "3M"
+                      ? "last 3 months"
+                      : netWorthPeriod === "6M"
+                        ? "last 6 months"
+                        : "last year"}
+                </span>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-            {(["1M", "3M", "6M", "1Y"] as const).map((p) => (
-              <Button
-                key={p}
-                variant="ghost"
-                size="sm"
-                onClick={() => setNetWorthPeriod(p)}
-                className={`px-3 py-1 text-xs font-medium transition-all duration-200 ${
-                  netWorthPeriod === p
-                    ? "bg-purple-600 hover:bg-purple-700 text-white shadow-sm"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                }`}
-              >
-                {p}
-              </Button>
-            ))}
+            <div className="flex items-center gap-1">
+              {(["1M", "3M", "6M", "1Y"] as const).map((p) => (
+                <Button
+                  key={p}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setNetWorthPeriod(p)}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    netWorthPeriod === p
+                      ? "bg-purple-600 hover:bg-purple-700 text-white shadow-sm"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  {p}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={netWorthData}>
+        <div className="relative">
+          {/* Navigation Arrows */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handlePrev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 p-0 bg-white/80 hover:bg-white shadow-sm border border-gray-200"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleNext}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 p-0 bg-white/80 hover:bg-white shadow-sm border border-gray-200"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          
+          <div className="h-48 px-8">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={netWorthData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis
                 dataKey="label"
@@ -491,8 +512,9 @@ export function DashboardGraphs() {
                 }}
                 connectNulls={false}
               />
-            </ComposedChart>
-          </ResponsiveContainer>
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </CardContent>
     </Card>
