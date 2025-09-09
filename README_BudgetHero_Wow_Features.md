@@ -275,3 +275,86 @@ FEATURE_SANKEY_FLOW=false
 - Start with deterministic, explainable logic; add LLM summaries only for the **Spend Story** copy.
 - Keep **Everything Else** as a first‑class concept across features.
 - Celebrate wins: confetti when `Remaining >= 0` at month‑end; gentle nudge when not.
+
+
+
+## ⚡ Quick Category Tracker (Pin & Check Fast)
+
+**Purpose:** Let users quickly track a category (e.g., Groceries) and see **spent this week/month** and **left to spend** without digging into Budgets or Spending.
+
+### What it does
+- **Pin categories** from Dashboard, Budgets, or Transactions.
+- One-tap **timeframe toggle**: *This Week* / *This Month*.
+- Shows:
+  - **Spent** in timeframe
+  - **Budgeted** for the timeframe
+  - **Left to spend** (budgeted − spent) with color (green/orange/red)
+- **Deep link** to filtered Transactions for that category + timeframe.
+- Optional **Daily allowance** (left ÷ days remaining).
+
+### Where it lives
+- **Dashboard**: “Pinned Categories” widget (cards: Groceries, Dining, Transport…).
+- **Budgets**: “⭐ Pin to Dashboard” action on each category row.
+- **Spending**: In donut legend, each category has a kebab menu → “Pin”.
+- **Mobile quick check**: PWA home-screen action or Command-K → “Check Groceries”.
+
+### UX details
+- Card layout (per pinned category):
+  - Title + icon (category color)
+  - **Spent / Budget / Left** (mono font for numbers)
+  - Timeframe chips: `Week` | `Month`
+  - Tiny progress bar/ring
+  - “View details” → opens Transactions filtered to that category+timeframe
+- Micro-copy:
+  - If **no budget set**: show “No budget set → Set budget” (link to Budgets).
+  - If **over**: show red “Over by $X” and a link “See last 5 transactions”.
+
+### Timeframe rules (recommended)
+- **This Week**: rolling week *Mon–Sun* (or user’s locale start day).
+- **This Month**: calendar month.
+- **Budget basis**:
+  - If a **monthly budget** exists for the category:
+    - *Week view:* **weekly budget = monthly budget × (days_in_week / days_in_month)** (prorated)
+    - *Month view:* **monthly budget**
+  - If **no budget**: show “—” for Budgeted and only show Spent.
+
+### Formulas
+- `spent = sum(|amount|) for category within timeframe (expenses only)`
+- `budget_week = budget_month * (days_in_week / days_in_month)` (round to cents)
+- `left = max(0, budget - spent)`; show **negative** in red if overspent
+- `daily_allowance = left / days_remaining_in_timeframe` (optional)
+
+### Edge cases
+- Refunds: subtract (treat as negative spend).
+- Transfers/ignored: excluded.
+- Category renamed: use **category_id** not name; backfill mapping.
+- Multi-currency: convert to user currency before summing.
+- Week crossing months: prorate using the exact days in that week.
+
+### Data model (minimal)
+- `user_pinned_categories`: `{ user_id, category_id, order_index, created_at }`
+- Use your existing `budgets` and `transactions` tables.
+
+### API (example)
+- `GET /api/pins` → list pinned category_ids
+- `POST /api/pins` `{ categoryId }` → pin
+- `DELETE /api/pins/:categoryId` → unpin
+- `GET /api/pins/summary?timeframe=week|month`
+  - returns array of `{ categoryId, name, icon, spent, budgeted, left, dailyAllowance }`
+
+### Caching & performance
+- Compute summaries via SQL window or materialized daily views
+- Cache per user + timeframe for 60s (Dashboard loads feel instant)
+
+### Accessibility
+- Keyboard focus on chips
+- ARIA labels: “Groceries, spent $X this week, $Y left”
+- High-contrast color tokens for status
+
+### Analytics to track
+- Pins added/removed
+- Timeframe toggles
+- Click-through to Transactions
+- Over-budget rates by category
+
+
