@@ -164,10 +164,69 @@ const DonutSkeleton = () => (
   </div>
 );
 
-// --- Main mock component ---
+// Type definitions
+interface NetWorthData {
+  totalNetWorth: number;
+  totalAssets: number;
+  totalLiabilities: number;
+  totalBankAccounts: number;
+}
+
+interface AccountData {
+  id: string;
+  name: string;
+  type: string;
+  subtype?: string;
+  currentBalance: string | number;
+  balance?: string | number;
+}
+
+interface TransactionData {
+  id: string;
+  description: string;
+  amount: string;
+  date: string;
+  category: string;
+  type: string;
+  merchant: string;
+}
+
+interface RecurringTransactionData {
+  id: string;
+  name: string;
+  merchant: string;
+  category: string;
+  amount: number;
+  frequency: string;
+  nextDueDate?: string;
+  excludeFromBills?: boolean;
+}
+
+// --- Main component ---
 export default function OverviewDashboard() {
   const { data: user } = useQuery<{ name?: string }>({
     queryKey: ["/api/auth/user"],
+  });
+
+  // Real data queries
+  const { data: netWorthData } = useQuery<NetWorthData>({
+    queryKey: ["/api/net-worth"],
+  });
+
+  const { data: accountsData = [] } = useQuery<AccountData[]>({
+    queryKey: ["/api/accounts"],
+  });
+
+  const { data: transactionsData = [] } = useQuery<TransactionData[]>({
+    queryKey: ["/api/transactions"],
+  });
+
+  const { data: recurringTransactions = [] } = useQuery<RecurringTransactionData[]>({
+    queryKey: ["/api/recurring-transactions"],
+  });
+
+  const { data: financialHealth } = useQuery({
+    queryKey: ["/api/financial-health"],
   });
 
   const allWidgets = [
@@ -181,6 +240,7 @@ export default function OverviewDashboard() {
     "accounts",
     "netIncome",
     "insights",
+    "bills",
   ];
 
   const widgetLabels: Record<string, string> = {
@@ -194,12 +254,13 @@ export default function OverviewDashboard() {
     accounts: "Accounts",
     netIncome: "Net Income",
     insights: "AI Insights",
+    bills: "Upcoming Bills",
   };
 
   const initialColumns: Record<string, string[]> = {
-    left: ["spending", "netWorth", "transactions"],
-    right: ["budgets", "cashflow", "tracker", "goals"],
-    bottom: ["accounts", "netIncome", "insights"],
+    left: ["netWorth", "accounts", "transactions"],
+    right: ["bills", "budgets", "spending"],
+    bottom: ["cashflow", "tracker", "goals", "netIncome", "insights"],
   };
 
   const [columns, setColumns] = useState<Record<string, string[]>>(initialColumns);
@@ -306,21 +367,22 @@ export default function OverviewDashboard() {
           </Card>
         );
       case "netWorth":
+        const netWorth = netWorthData?.totalNetWorth || 0;
+        const totalAssets = netWorthData?.totalAssets || 0;
+        const totalLiabilities = netWorthData?.totalLiabilities || 0;
+        const totalBankAccounts = netWorthData?.totalBankAccounts || 0;
+        
         return (
           <Card>
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
-                  <LineChart className="w-4 h-4" />Net Worth (Graph)
+                  <LineChart className="w-4 h-4" />Total Net Worth
                 </span>
               }
-              subtitle="1Y trend"
+              subtitle="Assets, accounts & liabilities"
               action={
                 <div className="flex gap-1">
-                  <button className="text-xs px-2 py-1 rounded-md border border-border">1M</button>
-                  <button className="text-xs px-2 py-1 rounded-md border border-border bg-foreground text-background">
-                    1Y
-                  </button>
                   <button
                     onClick={() => removeCard("netWorth")}
                     className="text-xs px-2 py-1 rounded-md border border-border"
@@ -331,11 +393,53 @@ export default function OverviewDashboard() {
               }
             />
             <CardBody>
-              <LineSkeleton />
+              <div className="space-y-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-foreground">
+                    ${netWorth.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Total Net Worth</div>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-3 text-sm">
+                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800">
+                    <div className="text-xs text-emerald-700 dark:text-emerald-400">Assets</div>
+                    <div className="font-semibold text-emerald-900 dark:text-emerald-300">${totalAssets.toLocaleString()}</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-blue-50 border border-blue-100 dark:bg-blue-950/30 dark:border-blue-800">
+                    <div className="text-xs text-blue-700 dark:text-blue-400">Bank Accounts</div>
+                    <div className="font-semibold text-blue-900 dark:text-blue-300">${totalBankAccounts.toLocaleString()}</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-100 dark:bg-rose-950/30 dark:border-rose-800">
+                    <div className="text-xs text-rose-700 dark:text-rose-400">Liabilities</div>
+                    <div className="font-semibold text-rose-900 dark:text-rose-300">${totalLiabilities.toLocaleString()}</div>
+                  </div>
+                </div>
+              </div>
             </CardBody>
           </Card>
         );
       case "transactions":
+        // Get the 6 most recent transactions
+        const recentTransactions = transactionsData
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, 6);
+
+        const formatDate = (dateString: string) => {
+          const date = new Date(dateString);
+          const today = new Date();
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+
+          if (date.toDateString() === today.toDateString()) {
+            return 'Today';
+          } else if (date.toDateString() === yesterday.toDateString()) {
+            return 'Yesterday';
+          } else {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          }
+        };
+
         return (
           <Card>
             <CardHeader
@@ -344,7 +448,7 @@ export default function OverviewDashboard() {
                   <List className="w-4 h-4" />Recent Transactions
                 </span>
               }
-              subtitle="Latest 6"
+              subtitle="Latest 6 transactions"
               action={
                 <div className="flex gap-1">
                   <button className="text-xs px-2 py-1 rounded-md border border-border">See all</button>
@@ -358,31 +462,38 @@ export default function OverviewDashboard() {
               }
             />
             <CardBody>
-              <ul className="text-sm divide-y">
-                {[
-                  { m: "Whole Foods", a: "-$56.78", t: "Groceries" },
-                  { m: "Blue Shield", a: "-$485.00", t: "Medical" },
-                  { m: "Salary", a: "+$4,200.00", t: "Income" },
-                  { m: "Uber", a: "-$18.40", t: "Transport" },
-                  { m: "Netflix", a: "-$15.99", t: "Subscription" },
-                  { m: "Rent", a: "-$1,950.00", t: "Housing" },
-                ].map((row, i) => (
-                  <li key={i} className="flex items-center justify-between py-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-lg bg-muted grid place-items-center text-xs">
-                        {row.m[0]}
-                      </div>
-                      <div>
-                        <div className="font-medium">{row.m}</div>
-                        <div className="text-xs text-muted-foreground">{row.t}</div>
-                      </div>
-                    </div>
-                    <div className={cn("font-mono", row.a.startsWith("+") ? "text-emerald-600" : "text-foreground")}>
-                     {row.a}
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              {recentTransactions.length > 0 ? (
+                <ul className="text-sm divide-y">
+                  {recentTransactions.map((transaction) => {
+                    const isIncome = transaction.type === 'income';
+                    const amount = parseFloat(transaction.amount || '0');
+                    const merchantName = transaction.merchant || transaction.description;
+                    
+                    return (
+                      <li key={transaction.id} className="flex items-center justify-between py-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-7 h-7 rounded-lg bg-muted grid place-items-center text-xs">
+                            {merchantName ? merchantName[0].toUpperCase() : 'T'}
+                          </div>
+                          <div>
+                            <div className="font-medium">{merchantName}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {transaction.category} • {formatDate(transaction.date)}
+                            </div>
+                          </div>
+                        </div>
+                        <div className={cn("font-mono", isIncome ? "text-emerald-600" : "text-foreground")}>
+                          {isIncome ? '+' : ''}${amount.toLocaleString()}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <div className="text-center py-4 text-muted-foreground">
+                  No transactions yet
+                </div>
+              )}
             </CardBody>
           </Card>
         );
@@ -545,15 +656,48 @@ export default function OverviewDashboard() {
           </Card>
         );
       case "accounts":
+        // Group accounts by type
+        const checkingAccounts = accountsData.filter(
+          (acc) => acc.type === "depository" && acc.subtype !== "savings"
+        );
+        const creditAccounts = accountsData.filter((acc) => acc.type === "credit");
+        const savingsAccounts = accountsData.filter(
+          (acc) => acc.type === "depository" && acc.subtype === "savings"
+        );
+        const investmentAccounts = accountsData.filter((acc) => acc.type === "investment");
+
+        // Calculate totals
+        const totalChecking = checkingAccounts.reduce((sum: number, acc) => {
+          const balance = typeof acc.currentBalance === "string" ? parseFloat(acc.currentBalance) : acc.currentBalance;
+          return sum + (isNaN(Number(balance)) ? 0 : Number(balance));
+        }, 0);
+
+        const totalCredit = creditAccounts.reduce((sum: number, acc) => {
+          const balance = typeof acc.currentBalance === "string" ? parseFloat(acc.currentBalance) : acc.currentBalance;
+          return sum + Math.abs(isNaN(Number(balance)) ? 0 : Number(balance));
+        }, 0);
+
+        const totalSavings = savingsAccounts.reduce((sum: number, acc) => {
+          const balance = typeof acc.currentBalance === "string" ? parseFloat(acc.currentBalance) : acc.currentBalance;
+          return sum + (isNaN(Number(balance)) ? 0 : Number(balance));
+        }, 0);
+
+        const totalInvestments = investmentAccounts.reduce((sum: number, acc) => {
+          const balance = typeof acc.currentBalance === "string" ? parseFloat(acc.currentBalance) : acc.currentBalance;
+          return sum + (isNaN(Number(balance)) ? 0 : Number(balance));
+        }, 0);
+
+        const netCash = totalChecking - totalCredit;
+        
         return (
           <Card>
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
-                  <Layers className="w-4 h-4" />Accounts (Snapshot)
+                  <Layers className="w-4 h-4" />Accounts Summary
                 </span>
               }
-              subtitle="Checking • Credit • Net Cash • Savings • Investments"
+              subtitle="Checking • Credit • Savings • Investments"
               action={
                 <button
                   onClick={() => removeCard("accounts")}
@@ -567,23 +711,31 @@ export default function OverviewDashboard() {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
                 <div className="p-3 rounded-xl bg-card border border-border">
                   <div className="text-xs text-muted-foreground">Checking</div>
-                  <div className="font-mono font-semibold">$17,130</div>
+                  <div className="font-mono font-semibold">${totalChecking.toLocaleString()}</div>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border">
                   <div className="text-xs text-muted-foreground">Credit Cards</div>
-                  <div className="font-mono font-semibold">$2,250</div>
+                  <div className="font-mono font-semibold">${totalCredit.toLocaleString()}</div>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border">
                   <div className="text-xs text-muted-foreground">Net Cash</div>
-                  <div className="font-mono font-semibold">$14,880</div>
+                  <div className={`font-mono font-semibold ${netCash >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    ${netCash.toLocaleString()}
+                  </div>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border">
                   <div className="text-xs text-muted-foreground">Savings</div>
-                  <div className="font-mono font-semibold">$16,170</div>
+                  <div className="font-mono font-semibold">${totalSavings.toLocaleString()}</div>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border">
                   <div className="text-xs text-muted-foreground">Investments</div>
-                  <div className="font-mono font-semibold">—</div>
+                  <div className="font-mono font-semibold">
+                    {totalInvestments > 0 ? `$${totalInvestments.toLocaleString()}` : "—"}
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border">
+                  <div className="text-xs text-muted-foreground">Total Accounts</div>
+                  <div className="font-mono font-semibold">{accountsData.length}</div>
                 </div>
               </div>
             </CardBody>
@@ -651,6 +803,81 @@ export default function OverviewDashboard() {
                 <li>⚠️ Free trial ends in 3 days: Acme Music</li>
                 <li>🎯 Move $50 to savings to hit goal on time</li>
               </ul>
+            </CardBody>
+          </Card>
+        );
+      case "bills":
+        // Calculate upcoming bills for next 7 days
+        const upcomingBills = recurringTransactions
+          .filter(item => {
+            if (!item.nextDueDate || item.excludeFromBills) return false;
+            const dueDate = new Date(item.nextDueDate);
+            const today = new Date();
+            const nextWeek = new Date();
+            nextWeek.setDate(today.getDate() + 7);
+            return dueDate >= today && dueDate <= nextWeek;
+          })
+          .map(item => {
+            const dueDate = new Date(item.nextDueDate!);
+            const today = new Date();
+            const diffTime = dueDate.getTime() - today.getTime();
+            const daysUntilDue = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            return {
+              ...item,
+              daysUntilDue
+            };
+          })
+          .sort((a, b) => a.daysUntilDue - b.daysUntilDue)
+          .slice(0, 4); // Show max 4 bills
+
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />Upcoming Bills
+                </span>
+              }
+              subtitle="Next 7 days"
+              action={
+                <button
+                  onClick={() => removeCard("bills")}
+                  className="text-xs px-2 py-1 rounded-md border border-border"
+                >
+                  Remove
+                </button>
+              }
+            />
+            <CardBody>
+              {upcomingBills.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  {upcomingBills.map((bill) => (
+                    <div key={bill.id} className="p-3 rounded-xl bg-card border border-border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-semibold">
+                            {bill.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="font-medium truncate">{bill.name}</div>
+                      </div>
+                      <div className="text-lg font-bold">${bill.amount.toLocaleString()}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        IN {bill.daysUntilDue} DAY{bill.daysUntilDue !== 1 ? 'S' : ''}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {bill.category}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-muted-foreground">
+                  <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No bills due soon</p>
+                </div>
+              )}
             </CardBody>
           </Card>
         );
