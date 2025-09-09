@@ -507,7 +507,7 @@ export default function OverviewDashboard() {
                 <>
                   <Link href="/spending">
                     <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
-                      View Spending <ArrowRight className="h-4 w-4 ml-1" />
+                      View Spending
                     </button>
                   </Link>
                   <button
@@ -538,7 +538,7 @@ export default function OverviewDashboard() {
                 <>
                   <Link href="/wealth-management">
                     <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
-                      View Net Worth <ArrowRight className="h-4 w-4 ml-1" />
+                      View Net Worth
                     </button>
                   </Link>
                   <button

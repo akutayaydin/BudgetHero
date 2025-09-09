@@ -314,15 +314,6 @@ export function DashboardGraphs() {
           <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
             Total Net Worth
           </CardTitle>
-          <Link href="/wealth-management">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-medium"
-            >
-              View Net Worth <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-          </Link>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
@@ -483,15 +474,7 @@ export function DashboardGraphs() {
           <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
             Current Spend This Month
           </CardTitle>
-          <Link href="/spending">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium"
-            >
-              View Spending <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-          </Link>
+
         </div>
       </CardHeader>
       <CardContent className="pt-0">
@@ -682,15 +665,6 @@ export function NetWorthGraph() {
           <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
             Total Net Worth
           </CardTitle>
-          <Link href="/wealth-management">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-medium"
-            >
-              View Net Worth <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-          </Link>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
@@ -957,15 +931,6 @@ export function SpendingGraph() {
           <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
             Current Spend This Month
           </CardTitle>
-          <Link href="/spending">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium"
-            >
-              View Spending <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-          </Link>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
