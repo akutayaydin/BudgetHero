@@ -411,28 +411,9 @@ export function DashboardGraphs() {
           </div>
         </div>
 
-        <div className="relative">
-          {/* Navigation Arrows */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handlePrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 p-0 bg-white/80 hover:bg-white shadow-sm border border-gray-200"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 p-0 bg-white/80 hover:bg-white shadow-sm border border-gray-200"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          
-          <div className="h-48 px-8">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={netWorthData}>
+        <div className="h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={netWorthData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis
                 dataKey="label"
@@ -521,9 +502,8 @@ export function DashboardGraphs() {
                 }}
                 connectNulls={false}
               />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
+            </ComposedChart>
+          </ResponsiveContainer>
         </div>
       </CardContent>
     </Card>
@@ -570,28 +550,9 @@ export function DashboardGraphs() {
             </span>
           </div>
         </div>
-        <div className="relative">
-          {/* Navigation Arrows */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handlePrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 p-0 bg-white/80 hover:bg-white shadow-sm border border-gray-200"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 p-0 bg-white/80 hover:bg-white shadow-sm border border-gray-200"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          
-          <div className="h-48 px-8">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={spendingComparisonData}>
+        <div className="h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={spendingComparisonData}>
               <CartesianGrid
                 vertical={false}
                 horizontal={true}
@@ -700,9 +661,8 @@ export function DashboardGraphs() {
                 strokeWidth={3}
                 dot={false}
               />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
+            </ComposedChart>
+          </ResponsiveContainer>
         </div>
       </CardContent>
     </Card>
