@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   BarChart2,
   PieChart,
@@ -85,65 +85,40 @@ const MenuItem = ({
   </a>
 );
 
-// --- Drag and drop helpers ---
-const useDragAndDrop = (
-  columns: Record<string, string[]>,
-  setColumns: React.Dispatch<React.SetStateAction<Record<string, string[]>>>,
-) => {
-  const dragItem = useRef<{ column: string; index: number } | null>(null);
-  const dragOverItem = useRef<{ column: string; index: number } | null>(null);
+// Simple HTML5 drag-and-drop card wrapper
+function DraggableCard({
+  id,
+  render,
+  onMove,
+}: {
+  id: string;
+  render: (id: string) => React.ReactNode;
+  onMove: (dragId: string, dropId: string | null, container: string) => void;
+}) {
+  return (
+    <div
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData("text/plain", id);
+      }}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        e.preventDefault();
+        const dragId = e.dataTransfer.getData("text/plain");
+        if (!dragId || dragId === id) return;
+        onMove(dragId, id, "");
+      }}
+    >
+      {render(id)}
+    </div>
+  );
+}
 
-  const handleDragStart = (column: string, index: number) => {
-    dragItem.current = { column, index };
-  };
-
-  const handleDragOver = (
-    column: string,
-    e: React.DragEvent<HTMLDivElement>,
-  ) => {
-    e.preventDefault();
-    const container = e.currentTarget;
-    const children = Array.from(
-      container.querySelectorAll<HTMLElement>('[data-dnd-item="true"]'),
-    );
-    const { index } = children.reduce(
-      (closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = e.clientY - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return {
-            offset,
-            index: Number(child.dataset.index),
-          };
-        }
-        return closest;
-      },
-      { offset: Number.NEGATIVE_INFINITY, index: children.length },
-    );
-    dragOverItem.current = { column, index };
-  };
-
-  const handleDrop = () => {
-    const from = dragItem.current;
-    const to = dragOverItem.current;
-    if (!from || !to) return;
-
-    setColumns((prev) => {
-      const next = { ...prev };
-      const fromItems = [...next[from.column]];
-      const [moved] = fromItems.splice(from.index, 1);
-      next[from.column] = fromItems;
-      const toItems = [...next[to.column]];
-      toItems.splice(to.index, 0, moved);
-      next[to.column] = toItems;
-      return next;
-    });
-
-    dragItem.current = null;
-    dragOverItem.current = null;
-  };
-
-  return { handleDragStart, handleDragOver, handleDrop };
+const findContainer = (
+  id: string,
+  cols: Record<string, string[]>,
+): string | undefined => {
+  return Object.keys(cols).find((key) => cols[key].includes(id));
 };
 
 // --- Placeholder graph components ---
@@ -188,10 +163,42 @@ export default function OverviewDashboard() {
     bottom: ["accounts", "netIncome", "insights"],
   });
 
-  const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
-    columns,
-    setColumns,
-  );
+  const moveCard = (
+    dragId: string,
+    dropId: string | null,
+    container?: string,
+  ) => {
+    setColumns((prev) => {
+      const next = { ...prev };
+      const from = findContainer(dragId, next);
+      if (!from) return prev;
+      const fromItems = [...next[from]];
+      const dragIndex = fromItems.indexOf(dragId);
+      fromItems.splice(dragIndex, 1);
+
+      let to: string;
+      let toItems: string[];
+
+      if (dropId) {
+        to = findContainer(dropId, next) || from;
+        toItems = [...next[to]];
+        const dropIndex = toItems.indexOf(dropId);
+        toItems.splice(dropIndex, 0, dragId);
+      } else if (container) {
+        to = container;
+        toItems = [...next[to]];
+        toItems.push(dragId);
+      } else {
+        to = from;
+        toItems = [...fromItems];
+        toItems.push(dragId);
+      }
+
+      next[from] = fromItems;
+      next[to] = toItems;
+      return next;
+    });
+  };
 
   const renderCard = (id: string) => {
     switch (id) {
@@ -495,7 +502,6 @@ export default function OverviewDashboard() {
     }
   };
 
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background text-foreground">
       {/* Top bar */}
@@ -597,58 +603,46 @@ export default function OverviewDashboard() {
           {/* Draggable card layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const dragId = e.dataTransfer.getData("text/plain");
+                if (dragId) moveCard(dragId, null, "left");
+              }}
               className="space-y-4"
-              onDragOver={(e) => handleDragOver("left", e)}
             >
-              {columns.left.map((id, index) => (
-                <div
-                  key={id}
-                  draggable
-                  data-dnd-item="true"
-                  data-index={index}
-                  onDragStart={() => handleDragStart("left", index)}
-                  onDragEnd={handleDrop}
-                >
-                  {renderCard(id)}
-                </div>
+              {columns.left.map((id) => (
+                <DraggableCard key={id} id={id} render={renderCard} onMove={moveCard} />
               ))}
             </div>
 
             <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const dragId = e.dataTransfer.getData("text/plain");
+                if (dragId) moveCard(dragId, null, "right");
+              }}
               className="space-y-4"
-              onDragOver={(e) => handleDragOver("right", e)}
             >
-              {columns.right.map((id, index) => (
-                <div
-                  key={id}
-                  draggable
-                  data-dnd-item="true"
-                  data-index={index}
-                  onDragStart={() => handleDragStart("right", index)}
-                  onDragEnd={handleDrop}
-                >
-                  {renderCard(id)}
-                </div>
+              {columns.right.map((id) => (
+                <DraggableCard key={id} id={id} render={renderCard} onMove={moveCard} />
               ))}
             </div>
           </div>
 
           {/* Today snapshot row */}
           <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              const dragId = e.dataTransfer.getData("text/plain");
+              if (dragId) moveCard(dragId, null, "bottom");
+            }}
             className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4"
-            onDragOver={(e) => handleDragOver("bottom", e)}
           >
-            {columns.bottom.map((id, index) => (
-              <div
-                key={id}
-                draggable
-                data-dnd-item="true"
-                data-index={index}
-                onDragStart={() => handleDragStart("bottom", index)}
-                onDragEnd={handleDrop}
-              >
-                {renderCard(id)}
-              </div>
+            {columns.bottom.map((id) => (
+              <DraggableCard key={id} id={id} render={renderCard} onMove={moveCard} />
             ))}
           </div>
         </main>
