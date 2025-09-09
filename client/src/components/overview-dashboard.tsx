@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { NetWorthGraph, SpendingGraph } from "@/components/dashboard-graphs";
+import WidgetDrawer from "@/components/widget-drawer";
 
 // --- Basic UI primitives using theme variables ---
 const Card = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
@@ -269,14 +270,15 @@ export default function OverviewDashboard() {
   };
 
   const [columns, setColumns] = useState<Record<string, string[]>>(initialColumns);
+  const [drawerExpanded, setDrawerExpanded] = useState(false);
+  
   const used = [
-    ...initialColumns.left,
-    ...initialColumns.right,
-    ...initialColumns.bottom,
+    ...columns.left,
+    ...columns.right,
+    ...columns.bottom,
   ];
-  const [unused, setUnused] = useState<string[]>(
-    allWidgets.filter((id) => !used.includes(id)),
-  );
+  
+  const availableWidgets = allWidgets.filter((id) => !used.includes(id));
   const [dragging, setDragging] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [overContainer, setOverContainer] = useState<string | null>(null);
@@ -326,14 +328,12 @@ export default function OverviewDashboard() {
       next[from] = next[from].filter((w) => w !== id);
       return next;
     });
-    setUnused((prev) => [...prev, id]);
   };
 
-  const addCard = (id: string) => {
-    setUnused((prev) => prev.filter((w) => w !== id));
+  const addCard = (id: string, targetColumn: string = "left") => {
     setColumns((prev) => ({
       ...prev,
-      left: [...prev.left, id],
+      [targetColumn]: [...prev[targetColumn], id],
     }));
   };
 
@@ -898,10 +898,17 @@ export default function OverviewDashboard() {
               }}
               onDrop={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 const dragId = e.dataTransfer.getData("text/plain");
+                const isFromDrawer = e.dataTransfer.getData("application/x-widget-source") === "drawer";
+                
                 // Only move if dropping on empty container space (not on another widget)
                 if (dragId && e.target === e.currentTarget) {
-                  moveCard(dragId, null, "left");
+                  if (isFromDrawer) {
+                    addCard(dragId, "left");
+                  } else {
+                    moveCard(dragId, null, "left");
+                  }
                 }
                 setDragging(null);
                 setOverId(null);
@@ -949,10 +956,17 @@ export default function OverviewDashboard() {
               }}
               onDrop={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 const dragId = e.dataTransfer.getData("text/plain");
+                const isFromDrawer = e.dataTransfer.getData("application/x-widget-source") === "drawer";
+                
                 // Only move if dropping on empty container space (not on another widget)
                 if (dragId && e.target === e.currentTarget) {
-                  moveCard(dragId, null, "right");
+                  if (isFromDrawer) {
+                    addCard(dragId, "right");
+                  } else {
+                    moveCard(dragId, null, "right");
+                  }
                 }
                 setDragging(null);
                 setOverId(null);
@@ -1038,22 +1052,12 @@ export default function OverviewDashboard() {
             )}
           </div>
 
-          {unused.length > 0 && (
-            <div className="mt-8">
-              <h3 className="text-sm font-medium mb-2">Unused Widgets</h3>
-              <div className="flex flex-wrap gap-2">
-                {unused.map((id) => (
-                  <button
-                    key={id}
-                    onClick={() => addCard(id)}
-                    className="px-3 py-2 rounded-md border border-border text-sm"
-                  >
-                    Add {widgetLabels[id]}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          <WidgetDrawer
+            availableWidgets={availableWidgets}
+            widgetLabels={widgetLabels}
+            isExpanded={drawerExpanded}
+            onToggle={() => setDrawerExpanded(!drawerExpanded)}
+          />
         </main>
       </div>
     </div>
