@@ -247,10 +247,7 @@ export default function OverviewDashboard() {
   // Save widget layout mutation
   const saveLayoutMutation = useMutation({
     mutationFn: async (layoutData: any) => {
-      return await apiRequest("/api/widget-layout", {
-        method: "POST",
-        body: { layoutData },
-      });
+      return await apiRequest("/api/widget-layout", "POST", { layoutData });
     },
     onError: (error) => {
       console.error("Failed to save widget layout:", error);
@@ -296,7 +293,7 @@ export default function OverviewDashboard() {
 
   // Load saved layout when data is available
   useEffect(() => {
-    if (savedLayout?.layoutData) {
+    if (savedLayout && savedLayout.layoutData) {
       setColumns(savedLayout.layoutData);
     }
   }, [savedLayout]);
