@@ -1,301 +1,659 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import {
-  ArrowUpRight,
-  ArrowDownRight,
-  TrendingDown,
-  TrendingUp,
+  BarChart2,
+  PieChart,
   Wallet,
-  Clock,
+  CreditCard,
+  LineChart,
   Calendar,
-  Zap,
-  ShoppingCart,
-  Car,
-  Utensils,
+  Gauge,
+  Goal,
+  Sparkles,
+  Layers,
+  Home,
+  List,
+  ChartPie,
+  Receipt,
+  Settings,
+  Bell,
+  MoreHorizontal,
+  GripVertical,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { AccountsPanel } from "@/components/accounts-panel";
 import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  PieChart as RePieChart,
-  Pie,
-  Cell,
-  CartesianGrid,
-} from "recharts";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
-interface Transaction {
-  id: number;
-  title: string;
-  date: string;
-  amount: number;
-  status?: "pending" | "posted";
-}
+// --- Basic UI primitives using theme variables ---
+const Card = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
+  <div className={cn("rounded-2xl border border-border bg-card text-card-foreground shadow-sm", className)}>
+    {children}
+  </div>
+);
 
-interface UpcomingCharge {
-  id: number;
-  name: string;
-  date: string;
-  amount: number;
-  dueSoon?: boolean;
-}
+const CardHeader = ({
+  title,
+  subtitle,
+  action,
+}: {
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+  action?: React.ReactNode;
+}) => (
+  <div className="flex items-center justify-between p-4 border-b border-border">
+    <div>
+      <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">{title}</h3>
+      {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
+    </div>
+    <div className="flex items-center gap-2">
+      {action}
+      <GripVertical className="w-4 h-4 text-muted-foreground cursor-move" />
+    </div>
+  </div>
+);
 
-interface BudgetCategory {
+const CardBody = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
+  <div className={cn("p-4", className)}>{children}</div>
+);
+
+const MenuItem = ({
+  icon: Icon,
+  label,
+  active = false,
+}: {
+  icon: React.ComponentType<any>;
   label: string;
-  amount: number;
-  pct: number;
-  trend: number;
-  icon: React.ElementType;
-}
+  active?: boolean;
+}) => (
+  <a
+    href="#"
+    className={cn(
+      "flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition",
+      active
+        ? "bg-primary/10 text-primary"
+        : "text-muted-foreground hover:bg-muted"
+    )}
+  >
+    <Icon className={cn("w-4 h-4", active ? "text-primary" : "text-muted-foreground")} />
+    <span className="truncate">{label}</span>
+  </a>
+);
 
-const cashData = [
-  { date: "1", current: 2000, previous: 1800 },
-  { date: "5", current: 2500, previous: 2000 },
-  { date: "10", current: 2300, previous: 2100 },
-  { date: "15", current: 2700, previous: 2200 },
-  { date: "20", current: 2600, previous: 2300 },
-  { date: "25", current: 2800, previous: 2400 },
-  { date: "30", current: 2582, previous: 2500 },
-];
+// --- Drag and drop helpers ---
+const useDragAndDrop = (
+  columns: Record<string, string[]>,
+  setColumns: React.Dispatch<React.SetStateAction<Record<string, string[]>>>,
+) => {
+  const dragItem = useRef<{ column: string; index: number } | null>(null);
+  const dragOverItem = useRef<{ column: string; index: number } | null>(null);
 
-const recentTransactions: Transaction[] = [
-  { id: 1, title: "Trader Joe's", date: "Aug 25", amount: -54.12 },
-  { id: 2, title: "Rent", date: "Aug 1", amount: -1200 },
-  { id: 3, title: "Paycheck", date: "Aug 30", amount: 3500 },
-  {
-    id: 4,
-    title: "Electric Bill",
-    date: "Aug 28",
-    amount: -90.2,
-    status: "pending",
-  },
-  { id: 5, title: "Freelance", date: "Aug 27", amount: 600 },
-];
+  const handleDragStart = (column: string, index: number) => {
+    dragItem.current = { column, index };
+  };
 
-const upcomingCharges: UpcomingCharge[] = [
-  { id: 1, name: "Netflix", date: "Sep 1", amount: 15.99, dueSoon: true },
-  { id: 2, name: "Rent", date: "Sep 1", amount: 1200, dueSoon: true },
-  { id: 3, name: "Gym Membership", date: "Sep 12", amount: 45 },
-];
+  const handleDragOver = (
+    column: string,
+    e: React.DragEvent<HTMLDivElement>,
+  ) => {
+    e.preventDefault();
+    const container = e.currentTarget;
+    const children = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-dnd-item="true"]'),
+    );
+    const { index } = children.reduce(
+      (closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = e.clientY - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return {
+            offset,
+            index: Number(child.dataset.index),
+          };
+        }
+        return closest;
+      },
+      { offset: Number.NEGATIVE_INFINITY, index: children.length },
+    );
+    dragOverItem.current = { column, index };
+  };
 
-const budgetCategories: BudgetCategory[] = [
-  { label: "Groceries", amount: 320, pct: 64, trend: -5, icon: ShoppingCart },
-  { label: "Utilities", amount: 150, pct: 50, trend: 2, icon: Zap },
-  { label: "Transport", amount: 90, pct: 60, trend: -3, icon: Car },
-  { label: "Dining", amount: 120, pct: 40, trend: 4, icon: Utensils },
-];
+  const handleDrop = () => {
+    const from = dragItem.current;
+    const to = dragOverItem.current;
+    if (!from || !to) return;
 
-const PIE_COLORS = ["#6366f1", "#f97316", "#10b981", "#ef4444"];
+    setColumns((prev) => {
+      const next = { ...prev };
+      const fromItems = [...next[from.column]];
+      const [moved] = fromItems.splice(from.index, 1);
+      next[from.column] = fromItems;
+      const toItems = [...next[to.column]];
+      toItems.splice(to.index, 0, moved);
+      next[to.column] = toItems;
+      return next;
+    });
 
-const formatCurrency = (value: number) =>
-  value.toLocaleString("en-US", { style: "currency", currency: "USD" });
+    dragItem.current = null;
+    dragOverItem.current = null;
+  };
 
+  return { handleDragStart, handleDragOver, handleDrop };
+};
+
+// --- Placeholder graph components ---
+const LineSkeleton = () => (
+  <div className="h-36 relative">
+    <div className="absolute inset-0 bg-gradient-to-b from-muted to-transparent rounded-xl" />
+    <svg viewBox="0 0 300 100" className="w-full h-full opacity-70">
+      <polyline
+        fill="none"
+        stroke="#8b5cf6"
+        strokeWidth="3"
+        points="0,80 30,70 60,72 90,60 120,65 150,50 180,58 210,45 240,55 270,38 300,42"
+      />
+    </svg>
+  </div>
+);
+
+const DonutSkeleton = () => (
+  <div className="h-36 flex items-center justify-center">
+    <div className="relative">
+      <div className="w-28 h-28 rounded-full border-[14px] border-muted" />
+      <div className="absolute inset-0 m-1 rounded-full border-[14px] border-indigo-400 clip-path-[polygon(50%_0,100%_0,100%_100%,0_100%,0_0)] rotate-45" />
+      <div className="absolute inset-8 bg-card rounded-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-xs text-muted-foreground">Spent</div>
+          <div className="text-sm font-semibold">$2,874</div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// --- Main mock component ---
 export default function OverviewDashboard() {
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      {/* Net Cash Summary */}
-      <Card className="lg:col-span-2">
-        <CardHeader className="pb-0">
-          <div className="flex items-center justify-between">
-            <CardTitle>Net Cash</CardTitle>
-            <Wallet className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <div className="mt-2 text-4xl font-bold">$2,582</div>
-          <p className="text-sm text-muted-foreground">
-            You’ve spent $600 more than last month
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="h-32">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={cashData} margin={{ left: 0, right: 0 }}>
-                <defs>
-                  <linearGradient id="currentFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient
-                    id="lastMonthFill"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
+  const { data: user } = useQuery<{ name?: string }>({
+    queryKey: ["/api/auth/user"],
+  });
 
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="date" hide />
-                <YAxis hide />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "0.5rem",
-                  }}
-                />
+  const [columns, setColumns] = useState<Record<string, string[]>>({
+    left: ["spending", "netWorth", "transactions"],
+    right: ["budgets", "cashflow", "tracker", "goals"],
+    bottom: ["accounts", "netIncome", "insights"],
+  });
 
-                <Area
-                  type="monotone"
-                  dataKey="previous"
-                  stroke="#f43f5e"
-                  fill="url(#lastMonthFill)"
-                  fillOpacity={1}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="current"
-                  stroke="#6366f1"
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: "#6366f1" }}
-                  isAnimationActive
-                  animationDuration={800}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+  const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
+    columns,
+    setColumns,
+  );
 
-      {/* Accounts Section */}
-      <AccountsPanel />
-
-      {/* Recent Transactions */}
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentTransactions.map((tx) => {
-              const isExpense = tx.amount < 0;
-              const Icon =
-                tx.status === "pending"
-                  ? Clock
-                  : isExpense
-                    ? ArrowDownRight
-                    : ArrowUpRight;
-              const color =
-                tx.status === "pending"
-                  ? "text-muted-foreground"
-                  : isExpense
-                    ? "text-red-500"
-                    : "text-green-500";
-              return (
-                <div key={tx.id} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{tx.title}</p>
-                    <p className="text-sm text-muted-foreground">{tx.date}</p>
-                  </div>
-                  <div className={`flex items-center gap-1 ${color}`}>
-                    <Icon className="h-4 w-4" />
-                    <span className="font-medium">
-                      {formatCurrency(Math.abs(tx.amount))}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <Button variant="ghost" className="w-full mt-4">
-            See all
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Upcoming Recurring Charges */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Upcoming Charges</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {upcomingCharges.map((charge) => (
-            <div key={charge.id} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">{charge.name}</p>
-                  <p className="text-sm text-muted-foreground">{charge.date}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {charge.dueSoon && <Badge variant="secondary">Due soon</Badge>}
-                <span className="font-medium">
-                  {formatCurrency(charge.amount)}
+  const renderCard = (id: string) => {
+    switch (id) {
+      case "spending":
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <PieChart className="w-4 h-4" />Spending (Donut)
                 </span>
+              }
+              subtitle="This month • Include bills"
+              action={<button className="text-xs px-2 py-1 rounded-md border border-border">Month ▾</button>}
+            />
+            <CardBody>
+              <DonutSkeleton />
+              <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                <div className="p-2 rounded-lg bg-muted">Dining <div className="font-mono">$412</div></div>
+                <div className="p-2 rounded-lg bg-muted">Groceries <div className="font-mono">$603</div></div>
+                <div className="p-2 rounded-lg bg-muted">Transport <div className="font-mono">$128</div></div>
               </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      {/* Monthly Budget Breakdown */}
-      <Card className="lg:col-span-3">
-        <CardHeader>
-          <CardTitle>Monthly Budget Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
-          <div className="flex items-center justify-center">
-            <ResponsiveContainer width="100%" height={200}>
-              <RePieChart>
-                <Pie
-                  data={budgetCategories}
-                  dataKey="amount"
-                  nameKey="label"
-                  innerRadius={60}
-                  outerRadius={80}
-                >
-                  {budgetCategories.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={PIE_COLORS[index % PIE_COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-              </RePieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Total Income</p>
-              <p className="text-2xl font-bold">$5,000</p>
-            </div>
-            {budgetCategories.map((cat) => (
-              <div key={cat.label} className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <cat.icon className="h-4 w-4 text-muted-foreground" />
-                    <span>{cat.label}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {cat.trend >= 0 ? (
-                      <TrendingUp className="h-3 w-3 text-green-500" />
-                    ) : (
-                      <TrendingDown className="h-3 w-3 text-red-500" />
-                    )}
-                    <span className="text-sm text-muted-foreground">
-                      {Math.abs(cat.trend)}%
-                    </span>
-                  </div>
+            </CardBody>
+          </Card>
+        );
+      case "netWorth":
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <LineChart className="w-4 h-4" />Net Worth (Graph)
+                </span>
+              }
+              subtitle="1Y trend"
+              action={
+                <div className="flex gap-1">
+                  <button className="text-xs px-2 py-1 rounded-md border border-border">1M</button>
+                  <button className="text-xs px-2 py-1 rounded-md border border-border bg-foreground text-background">
+                    1Y
+                  </button>
                 </div>
-                <Progress value={cat.pct} className="h-2" />
-                <p className="text-sm text-muted-foreground">
-                  {formatCurrency(cat.amount)}
-                </p>
+              }
+            />
+            <CardBody>
+              <LineSkeleton />
+            </CardBody>
+          </Card>
+        );
+      case "transactions":
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <List className="w-4 h-4" />Recent Transactions
+                </span>
+              }
+              subtitle="Latest 6"
+              action={<button className="text-xs px-2 py-1 rounded-md border border-border">See all</button>}
+            />
+            <CardBody>
+              <ul className="text-sm divide-y">
+                {[
+                  { m: "Whole Foods", a: "-$56.78", t: "Groceries" },
+                  { m: "Blue Shield", a: "-$485.00", t: "Medical" },
+                  { m: "Salary", a: "+$4,200.00", t: "Income" },
+                  { m: "Uber", a: "-$18.40", t: "Transport" },
+                  { m: "Netflix", a: "-$15.99", t: "Subscription" },
+                  { m: "Rent", a: "-$1,950.00", t: "Housing" },
+                ].map((row, i) => (
+                  <li key={i} className="flex items-center justify-between py-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-lg bg-muted grid place-items-center text-xs">
+                        {row.m[0]}
+                      </div>
+                      <div>
+                        <div className="font-medium">{row.m}</div>
+                        <div className="text-xs text-muted-foreground">{row.t}</div>
+                      </div>
+                    </div>
+                    <div className={cn("font-mono", row.a.startsWith("+") ? "text-emerald-600" : "text-foreground")}>
+                      {row.a}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </CardBody>
+          </Card>
+        );
+      case "budgets":
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <Wallet className="w-4 h-4" />Budgets (Left to Spend)
+                </span>
+              }
+              subtitle="This month"
+              action={<button className="text-xs px-2 py-1 rounded-md border border-border">Manage</button>}
+            />
+            <CardBody>
+              <div className="grid grid-cols-3 gap-3 text-sm">
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
+                  <div className="text-xs text-emerald-700">Left to Spend</div>
+                  <div className="text-xl font-extrabold">$563</div>
+                </div>
+                <div className="p-3 rounded-xl bg-muted border border-border">
+                  <div className="text-xs text-muted-foreground">Budgeted</div>
+                  <div className="font-semibold">$720</div>
+                </div>
+                <div className="p-3 rounded-xl bg-muted border border-border">
+                  <div className="text-xs text-muted-foreground">Current Spend</div>
+                  <div className="font-semibold">$157</div>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        );
+      case "cashflow":
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />Cash‑Flow & Days Safe
+                </span>
+              }
+              subtitle="30‑day projection"
+              action={<button className="text-xs px-2 py-1 rounded-md border border-border">Calendar</button>}
+            />
+            <CardBody>
+              <div className="grid grid-cols-3 gap-3 text-sm">
+                <div className="col-span-2">
+                  <LineSkeleton />
+                </div>
+                <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-100">
+                  <div className="text-xs text-indigo-700">Days Safe</div>
+                  <div className="text-2xl font-extrabold">12</div>
+                  <div className="text-xs text-muted-foreground">until $0 balance</div>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        );
+      case "tracker":
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4" />Quick Category Tracker
+                </span>
+              }
+              subtitle="Groceries • Week / Month"
+              action={
+                <div className="flex gap-1">
+                  <button className="text-xs px-2 py-1 rounded-md border border-border bg-foreground text-background">
+                    Week
+                  </button>
+                  <button className="text-xs px-2 py-1 rounded-md border border-border">Month</button>
+                </div>
+              }
+            />
+            <CardBody>
+              <div className="grid grid-cols-3 gap-3 text-sm">
+                <div className="p-3 rounded-xl bg-muted border border-border">
+                  <div className="text-xs text-muted-foreground">Spent</div>
+                  <div className="font-mono">$146.22</div>
+                </div>
+                <div className="p-3 rounded-xl bg-muted border border-border">
+                  <div className="text-xs text-muted-foreground">Budget</div>
+                  <div className="font-mono">$200.00</div>
+                </div>
+                <div className="p-3 rounded-xl bg-muted border border-border">
+                  <div className="text-xs text-muted-foreground">Left</div>
+                  <div className="font-mono text-emerald-600">$53.78</div>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        );
+      case "goals":
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <Goal className="w-4 h-4" />Goals Progress
+                </span>
+              }
+              subtitle="Emergency • Vacation • Debt"
+            />
+            <CardBody>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span>Emergency Fund</span>
+                  <span className="font-mono">$2,300 / $5,000</span>
+                </div>
+                <div className="w-full h-2 bg-muted rounded-full">
+                  <div className="h-2 bg-emerald-500 rounded-full w-[46%]" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Vacation</span>
+                  <span className="font-mono">$900 / $1,500</span>
+                </div>
+                <div className="w-full h-2 bg-muted rounded-full">
+                  <div className="h-2 bg-indigo-500 rounded-full w-[60%]" />
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        );
+      case "accounts":
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <Layers className="w-4 h-4" />Accounts (Snapshot)
+                </span>
+              }
+              subtitle="Checking • Credit • Net Cash • Savings • Investments"
+            />
+            <CardBody>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                <div className="p-3 rounded-xl bg-card border border-border">
+                  <div className="text-xs text-muted-foreground">Checking</div>
+                  <div className="font-mono font-semibold">$17,130</div>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border">
+                  <div className="text-xs text-muted-foreground">Credit Cards</div>
+                  <div className="font-mono font-semibold">$2,250</div>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border">
+                  <div className="text-xs text-muted-foreground">Net Cash</div>
+                  <div className="font-mono font-semibold">$14,880</div>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border">
+                  <div className="text-xs text-muted-foreground">Savings</div>
+                  <div className="font-mono font-semibold">$16,170</div>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border">
+                  <div className="text-xs text-muted-foreground">Investments</div>
+                  <div className="font-mono font-semibold">—</div>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        );
+      case "netIncome":
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <BarChart2 className="w-4 h-4" />Net Income (This Month)
+                </span>
+              }
+              subtitle="Income – Expenses = Net"
+            />
+            <CardBody>
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
+                  <div className="text-xs text-emerald-700">Income</div>
+                  <div className="text-lg font-bold">$4,500</div>
+                </div>
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-100">
+                  <div className="text-xs text-rose-700">Expenses</div>
+                  <div className="text-lg font-bold">$3,800</div>
+                </div>
+                <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-100">
+                  <div className="text-xs text-indigo-700">Net Income</div>
+                  <div className="text-lg font-bold">$700</div>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        );
+      case "insights":
+        return (
+          <Card>
+            <CardHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />AI Insights
+                </span>
+              }
+              subtitle="Nudges • Anomalies • Tips"
+            />
+            <CardBody>
+              <ul className="space-y-2 text-sm">
+                <li>💡 Dining is 18% lower than last month — nice!</li>
+                <li>⚠️ Free trial ends in 3 days: Acme Music</li>
+                <li>🎯 Move $50 to savings to hit goal on time</li>
+              </ul>
+            </CardBody>
+          </Card>
+        );
+    }
+  };
+
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-background text-foreground">
+      {/* Top bar */}
+      <header className="sticky top-0 z-40 bg-background/70 backdrop-blur border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-primary grid place-items-center text-primary-foreground font-bold">BH</div>
+            <div>
+              <div className="font-semibold tracking-tight">BudgetHero</div>
+              <div className="text-xs text-muted-foreground">Level Up Your Money</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <ThemeToggle />
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-5 w-5" />
+            </Button>
+            {user?.name && <span className="px-2">{user.name}</span>}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>Personal</DropdownMenuItem>
+                <DropdownMenuItem>Household</DropdownMenuItem>
+                <DropdownMenuItem>Customize Layout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-12 gap-4">
+        {/* Sidebar */}
+        <aside className="col-span-12 md:col-span-3 lg:col-span-2">
+          <Card>
+            <CardBody>
+              <nav className="space-y-1">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground px-2 mb-1">Menu</div>
+                <MenuItem icon={Home} label="Dashboard" active />
+                <MenuItem icon={List} label="Transactions" />
+                <MenuItem icon={ChartPie} label="Spending" />
+                <MenuItem icon={Wallet} label="Budgets" />
+                <MenuItem icon={Gauge} label="Cash Flow (Days Safe)" />
+                <MenuItem icon={Receipt} label="Bills & Subscriptions" />
+                <MenuItem icon={Goal} label="Goals & Reports" />
+                <MenuItem icon={Sparkles} label="Insights (AI Coach)" />
+                <div className="pt-2 border-t border-border mt-2" />
+                <MenuItem icon={Settings} label="More ▾" />
+              </nav>
+            </CardBody>
+          </Card>
+        </aside>
+
+        {/* Main content */}
+        <main className="col-span-12 md:col-span-9 lg:col-span-10">
+          {/* Split headers */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            <Card>
+              <CardHeader
+                title={
+                  <span className="flex items-center gap-2">
+                    <span className="inline-flex w-6 h-6 rounded-full bg-blue-50 text-blue-600 items-center justify-center">
+                      🪞
+                    </span>
+                    Where Your Money Went
+                  </span>
+                }
+                subtitle="Past • Rearview"
+              />
+              <CardBody>
+                <div className="text-xs text-muted-foreground">
+                  Historical insights: Spending, Net Worth trend, Transactions.
+                </div>
+              </CardBody>
+            </Card>
+            <Card>
+              <CardHeader
+                title={
+                  <span className="flex items-center gap-2">
+                    <span className="inline-flex w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 items-center justify-center">
+                      🔮
+                    </span>
+                    Where You're Headed
+                  </span>
+                }
+                subtitle="Future • Windshield"
+              />
+              <CardBody>
+                <div className="text-xs text-muted-foreground">
+                  Budgets, Cash‑flow & Days Safe, Goals, Quick Trackers.
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+
+          {/* Draggable card layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div
+              className="space-y-4"
+              onDragOver={(e) => handleDragOver("left", e)}
+            >
+              {columns.left.map((id, index) => (
+                <div
+                  key={id}
+                  draggable
+                  data-dnd-item="true"
+                  data-index={index}
+                  onDragStart={() => handleDragStart("left", index)}
+                  onDragEnd={handleDrop}
+                >
+                  {renderCard(id)}
+                </div>
+              ))}
+            </div>
+
+            <div
+              className="space-y-4"
+              onDragOver={(e) => handleDragOver("right", e)}
+            >
+              {columns.right.map((id, index) => (
+                <div
+                  key={id}
+                  draggable
+                  data-dnd-item="true"
+                  data-index={index}
+                  onDragStart={() => handleDragStart("right", index)}
+                  onDragEnd={handleDrop}
+                >
+                  {renderCard(id)}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Today snapshot row */}
+          <div
+            className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4"
+            onDragOver={(e) => handleDragOver("bottom", e)}
+          >
+            {columns.bottom.map((id, index) => (
+              <div
+                key={id}
+                draggable
+                data-dnd-item="true"
+                data-index={index}
+                onDragStart={() => handleDragStart("bottom", index)}
+                onDragEnd={handleDrop}
+              >
+                {renderCard(id)}
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </main>
+      </div>
     </div>
   );
 }
+

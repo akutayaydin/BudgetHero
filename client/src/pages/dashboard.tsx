@@ -1,5 +1,4 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { PlaidLink } from "@/components/PlaidLink";
 import { useToast } from "@/hooks/use-toast";
@@ -14,7 +13,7 @@ import { RecentTransactionsSection } from "@/components/recent-transactions-sect
 import { BudgetSection } from "@/components/budget-section";
 import { SmartRecommendations } from "@/components/smart-recommendations";
 import FinancialTipsSidebar from "@/components/financial-tips-sidebar";
-//import OverviewDashboard from "@/components/overview-dashboard";
+import OverviewDashboard from "@/components/overview-dashboard";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -28,7 +27,7 @@ export default function Dashboard() {
     <>
       <div className="p-4 sm:p-6 space-y-6 bg-background min-h-full">
         <SubscriptionBanner />
-        {/* <OverviewDashboard /> */}
+        <OverviewDashboard />
 
         {/* === Two independent columns (no sticky, no sidebar scroll) === */}
         <div className="xl:flex xl:items-start xl:gap-6">
