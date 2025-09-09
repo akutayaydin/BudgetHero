@@ -1058,7 +1058,7 @@ export function SpendingGraph() {
                 dataKey="previous"
                 fill="url(#previousGradient)"
                 stroke="#93C5FD"
-                strokeWidth={2}
+                strokeWidth={3}
                 dot={false}
                 name="Last Month"
               />
