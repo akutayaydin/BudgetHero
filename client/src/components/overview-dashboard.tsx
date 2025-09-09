@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { NetWorthGraph, SpendingGraph } from "@/components/dashboard-graphs";
+import AccountsCard from "@/components/accounts-card";
 import WidgetDrawer from "@/components/widget-drawer";
 
 // --- Basic UI primitives using theme variables ---
@@ -180,15 +181,6 @@ interface NetWorthData {
   totalBankAccounts: number;
 }
 
-interface AccountData {
-  id: string;
-  name: string;
-  type: string;
-  subtype?: string;
-  currentBalance: string | number;
-  balance?: string | number;
-}
-
 interface TransactionData {
   id: string;
   description: string;
@@ -223,9 +215,6 @@ export default function OverviewDashboard() {
     queryKey: ["/api/net-worth"],
   });
 
-  const { data: accountsData = [] } = useQuery<AccountData[]>({
-    queryKey: ["/api/accounts"],
-  });
 
   const { data: transactionsData = [] } = useQuery<TransactionData[]>({
     queryKey: ["/api/transactions"],
@@ -787,39 +776,6 @@ export default function OverviewDashboard() {
           </Card>
         );
       case "accounts":
-        // Group accounts by type
-        const checkingAccounts = accountsData.filter(
-          (acc) => acc.type === "depository" && acc.subtype !== "savings"
-        );
-        const creditAccounts = accountsData.filter((acc) => acc.type === "credit");
-        const savingsAccounts = accountsData.filter(
-          (acc) => acc.type === "depository" && acc.subtype === "savings"
-        );
-        const investmentAccounts = accountsData.filter((acc) => acc.type === "investment");
-
-        // Calculate totals
-        const totalChecking = checkingAccounts.reduce((sum: number, acc) => {
-          const balance = typeof acc.currentBalance === "string" ? parseFloat(acc.currentBalance) : acc.currentBalance;
-          return sum + (isNaN(Number(balance)) ? 0 : Number(balance));
-        }, 0);
-
-        const totalCredit = creditAccounts.reduce((sum: number, acc) => {
-          const balance = typeof acc.currentBalance === "string" ? parseFloat(acc.currentBalance) : acc.currentBalance;
-          return sum + Math.abs(isNaN(Number(balance)) ? 0 : Number(balance));
-        }, 0);
-
-        const totalSavings = savingsAccounts.reduce((sum: number, acc) => {
-          const balance = typeof acc.currentBalance === "string" ? parseFloat(acc.currentBalance) : acc.currentBalance;
-          return sum + (isNaN(Number(balance)) ? 0 : Number(balance));
-        }, 0);
-
-        const totalInvestments = investmentAccounts.reduce((sum: number, acc) => {
-          const balance = typeof acc.currentBalance === "string" ? parseFloat(acc.currentBalance) : acc.currentBalance;
-          return sum + (isNaN(Number(balance)) ? 0 : Number(balance));
-        }, 0);
-
-        const netCash = totalChecking - totalCredit;
-        
         return (
           <Card>
             <CardHeader
@@ -839,36 +795,7 @@ export default function OverviewDashboard() {
               }
             />
             <CardBody>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-                <div className="p-3 rounded-xl bg-card border border-border">
-                  <div className="text-xs text-muted-foreground">Checking</div>
-                  <div className="font-mono font-semibold">${totalChecking.toLocaleString()}</div>
-                </div>
-                <div className="p-3 rounded-xl bg-card border border-border">
-                  <div className="text-xs text-muted-foreground">Credit Cards</div>
-                  <div className="font-mono font-semibold">${totalCredit.toLocaleString()}</div>
-                </div>
-                <div className="p-3 rounded-xl bg-card border border-border">
-                  <div className="text-xs text-muted-foreground">Net Cash</div>
-                  <div className={`font-mono font-semibold ${netCash >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                    ${netCash.toLocaleString()}
-                  </div>
-                </div>
-                <div className="p-3 rounded-xl bg-card border border-border">
-                  <div className="text-xs text-muted-foreground">Savings</div>
-                  <div className="font-mono font-semibold">${totalSavings.toLocaleString()}</div>
-                </div>
-                <div className="p-3 rounded-xl bg-card border border-border">
-                  <div className="text-xs text-muted-foreground">Investments</div>
-                  <div className="font-mono font-semibold">
-                    {totalInvestments > 0 ? `$${totalInvestments.toLocaleString()}` : "—"}
-                  </div>
-                </div>
-                <div className="p-3 rounded-xl bg-card border border-border">
-                  <div className="text-xs text-muted-foreground">Total Accounts</div>
-                  <div className="font-mono font-semibold">{accountsData.length}</div>
-                </div>
-              </div>
+              <AccountsCard />
             </CardBody>
           </Card>
         );
