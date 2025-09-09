@@ -918,30 +918,9 @@ export default function OverviewDashboard() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-12 gap-4">
-        {/* Sidebar */}
-        <aside className="col-span-12 md:col-span-3 lg:col-span-2">
-          <Card>
-            <CardBody>
-              <nav className="space-y-1">
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground px-2 mb-1">Menu</div>
-                <MenuItem icon={Home} label="Dashboard" active />
-                <MenuItem icon={List} label="Transactions" />
-                <MenuItem icon={ChartPie} label="Spending" />
-                <MenuItem icon={Wallet} label="Budgets" />
-                <MenuItem icon={Gauge} label="Cash Flow (Days Safe)" />
-                <MenuItem icon={Receipt} label="Bills & Subscriptions" />
-                <MenuItem icon={Goal} label="Goals & Reports" />
-                <MenuItem icon={Sparkles} label="Insights (AI Coach)" />
-                <div className="pt-2 border-t border-border mt-2" />
-                <MenuItem icon={Settings} label="More ▾" />
-              </nav>
-            </CardBody>
-          </Card>
-        </aside>
-
+      <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Main content */}
-        <main className="col-span-12 md:col-span-9 lg:col-span-10">
+        <main>
           {/* Split headers */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             <Card>

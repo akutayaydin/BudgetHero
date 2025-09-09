@@ -95,10 +95,6 @@ function Router() {
       <div className="flex-1 flex flex-col md:ml-0 ml-0">
         <MobileTopNav onMenuClick={() => setIsMobileMenuOpen(true)} />
         
-        {/* Setup Reminder Banner for Limited Mode */}
-        {isInLimitedMode && (
-          <SetupReminderBanner onFinishSetup={() => setShowOnboardingModal(true)} />
-        )}
         
         <div className="flex-1 overflow-auto bg-background">
           <Switch>
