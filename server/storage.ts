@@ -1,5 +1,5 @@
 import { db, migrateDb } from "./db";
-import { transactions, budgets, budgetPlans, goals, users, categories, institutions, accounts, subscriptionPlans, assets, liabilities, recurringTransactions, billNotifications, manualSubscriptions, categorizationRules, transactionTags, transactionTagAssignments, automationRules, transactionSplits } from "@shared/schema";
+import { transactions, budgets, budgetPlans, goals, users, categories, institutions, accounts, subscriptionPlans, assets, liabilities, recurringTransactions, billNotifications, manualSubscriptions, categorizationRules, transactionTags, transactionTagAssignments, automationRules, transactionSplits, widgetLayouts } from "@shared/schema";
 import { eq, and, gte, lte, like, or, ilike } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 import type {
@@ -9,7 +9,8 @@ import type {
   RecurringTransaction, InsertRecurringTransaction, BillNotification, InsertBillNotification,
   ManualSubscription, InsertManualSubscription, CategorizationRule, InsertCategorizationRule,
   TransactionTag, InsertTransactionTag, TransactionTagAssignment, InsertTransactionTagAssignment,
-  AutomationRule, InsertAutomationRule, TransactionSplit, InsertTransactionSplit
+  AutomationRule, InsertAutomationRule, TransactionSplit, InsertTransactionSplit,
+  WidgetLayout, InsertWidgetLayout
 } from "@shared/schema";
 import { defaultCategories } from "../client/src/lib/transaction-classifier";
 
@@ -213,6 +214,10 @@ export interface IStorage {
   getTransactionSplits(originalTransactionId?: string, userId?: string): Promise<TransactionSplit[]>;
   createTransactionSplits(splits: InsertTransactionSplit[], userId: string): Promise<TransactionSplit[]>;
   deleteTransactionSplits(originalTransactionId: string): Promise<boolean>;
+
+  // Widget Layout methods
+  getWidgetLayout(userId: string, deviceId?: string): Promise<WidgetLayout | undefined>;
+  saveWidgetLayout(layout: InsertWidgetLayout, userId: string): Promise<WidgetLayout>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1566,6 +1571,55 @@ export class DatabaseStorage implements IStorage {
       .delete(transactionSplits)
       .where(eq(transactionSplits.originalTransactionId, originalTransactionId));
     return (result.rowCount || 0) > 0;
+  }
+
+  // Widget Layout methods
+  async getWidgetLayout(userId: string, deviceId?: string): Promise<WidgetLayout | undefined> {
+    const query = db.select().from(widgetLayouts)
+      .where(eq(widgetLayouts.userId, userId));
+      
+    if (deviceId) {
+      const [layout] = await query.where(
+        and(
+          eq(widgetLayouts.userId, userId),
+          eq(widgetLayouts.deviceId, deviceId)
+        )
+      );
+      return layout;
+    } else {
+      // Get the most recent layout for the user (any device)
+      const [layout] = await query
+        .orderBy(sql`${widgetLayouts.updatedAt} DESC`)
+        .limit(1);
+      return layout;
+    }
+  }
+
+  async saveWidgetLayout(layout: InsertWidgetLayout, userId: string): Promise<WidgetLayout> {
+    const layoutWithUserId = { ...layout, userId };
+    
+    // Check if layout exists for this user/device combination
+    const existing = await this.getWidgetLayout(userId, layout.deviceId || undefined);
+    
+    if (existing) {
+      // Update existing layout
+      const [updated] = await db
+        .update(widgetLayouts)
+        .set({
+          layoutData: layoutWithUserId.layoutData,
+          updatedAt: new Date(),
+        })
+        .where(eq(widgetLayouts.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      // Create new layout
+      const [created] = await db
+        .insert(widgetLayouts)
+        .values(layoutWithUserId)
+        .returning();
+      return created;
+    }
   }
 }
 

@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupMultiAuth, isAuthenticated } from "./multiAuth";
-import { insertTransactionSchema, updateTransactionSchema, insertBudgetSchema, insertBudgetPlanSchema, insertGoalSchema, transactionFiltersSchema, insertInstitutionSchema, insertAccountSchema, insertAssetSchema, insertLiabilitySchema, insertManualSubscriptionSchema, insertTransactionTagSchema, insertAutomationRuleSchema, insertTransactionSplitSchema, transactions, budgets, accounts, adminCategories, passwordResetTokens, forgotPasswordSchema, resetPasswordSchema, recurringMerchants, insertRecurringMerchantSchema, users } from "@shared/schema";
+import { insertTransactionSchema, updateTransactionSchema, insertBudgetSchema, insertBudgetPlanSchema, insertGoalSchema, transactionFiltersSchema, insertInstitutionSchema, insertAccountSchema, insertAssetSchema, insertLiabilitySchema, insertManualSubscriptionSchema, insertTransactionTagSchema, insertAutomationRuleSchema, insertTransactionSplitSchema, transactions, budgets, accounts, adminCategories, passwordResetTokens, forgotPasswordSchema, resetPasswordSchema, recurringMerchants, insertRecurringMerchantSchema, users, insertWidgetLayoutSchema } from "@shared/schema";
 import { sendEmail, generatePasswordResetEmail } from "./emailService";
 import { getTransactionsNeedingReview } from "./enhancedCategorization";
 import { enhancedRecurringDetection } from './enhancedRecurringDetection';
@@ -4389,6 +4389,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register notification routes
   const notificationRoutes = (await import('./routes/notifications.js')).default;
   app.use('/api/notifications', isAuthenticated, notificationRoutes);
+
+  // Widget Layout routes
+  app.get('/api/widget-layout', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const deviceId = req.query.deviceId as string | undefined;
+      const layout = await storage.getWidgetLayout(userId, deviceId);
+      
+      if (layout) {
+        res.json(layout);
+      } else {
+        // Return default layout if none exists
+        res.json({
+          layoutData: {
+            left: ["netWorth", "accounts", "transactions"],
+            right: ["bills", "budgets", "spending"],
+            bottom: ["cashflow", "tracker", "goals", "netIncome", "insights"],
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching widget layout:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post('/api/widget-layout', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const validatedData = insertWidgetLayoutSchema.parse(req.body);
+      const layout = await storage.saveWidgetLayout(validatedData, userId);
+      
+      res.json(layout);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid layout data", 
+          errors: error.issues 
+        });
+      }
+      console.error("Error saving widget layout:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
