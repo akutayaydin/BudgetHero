@@ -12,7 +12,6 @@ import { UpcomingBillsWidget } from "@/components/upcoming-bills-widget";
 import { RecentTransactionsSection } from "@/components/recent-transactions-section";
 import { BudgetSection } from "@/components/budget-section";
 import { SmartRecommendations } from "@/components/smart-recommendations";
-import FinancialTipsSidebar from "@/components/financial-tips-sidebar";
 import OverviewDashboard from "@/components/overview-dashboard";
 
 export default function Dashboard() {
@@ -90,7 +89,6 @@ export default function Dashboard() {
         )}
       </div>
 
-      <FinancialTipsSidebar />
     </>
   );
 }
