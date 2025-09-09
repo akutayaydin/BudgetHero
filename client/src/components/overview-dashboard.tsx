@@ -506,13 +506,9 @@ export default function OverviewDashboard() {
               action={
                 <>
                   <Link href="/spending">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium"
-                    >
+                    <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
                       View Spending <ArrowRight className="h-4 w-4 ml-1" />
-                    </Button>
+                    </button>
                   </Link>
                   <button
                     onClick={() => removeCard("spending")}
@@ -523,7 +519,7 @@ export default function OverviewDashboard() {
                 </>
               }
             />
-            <CardBody>
+            <CardBody className="pt-2">
               <SpendingGraph />
             </CardBody>
           </Card>
@@ -541,13 +537,9 @@ export default function OverviewDashboard() {
               action={
                 <>
                   <Link href="/wealth-management">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-medium"
-                    >
+                    <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
                       View Net Worth <ArrowRight className="h-4 w-4 ml-1" />
-                    </Button>
+                    </button>
                   </Link>
                   <button
                     onClick={() => removeCard("netWorth")}
@@ -558,7 +550,7 @@ export default function OverviewDashboard() {
                 </>
               }
             />
-            <CardBody>
+            <CardBody className="pt-2">
               <NetWorthGraph />
             </CardBody>
           </Card>
