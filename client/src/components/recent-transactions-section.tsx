@@ -119,7 +119,7 @@ export function RecentTransactionsSection() {
             </Link>
           </div>
         </CardHeader>
-        <CardContent className="border-t border-border pt-6 space-y-3">
+        <CardContent className="border-t border-border pt-6 divide-y divide-border">
           {recentTransactions.length > 0 ? (
             recentTransactions.map((transaction) => {
               const isIncome = transaction.type === 'income';
@@ -130,7 +130,7 @@ export function RecentTransactionsSection() {
               const numericAmount = parseFloat(transaction.amount || '0');
               
               return (
-                <div key={transaction.id} className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                <div key={transaction.id} className="flex items-center justify-between py-4 px-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <div className="flex items-center gap-4">
                     <MerchantLogo merchant={transaction.merchant || transaction.description} size={9} />
                     <div>
