@@ -78,4 +78,11 @@
 
 ---
 
+### TO FIX ERRORS:
+
+* **git restore --staged client/src/components/overview-dashboard.tsx** 
+
+* **git add client/src/components/overview-dashboard.tsx** 
+
+
 Do you want me to also add a **“Quick Troubleshooting”** section (like what to do if you see conflicts or can’t push from Replit)?
