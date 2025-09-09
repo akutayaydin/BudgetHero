@@ -147,7 +147,7 @@ export default function AccountsCard({ onRemove, isDragging }: AccountsCardProps
             <Link href="/connect-bank">
               <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
                 <Plus className="h-4 w-4 mr-2" />
-                Connect Bank Account
+                Add Account
               </Button>
             </Link>
           </div>
