@@ -80,6 +80,7 @@
 
 ### TO FIX ERRORS:
 
+* **git status** 
 * **git restore --staged client/src/components/overview-dashboard.tsx** 
 
 * **git add client/src/components/overview-dashboard.tsx** 
