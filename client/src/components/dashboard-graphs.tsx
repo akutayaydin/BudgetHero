@@ -533,8 +533,8 @@ export function DashboardGraphs() {
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor="#BFDBFE" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#BFDBFE" stopOpacity={0.05} />
+                  <stop offset="0%" stopColor="#93C5FD" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="#93C5FD" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
 
@@ -615,8 +615,8 @@ export function DashboardGraphs() {
                 type="monotone"
                 dataKey="previous"
                 name="Last Month"
-                fill="#BFDBFE"
-                stroke="#BFDBFE"
+                fill="#93C5FD"
+                stroke="#93C5FD"
                 fillOpacity={0.1}
               />
 
@@ -1002,8 +1002,8 @@ export function SpendingGraph() {
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor="#BFDBFE" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#BFDBFE" stopOpacity={0.05} />
+                  <stop offset="0%" stopColor="#93C5FD" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="#93C5FD" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
 
