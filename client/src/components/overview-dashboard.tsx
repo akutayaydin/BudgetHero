@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { NetWorthGraph, SpendingGraph } from "@/components/dashboard-graphs";
 
 // --- Basic UI primitives using theme variables ---
 const Card = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
@@ -335,90 +336,9 @@ export default function OverviewDashboard() {
   const renderCard = (id: string) => {
     switch (id) {
       case "spending":
-        return (
-          <Card>
-            <CardHeader
-              title={
-                <span className="flex items-center gap-2">
-                  <PieChart className="w-4 h-4" />Spending (Donut)
-                </span>
-              }
-              subtitle="This month • Include bills"
-              action={
-                <div className="flex gap-1">
-                  <button className="text-xs px-2 py-1 rounded-md border border-border">Month ▾</button>
-                  <button
-                    onClick={() => removeCard("spending")}
-                    className="text-xs px-2 py-1 rounded-md border border-border"
-                  >
-                    Remove
-                  </button>
-                </div>
-              }
-            />
-            <CardBody>
-              <DonutSkeleton />
-              <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
-                <div className="p-2 rounded-lg bg-muted">Dining <div className="font-mono">$412</div></div>
-                <div className="p-2 rounded-lg bg-muted">Groceries <div className="font-mono">$603</div></div>
-                <div className="p-2 rounded-lg bg-muted">Transport <div className="font-mono">$128</div></div>
-              </div>
-            </CardBody>
-          </Card>
-        );
+        return <SpendingGraph />;
       case "netWorth":
-        const netWorth = netWorthData?.totalNetWorth || 0;
-        const totalAssets = netWorthData?.totalAssets || 0;
-        const totalLiabilities = netWorthData?.totalLiabilities || 0;
-        const totalBankAccounts = netWorthData?.totalBankAccounts || 0;
-        
-        return (
-          <Card>
-            <CardHeader
-              title={
-                <span className="flex items-center gap-2">
-                  <LineChart className="w-4 h-4" />Total Net Worth
-                </span>
-              }
-              subtitle="Assets, accounts & liabilities"
-              action={
-                <div className="flex gap-1">
-                  <button
-                    onClick={() => removeCard("netWorth")}
-                    className="text-xs px-2 py-1 rounded-md border border-border"
-                  >
-                    Remove
-                  </button>
-                </div>
-              }
-            />
-            <CardBody>
-              <div className="space-y-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-foreground">
-                    ${netWorth.toLocaleString()}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Total Net Worth</div>
-                </div>
-                
-                <div className="grid grid-cols-3 gap-3 text-sm">
-                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800">
-                    <div className="text-xs text-emerald-700 dark:text-emerald-400">Assets</div>
-                    <div className="font-semibold text-emerald-900 dark:text-emerald-300">${totalAssets.toLocaleString()}</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-blue-50 border border-blue-100 dark:bg-blue-950/30 dark:border-blue-800">
-                    <div className="text-xs text-blue-700 dark:text-blue-400">Bank Accounts</div>
-                    <div className="font-semibold text-blue-900 dark:text-blue-300">${totalBankAccounts.toLocaleString()}</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-100 dark:bg-rose-950/30 dark:border-rose-800">
-                    <div className="text-xs text-rose-700 dark:text-rose-400">Liabilities</div>
-                    <div className="font-semibold text-rose-900 dark:text-rose-300">${totalLiabilities.toLocaleString()}</div>
-                  </div>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-        );
+        return <NetWorthGraph />;
       case "transactions":
         // Get the 6 most recent transactions
         const recentTransactions = transactionsData
