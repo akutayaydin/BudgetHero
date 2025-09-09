@@ -4434,6 +4434,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(layout);
     } catch (error) {
       if (error instanceof ZodError) {
+        console.error("Widget layout validation error:", {
+          requestBody: req.body,
+          dataWithUserId: { ...req.body, userId },
+          zodErrors: error.issues
+        });
         return res.status(400).json({ 
           message: "Invalid layout data", 
           errors: error.issues 

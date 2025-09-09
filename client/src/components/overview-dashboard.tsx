@@ -298,16 +298,16 @@ export default function OverviewDashboard() {
     }
   }, [savedLayout]);
 
-  // Save layout changes with debouncing - temporarily disabled for debugging
+  // Save layout changes with debouncing
   useEffect(() => {
-    // Temporarily disable auto-save to debug other issues
-    // const timeoutId = setTimeout(() => {
-    //   if (user && !saveLayoutMutation.isPending) {
-    //     saveLayoutMutation.mutate(columns);
-    //   }
-    // }, 1000); // Debounce for 1 second
+    const timeoutId = setTimeout(() => {
+      if (user && !saveLayoutMutation.isPending) {
+        console.log("Saving layout:", columns);
+        saveLayoutMutation.mutate(columns);
+      }
+    }, 1000); // Debounce for 1 second
 
-    // return () => clearTimeout(timeoutId);
+    return () => clearTimeout(timeoutId);
   }, [columns, user, saveLayoutMutation]);
   
   const used = [
