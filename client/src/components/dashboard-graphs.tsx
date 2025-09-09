@@ -524,49 +524,65 @@ export function DashboardGraphs() {
     <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
             Current Spend This Month
           </CardTitle>
           <Link href="/spending">
             <Button
               variant="ghost"
               size="sm"
-              className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium"
             >
               View Spending <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </Link>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-3xl font-bold text-gray-900 dark:text-white ">
-              ${(totalSpending || 0).toLocaleString()}
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              {spendingChange >= 0 ? (
-                <ArrowUpRight className="h-4 w-4 text-red-500" />
-              ) : (
-                <ArrowDownRight className="h-4 w-4 text-green-500" />
-              )}
-              <span
-                className={`text-sm font-medium ${
-                  spendingChange >= 0
-                    ? "text-red-600 dark:text-red-400"
-                    : "text-green-600 dark:text-green-400"
-                }`}
-              >
-                {spendingChange >= 0 ? "You've spent" : "You've spent"} $
-                <span>{Math.abs(spendingChange || 0).toLocaleString()}</span>{" "}
-                {spendingChange >= 0 ? "more" : "less"} than last month
-              </span>
-            </div>
+      <CardContent className="pt-0">
+        <div className="mb-6">
+          <p className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
+            ${(totalSpending || 0).toLocaleString()}
+          </p>
+          <div className="flex items-center gap-2">
+            {spendingChange >= 0 ? (
+              <ArrowUpRight className="h-4 w-4 text-red-500" />
+            ) : (
+              <ArrowDownRight className="h-4 w-4 text-green-500" />
+            )}
+            <span
+              className={`text-sm font-medium ${
+                spendingChange >= 0
+                  ? "text-red-600 dark:text-red-400"
+                  : "text-green-600 dark:text-green-400"
+              }`}
+            >
+              You've spent ${Math.abs(spendingChange || 0).toLocaleString()}{" "}
+              {spendingChange >= 0 ? "more" : "less"} than last month
+            </span>
           </div>
         </div>
-        <div className="h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={spendingComparisonData}>
+        <div className="relative">
+          {/* Navigation Arrows */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handlePrev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 p-0 bg-white/80 hover:bg-white shadow-sm border border-gray-200"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleNext}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 p-0 bg-white/80 hover:bg-white shadow-sm border border-gray-200"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          
+          <div className="h-48 px-8">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={spendingComparisonData}>
               <CartesianGrid
                 vertical={false}
                 horizontal={true}
@@ -675,8 +691,9 @@ export function DashboardGraphs() {
                 strokeWidth={3}
                 dot={false}
               />
-            </ComposedChart>
-          </ResponsiveContainer>
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </CardContent>
     </Card>
