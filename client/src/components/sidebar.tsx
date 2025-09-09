@@ -9,11 +9,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { AvatarSelection } from "@/components/avatar-selection";
 import {
   Upload,
-  BarChart3,
-  List,
   PieChart,
-  Target,
-  FileText,
   Settings,
   TrendingUp,
   LogOut,
@@ -24,30 +20,21 @@ import {
   DollarSign,
   Zap,
   Home,
-  ArrowRight,
   RefreshCw,
   User,
-  Mail,
   Shield,
-  Activity,
   Tag,
-  Sparkles,
+  Bell,
 } from "lucide-react";
 import { HeroShieldLogo } from "./hero-shield-logo";
 import { useAuth } from "../hooks/useAuth";
 
 const navigation = [
   {
-    name: "Overview",
-    href: "/dashboard",
+    name: "Dashboard",
+    href: "/overview",
     icon: Home,
     description: "Financial summary & insights",
-  },
-  {
-    name: "Wealth Management",
-    href: "/wealth-management",
-    icon: TrendingUp,
-    description: "Assets, liabilities, accounts & data upload",
   },
   {
     name: "Transactions",
@@ -68,47 +55,55 @@ const navigation = [
     description: "Recurring payments & subscriptions",
   },
   {
-    name: "Categories, Tags & Rules",
-    href: "/rules-automation", 
-    icon: Settings,
-    description: "Categories, tags, rules & transaction splits",
+    name: "Wealth Management",
+    href: "/wealth-management",
+    icon: TrendingUp,
+    description: "Assets, liabilities & investments",
   },
-  {
-    name: "Financial Health",
-    href: "/health",
-    icon: Activity,
-    description: "Complete financial wellness analysis",
-  },
+];
 
+const moreNavigation = [
   {
-    name: "Financial Goals",
-    href: "/goals",
-    icon: Target,
-    description: "Savings & spending targets",
+    name: "Profile & Preferences",
+    href: "/settings",
+    icon: User,
+    description: "Currency, theme, timezone",
   },
   {
-    name: "Categories",
+    name: "Linked Accounts",
+    href: "/accounts",
+    icon: Building,
+    description: "Plaid integration",
+  },
+  {
+    name: "Categories & Tags",
     href: "/categories",
     icon: Tag,
-    description: "Manage spending categories & preferences",
+    description: "Manage categories and tags",
   },
   {
-    name: "Reports",
-    href: "/reports",
-    icon: FileText,
-    description: "Detailed analytics & exports",
-  },
-  {
-    name: "Billing",
-    href: "/billing",
-    icon: CreditCard,
-    description: "Subscription & payment settings",
-  },
-  {
-    name: "Profile",
-    href: "/profile",
+    name: "Transaction Rules",
+    href: "/rules-automation",
     icon: Settings,
-    description: "Personal information & preferences",
+    description: "Create/edit/delete automation rules",
+  },
+  {
+    name: "Notifications & Alerts",
+    href: "/notifications",
+    icon: Bell,
+    description: "Email, push, in-app",
+  },
+  {
+    name: "Premium Upgrade",
+    href: "/subscription/plans",
+    icon: CreditCard,
+    description: "Plan management & billing",
+  },
+  {
+    name: "Data Backup / Export",
+    href: "/reports",
+    icon: Upload,
+    description: "CSV, JSON, PDF",
   },
 ];
 
@@ -203,7 +198,7 @@ export default function Sidebar({
       <div className="p-4 sm:p-6 border-b border-border bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10">
         <div className="mb-4">
           <Link
-            href="/dashboard"
+            href="/overview"
             className="inline-block hover:opacity-80 transition-opacity cursor-pointer"
             onClick={() => setIsMobileMenuOpen?.(false)}
           >
@@ -251,7 +246,7 @@ export default function Sidebar({
           {navigation.map((item) => {
             const isActive =
               location === item.href ||
-              (location === "/" && item.href === "/dashboard");
+              (location === "/" && item.href === "/overview");
             return (
               <li key={item.name}>
                 <Link
@@ -286,6 +281,51 @@ export default function Sidebar({
               </li>
             );
           })}
+
+          {/* More Navigation */}
+          <li className="pt-4 mt-4 border-t border-border">
+            <div className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
+              More
+            </div>
+            <ul className="space-y-1 mt-1">
+              {moreNavigation.map((item) => {
+                const isActive = location === item.href;
+                return (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "flex items-start space-x-3 px-3 py-2.5 sm:py-3 rounded-lg transition-all duration-200 group touch-manipulation",
+                        isActive
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-card-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-sm active:bg-accent/80",
+                      )}
+                      onClick={() => setIsMobileMenuOpen?.(false)}
+                    >
+                      <item.icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium truncate">
+                            {item.name}
+                          </span>
+                        </div>
+                        <p
+                          className={cn(
+                            "text-xs mt-0.5 truncate hidden sm:block",
+                            isActive
+                              ? "text-primary-foreground/80"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          {item.description}
+                        </p>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </li>
 
           {/* Admin Navigation - Only for admin users */}
           {user?.isAdmin &&

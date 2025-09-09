@@ -12,7 +12,7 @@ import Landing from "@/pages/landing";
 import Privacy from "@/pages/privacy";
 import Home from "@/pages/home";
 import Upload from "@/pages/upload";
-import Dashboard from "@/pages/dashboard";
+import OverviewV2 from "@/pages/overview-v2";
 import Transactions from "@/pages/transactions";
 import BudgetsIndex from "@/pages/budgets";
 import BudgetSetup from "@/pages/budgets-setup";
@@ -102,9 +102,10 @@ function Router() {
         
         <div className="flex-1 overflow-auto bg-background">
           <Switch>
-            <Route path="/" component={Dashboard} />
+            <Route path="/" component={OverviewV2} />
+            <Route path="/overview" component={OverviewV2} />
+            <Route path="/dashboard" component={OverviewV2} />
             <Route path="/upload" component={Upload} />
-            <Route path="/dashboard" component={Dashboard} />
             <Route path="/accounts" component={AccountsPage} />
             <Route path="/assets-liabilities" component={AssetsLiabilities} />
             <Route path="/wealth-management" component={WealthManagement} />

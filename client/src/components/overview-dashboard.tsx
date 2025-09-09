@@ -90,16 +90,27 @@ function DraggableCard({
   id,
   render,
   onMove,
+  onDragStart,
+  onDragEnd,
+  onDragEnter,
 }: {
   id: string;
   render: (id: string) => React.ReactNode;
   onMove: (dragId: string, dropId: string | null, container: string) => void;
+  onDragStart?: (id: string) => void;
+  onDragEnd?: () => void;
+  onDragEnter?: (id: string) => void;
 }) {
   return (
     <div
       draggable
       onDragStart={(e) => {
         e.dataTransfer.setData("text/plain", id);
+        onDragStart?.(id);
+      }}
+      onDragEnter={(e) => {
+        e.preventDefault();
+        onDragEnter?.(id);
       }}
       onDragOver={(e) => e.preventDefault()}
       onDrop={(e) => {
@@ -107,7 +118,9 @@ function DraggableCard({
         const dragId = e.dataTransfer.getData("text/plain");
         if (!dragId || dragId === id) return;
         onMove(dragId, id, "");
+        onDragEnd?.();
       }}
+      onDragEnd={() => onDragEnd?.()}
     >
       {render(id)}
     </div>
@@ -157,11 +170,50 @@ export default function OverviewDashboard() {
     queryKey: ["/api/auth/user"],
   });
 
-  const [columns, setColumns] = useState<Record<string, string[]>>({
+  const allWidgets = [
+    "spending",
+    "netWorth",
+    "transactions",
+    "budgets",
+    "cashflow",
+    "tracker",
+    "goals",
+    "accounts",
+    "netIncome",
+    "insights",
+  ];
+
+  const widgetLabels: Record<string, string> = {
+    spending: "Spending",
+    netWorth: "Net Worth",
+    transactions: "Recent Transactions",
+    budgets: "Budgets",
+    cashflow: "Cash Flow",
+    tracker: "Category Tracker",
+    goals: "Goals",
+    accounts: "Accounts",
+    netIncome: "Net Income",
+    insights: "AI Insights",
+  };
+
+  const initialColumns: Record<string, string[]> = {
     left: ["spending", "netWorth", "transactions"],
     right: ["budgets", "cashflow", "tracker", "goals"],
     bottom: ["accounts", "netIncome", "insights"],
-  });
+  };
+
+  const [columns, setColumns] = useState<Record<string, string[]>>(initialColumns);
+  const used = [
+    ...initialColumns.left,
+    ...initialColumns.right,
+    ...initialColumns.bottom,
+  ];
+  const [unused, setUnused] = useState<string[]>(
+    allWidgets.filter((id) => !used.includes(id)),
+  );
+  const [dragging, setDragging] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
+  const [overContainer, setOverContainer] = useState<string | null>(null);
 
   const moveCard = (
     dragId: string,
@@ -200,6 +252,25 @@ export default function OverviewDashboard() {
     });
   };
 
+  const removeCard = (id: string) => {
+    setColumns((prev) => {
+      const next = { ...prev };
+      const from = findContainer(id, next);
+      if (!from) return prev;
+      next[from] = next[from].filter((w) => w !== id);
+      return next;
+    });
+    setUnused((prev) => [...prev, id]);
+  };
+
+  const addCard = (id: string) => {
+    setUnused((prev) => prev.filter((w) => w !== id));
+    setColumns((prev) => ({
+      ...prev,
+      left: [...prev.left, id],
+    }));
+  };
+
   const renderCard = (id: string) => {
     switch (id) {
       case "spending":
@@ -212,7 +283,17 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="This month • Include bills"
-              action={<button className="text-xs px-2 py-1 rounded-md border border-border">Month ▾</button>}
+              action={
+                <div className="flex gap-1">
+                  <button className="text-xs px-2 py-1 rounded-md border border-border">Month ▾</button>
+                  <button
+                    onClick={() => removeCard("spending")}
+                    className="text-xs px-2 py-1 rounded-md border border-border"
+                  >
+                    Remove
+                  </button>
+                </div>
+              }
             />
             <CardBody>
               <DonutSkeleton />
@@ -240,6 +321,12 @@ export default function OverviewDashboard() {
                   <button className="text-xs px-2 py-1 rounded-md border border-border bg-foreground text-background">
                     1Y
                   </button>
+                  <button
+                    onClick={() => removeCard("netWorth")}
+                    className="text-xs px-2 py-1 rounded-md border border-border"
+                  >
+                    Remove
+                  </button>
                 </div>
               }
             />
@@ -258,7 +345,17 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="Latest 6"
-              action={<button className="text-xs px-2 py-1 rounded-md border border-border">See all</button>}
+              action={
+                <div className="flex gap-1">
+                  <button className="text-xs px-2 py-1 rounded-md border border-border">See all</button>
+                  <button
+                    onClick={() => removeCard("transactions")}
+                    className="text-xs px-2 py-1 rounded-md border border-border"
+                  >
+                    Remove
+                  </button>
+                </div>
+              }
             />
             <CardBody>
               <ul className="text-sm divide-y">
@@ -281,7 +378,7 @@ export default function OverviewDashboard() {
                       </div>
                     </div>
                     <div className={cn("font-mono", row.a.startsWith("+") ? "text-emerald-600" : "text-foreground")}>
-                      {row.a}
+                     {row.a}
                     </div>
                   </li>
                 ))}
@@ -299,7 +396,17 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="This month"
-              action={<button className="text-xs px-2 py-1 rounded-md border border-border">Manage</button>}
+              action={
+                <div className="flex gap-1">
+                  <button className="text-xs px-2 py-1 rounded-md border border-border">Manage</button>
+                  <button
+                    onClick={() => removeCard("budgets")}
+                    className="text-xs px-2 py-1 rounded-md border border-border"
+                  >
+                    Remove
+                  </button>
+                </div>
+              }
             />
             <CardBody>
               <div className="grid grid-cols-3 gap-3 text-sm">
@@ -329,7 +436,17 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="30‑day projection"
-              action={<button className="text-xs px-2 py-1 rounded-md border border-border">Calendar</button>}
+              action={
+                <div className="flex gap-1">
+                  <button className="text-xs px-2 py-1 rounded-md border border-border">Calendar</button>
+                  <button
+                    onClick={() => removeCard("cashflow")}
+                    className="text-xs px-2 py-1 rounded-md border border-border"
+                  >
+                    Remove
+                  </button>
+                </div>
+              }
             />
             <CardBody>
               <div className="grid grid-cols-3 gap-3 text-sm">
@@ -361,6 +478,12 @@ export default function OverviewDashboard() {
                     Week
                   </button>
                   <button className="text-xs px-2 py-1 rounded-md border border-border">Month</button>
+                  <button
+                    onClick={() => removeCard("tracker")}
+                    className="text-xs px-2 py-1 rounded-md border border-border"
+                  >
+                    Remove
+                  </button>
                 </div>
               }
             />
@@ -392,6 +515,14 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="Emergency • Vacation • Debt"
+              action={
+                <button
+                  onClick={() => removeCard("goals")}
+                  className="text-xs px-2 py-1 rounded-md border border-border"
+                >
+                  Remove
+                </button>
+              }
             />
             <CardBody>
               <div className="space-y-2 text-sm">
@@ -423,6 +554,14 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="Checking • Credit • Net Cash • Savings • Investments"
+              action={
+                <button
+                  onClick={() => removeCard("accounts")}
+                  className="text-xs px-2 py-1 rounded-md border border-border"
+                >
+                  Remove
+                </button>
+              }
             />
             <CardBody>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
@@ -460,6 +599,14 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="Income – Expenses = Net"
+              action={
+                <button
+                  onClick={() => removeCard("netIncome")}
+                  className="text-xs px-2 py-1 rounded-md border border-border"
+                >
+                  Remove
+                </button>
+              }
             />
             <CardBody>
               <div className="grid grid-cols-3 gap-3 text-center">
@@ -489,6 +636,14 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="Nudges • Anomalies • Tips"
+              action={
+                <button
+                  onClick={() => removeCard("insights")}
+                  className="text-xs px-2 py-1 rounded-md border border-border"
+                >
+                  Remove
+                </button>
+              }
             />
             <CardBody>
               <ul className="space-y-2 text-sm">
@@ -603,48 +758,164 @@ export default function OverviewDashboard() {
           {/* Draggable card layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div
-              onDragOver={(e) => e.preventDefault()}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (dragging) {
+                  setOverContainer("left");
+                  setOverId(null);
+                }
+              }}
               onDrop={(e) => {
                 e.preventDefault();
                 const dragId = e.dataTransfer.getData("text/plain");
                 if (dragId) moveCard(dragId, null, "left");
+                setDragging(null);
+                setOverId(null);
+                setOverContainer(null);
               }}
               className="space-y-4"
             >
               {columns.left.map((id) => (
-                <DraggableCard key={id} id={id} render={renderCard} onMove={moveCard} />
+                <React.Fragment key={id}>
+                  {dragging && overId === id && (
+                    <div className="h-32 border-2 border-dashed rounded-xl" />
+                  )}
+                  <DraggableCard
+                    id={id}
+                    render={renderCard}
+                    onMove={moveCard}
+                    onDragStart={(id) => setDragging(id)}
+                    onDragEnd={() => {
+                      setDragging(null);
+                      setOverId(null);
+                      setOverContainer(null);
+                    }}
+                    onDragEnter={(id) => {
+                      if (dragging && id !== dragging) {
+                        setOverId(id);
+                        setOverContainer(null);
+                      }
+                    }}
+                  />
+                </React.Fragment>
               ))}
+              {dragging && overContainer === "left" && (
+                <div className="h-32 border-2 border-dashed rounded-xl" />
+              )}
             </div>
 
             <div
-              onDragOver={(e) => e.preventDefault()}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (dragging) {
+                  setOverContainer("right");
+                  setOverId(null);
+                }
+              }}
               onDrop={(e) => {
                 e.preventDefault();
                 const dragId = e.dataTransfer.getData("text/plain");
                 if (dragId) moveCard(dragId, null, "right");
+                setDragging(null);
+                setOverId(null);
+                setOverContainer(null);
               }}
               className="space-y-4"
             >
               {columns.right.map((id) => (
-                <DraggableCard key={id} id={id} render={renderCard} onMove={moveCard} />
+                <React.Fragment key={id}>
+                  {dragging && overId === id && (
+                    <div className="h-32 border-2 border-dashed rounded-xl" />
+                  )}
+                  <DraggableCard
+                    id={id}
+                    render={renderCard}
+                    onMove={moveCard}
+                    onDragStart={(id) => setDragging(id)}
+                    onDragEnd={() => {
+                      setDragging(null);
+                      setOverId(null);
+                      setOverContainer(null);
+                    }}
+                    onDragEnter={(id) => {
+                      if (dragging && id !== dragging) {
+                        setOverId(id);
+                        setOverContainer(null);
+                      }
+                    }}
+                  />
+                </React.Fragment>
               ))}
+              {dragging && overContainer === "right" && (
+                <div className="h-32 border-2 border-dashed rounded-xl" />
+              )}
             </div>
           </div>
 
           {/* Today snapshot row */}
           <div
-            onDragOver={(e) => e.preventDefault()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              if (dragging) {
+                setOverContainer("bottom");
+                setOverId(null);
+              }
+            }}
             onDrop={(e) => {
               e.preventDefault();
               const dragId = e.dataTransfer.getData("text/plain");
               if (dragId) moveCard(dragId, null, "bottom");
+              setDragging(null);
+              setOverId(null);
+              setOverContainer(null);
             }}
             className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4"
           >
             {columns.bottom.map((id) => (
-              <DraggableCard key={id} id={id} render={renderCard} onMove={moveCard} />
+              <React.Fragment key={id}>
+                {dragging && overId === id && (
+                  <div className="h-32 border-2 border-dashed rounded-xl" />
+                )}
+                <DraggableCard
+                  id={id}
+                  render={renderCard}
+                  onMove={moveCard}
+                  onDragStart={(id) => setDragging(id)}
+                  onDragEnd={() => {
+                    setDragging(null);
+                    setOverId(null);
+                    setOverContainer(null);
+                  }}
+                  onDragEnter={(id) => {
+                    if (dragging && id !== dragging) {
+                      setOverId(id);
+                      setOverContainer(null);
+                    }
+                  }}
+                />
+              </React.Fragment>
             ))}
+            {dragging && overContainer === "bottom" && (
+              <div className="h-32 border-2 border-dashed rounded-xl" />
+            )}
           </div>
+
+          {unused.length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-sm font-medium mb-2">Unused Widgets</h3>
+              <div className="flex flex-wrap gap-2">
+                {unused.map((id) => (
+                  <button
+                    key={id}
+                    onClick={() => addCard(id)}
+                    className="px-3 py-2 rounded-md border border-border text-sm"
+                  >
+                    Add {widgetLabels[id]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>

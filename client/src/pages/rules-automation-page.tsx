@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import tagIllustration from "../assets/images/tagIllustration.svg";
+import tagIllustration from "@assets/assets/images/tagIllustration.svg";
 import {
   Select,
   SelectContent,
