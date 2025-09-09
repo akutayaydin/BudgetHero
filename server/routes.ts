@@ -1469,6 +1469,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const netCash = totalChecking + totalSavings - Math.abs(totalCredit);
 
       // Assemble groups in the required order
+      const order = [
+        "checking",
+        "creditCards",
+        "netCash",
+        "savings",
+        "investments",
+      ];
+      const idx = (id: string) => {
+        const i = order.indexOf(id);
+        return i === -1 ? order.length : i;
+      };
+
       groups = [
         checkingGroup,
         creditGroup,
@@ -1482,7 +1494,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           : null,
         savingsGroup,
         investmentsGroup,
-      ].filter(Boolean);
+      ]
+        .filter(Boolean)
+        .sort((a, b) => idx(a.id) - idx(b.id));
 
       res.json({ groups });
     } catch (error) {
