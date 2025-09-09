@@ -349,7 +349,7 @@ export function DashboardGraphs() {
           </Link>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="border-t border-border pt-6">
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
