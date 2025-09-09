@@ -358,20 +358,14 @@ export default function OverviewDashboard() {
   // Load saved layout when data is available
   useEffect(() => {
     if (savedLayout && savedLayout.layoutData) {
-      console.log("Restoring saved layout:", savedLayout.layoutData);
-      console.log("Current device ID:", deviceId);
       setColumns(savedLayout.layoutData);
-    } else {
-      console.log("No saved layout found for device:", deviceId);
-      console.log("Using default layout:", getInitialColumns());
     }
-  }, [savedLayout, deviceId]);
+  }, [savedLayout]);
 
   // Save layout changes with debouncing
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (user && !saveLayoutMutation.isPending) {
-        console.log("Saving layout:", columns);
         saveLayoutMutation.mutate(columns);
       }
     }, 1000); // Debounce for 1 second
@@ -1062,7 +1056,12 @@ export default function OverviewDashboard() {
           </div>
 
           {/* Draggable card layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className={cn(
+            "grid gap-4",
+            deviceId.startsWith('mobile_') ? "grid-cols-1" : 
+            deviceId.startsWith('tablet_') ? "grid-cols-1 lg:grid-cols-2" :
+            "grid-cols-1 lg:grid-cols-2"
+          )}>
             <div
               onDragOver={(e) => {
                 e.preventDefault();
