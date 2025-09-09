@@ -524,6 +524,7 @@ export function DashboardGraphs() {
                 vertical={false}
                 horizontal={true}
                 stroke="#E5E7EB"
+                strokeDasharray="3 3"
               />
               <defs>
                 <linearGradient
@@ -997,6 +998,7 @@ export function SpendingGraph() {
                 vertical={false}
                 horizontal={true}
                 stroke="#E5E7EB"
+                strokeDasharray="3 3"
               />
               <defs>
                 <linearGradient
