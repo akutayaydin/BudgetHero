@@ -35,7 +35,7 @@ import SubscriptionPlans from "@/pages/subscription-plans";
 import SubscriptionSuccess from "@/pages/subscription-success";
 import Billing from "@/pages/billing";
 
-import Sidebar from "@/components/sidebar";
+import ModernSidebar from "@/components/modern-sidebar";
 import MobileTopNav from "@/components/mobile-top-nav";
 import { OnboardingWizard } from "@/components/onboarding-wizard";
 import { SetupReminderBanner } from "@/components/setup-reminder-banner";
@@ -91,7 +91,7 @@ function Router() {
 
   return (
     <div className="flex h-screen bg-background transition-colors duration-300">
-      <Sidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
+      <ModernSidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
       <div className="flex-1 flex flex-col md:ml-0 ml-0">
         <MobileTopNav onMenuClick={() => setIsMobileMenuOpen(true)} />
         
