@@ -9,8 +9,6 @@ import {
   TrendingDown,
   PieChart,
   ArrowRight,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import {
   LineChart,
@@ -144,12 +142,7 @@ const formatTooltipDate = (dataPoint: any): string => {
 /* ---------- Component ---------- */
 
 export function DashboardGraphs() {
-  const [activeGraph, setActiveGraph] = useState<"networth" | "spending">(
-    "networth",
-  );
   const [netWorthPeriod, setNetWorthPeriod] = useState<Period>("1M");
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const { data: netWorthSummary } = useQuery<NetWorthData>({
     queryKey: ["/api/net-worth"],
@@ -311,32 +304,6 @@ export function DashboardGraphs() {
   const totalSpending = monthlySpendingComparison.current;
   const spendingChange = monthlySpendingComparison.change;
 
-  const handleNext = () =>
-    setActiveGraph((g) => (g === "networth" ? "spending" : "networth"));
-  const handlePrev = () =>
-    setActiveGraph((g) => (g === "spending" ? "networth" : "spending"));
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-  const onTouchMove = (e: React.TouchEvent) =>
-    setTouchEnd(e.targetTouches[0].clientX);
-  const onTouchEnd = () => {
-    if (!touchStart || touchEnd === null) return;
-    const dist = touchStart - touchEnd;
-    if (dist > 50) handleNext();
-    if (dist < -50) handlePrev();
-  };
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") handlePrev();
-      if (e.key === "ArrowRight") handleNext();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
 
   /* ---------- Graphs ---------- */
 
@@ -670,59 +637,445 @@ export function DashboardGraphs() {
 
   /* ---------- Render ---------- */
 
+  return null; // This component is no longer used directly
+}
+
+// Export individual chart components for use as drag-and-drop widgets
+export function NetWorthGraph() {
+  const [netWorthPeriod, setNetWorthPeriod] = useState<Period>("1M");
+
+  const { data: netWorthSummary } = useQuery<NetWorthData>({
+    queryKey: ["/api/net-worth"],
+  });
+
+  const currentNetWorth = netWorthSummary?.totalNetWorth ?? 0;
+
+  // Calculate net worth change based on selected period
+  const netWorthChange = useMemo(() => {
+    const baseChange = currentNetWorth * 0.02; // 2% base change
+    const periodMultiplier = {
+      "1M": 1,
+      "3M": 2.5,
+      "6M": 4,
+      "1Y": 6,
+    }[netWorthPeriod];
+    return Math.round(baseChange * periodMultiplier);
+  }, [currentNetWorth, netWorthPeriod]);
+
+  const netWorthData = useMemo(() => {
+    // Simulate first data date - in a real app, this would come from when accounts were first linked
+    const firstDataDate = new Date(
+      new Date().getTime() - 45 * 24 * 60 * 60 * 1000,
+    ); // 45 days ago
+    return generateNetWorthData(currentNetWorth, netWorthPeriod, firstDataDate);
+  }, [currentNetWorth, netWorthPeriod]);
+
   return (
-    <div className="space-y-4">
-      <div
-        className="relative"
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        data-testid="graph-container"
-      >
-        {activeGraph === "networth"
-          ? renderNetWorthGraph()
-          : renderSpendingGraph()}
+    <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+            Total Net Worth
+          </CardTitle>
+          <Link href="/wealth-management">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-medium"
+            >
+              View Net Worth <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="mb-6">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <p className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
+                {formatFullCurrency(currentNetWorth)}
+              </p>
+              <div className="flex items-center gap-2">
+                {netWorthChange >= 0 ? (
+                  <TrendingUp className="h-4 w-4 text-green-500" />
+                ) : (
+                  <TrendingDown className="h-4 w-4 text-red-500" />
+                )}
+                <span
+                  className={`text-sm font-medium ${
+                    netWorthChange >= 0
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {netWorthChange >= 0 ? "Up " : "Down "}
+                  {formatFullCurrency(Math.abs(netWorthChange))} over the{" "}
+                  {netWorthPeriod === "1M"
+                    ? "last month"
+                    : netWorthPeriod === "3M"
+                      ? "last 3 months"
+                      : netWorthPeriod === "6M"
+                        ? "last 6 months"
+                        : "last year"}
+                </span>
+              </div>
+            </div>
 
-        <button
-          onClick={handlePrev}
-          disabled={activeGraph === "networth"}
-          aria-label="Previous graph"
-          className="p-1 rounded-full bg-black/5 hover:bg-black/10 disabled:opacity-30 absolute left-2 top-1/2 -translate-y-1/2 transition"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
+            <div className="flex items-center gap-1">
+              {(["1M", "3M", "6M", "1Y"] as const).map((p) => (
+                <Button
+                  key={p}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setNetWorthPeriod(p)}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    netWorthPeriod === p
+                      ? "bg-purple-600 hover:bg-purple-700 text-white shadow-sm"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  {p}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
 
-        <button
-          onClick={handleNext}
-          disabled={activeGraph === "spending"}
-          aria-label="Next graph"
-          className="p-1 rounded-full bg-black/5 hover:bg-black/10 disabled:opacity-30 absolute right-2 top-1/2 -translate-y-1/2 transition"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
-      </div>
+        <div className="h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={netWorthData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis
+                dataKey="label"
+                axisLine={false}
+                tickLine={false}
+                tick={false}
+                hide
+              />
 
-      <div className="flex items-center justify-center gap-2">
-        <button
-          onClick={() => setActiveGraph("networth")}
-          className={`h-2 w-8 rounded-full transition-all duration-200 ${
-            activeGraph === "networth"
-              ? "bg-purple-600"
-              : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400"
-          }`}
-          aria-label="Show net worth graph"
-        />
-        <button
-          onClick={() => setActiveGraph("spending")}
-          className={`h-2 w-8 rounded-full transition-all duration-200 ${
-            activeGraph === "spending"
-              ? "bg-blue-600"
-              : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400"
-          }`}
-          aria-label="Show spending graph"
-        />
-      </div>
-    </div>
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#6B7280", fontSize: 12 }}
+                domain={[
+                  (dataMin: number) => dataMin * 0.99,
+                  (dataMax: number) => dataMax * 1.01,
+                ]}
+                tickFormatter={(v) => {
+                  return new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                    notation: "compact",
+                  }).format(v);
+                }}
+              />
+
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    const value = payload[0].value;
+                    if (!data?.isValidData) return null;
+                    return (
+                      <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div className="space-y-1">
+                          <span className="text-xs text-gray-500 dark:text-gray-300">
+                            {formatTooltipDate(data)}
+                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-300">
+                            Net Worth
+                          </span>
+                          <span className="text-xs font-medium text-gray-900 dark:text-white ">
+                            {formatFullCurrency(value)}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+
+              <Area
+                type="monotone"
+                dataKey="netWorth"
+                fill="#8B5CF6"
+                stroke="#8B5CF6"
+                fillOpacity={0.1}
+                strokeWidth={3}
+                dot={false}
+                activeDot={{
+                  r: 4,
+                  fill: "#8B5CF6",
+                  stroke: "#fff",
+                  strokeWidth: 2,
+                }}
+                connectNulls={false}
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function SpendingGraph() {
+  const { data: transactions } = useQuery<any[]>({
+    queryKey: ["/api/transactions"],
+  });
+
+  const monthlySpendingComparison = useMemo(() => {
+    if (!transactions) return { current: 0, previous: 0, change: 0 };
+
+    const now = new Date();
+    const today = now.getDate(); // e.g., 3rd
+    const thisMonth = now.getMonth();
+    const lastMonth = now.getMonth() - 1;
+    const year = now.getFullYear();
+
+    const curStart = new Date(year, thisMonth, 1);
+    const curEnd = new Date(year, thisMonth, today);
+
+    const prevStart = new Date(year, lastMonth, 1);
+    const prevEnd = new Date(year, lastMonth, today);
+
+    const expenses = transactions.filter((t) => t.type === "expense");
+
+    const current = expenses
+      .filter((t) => {
+        const d = new Date(t.date);
+        return d >= curStart && d <= curEnd;
+      })
+      .reduce((s, t) => s + Math.abs(parseFloat(t.amount)), 0);
+
+    const previous = expenses
+      .filter((t) => {
+        const d = new Date(t.date);
+        return d >= prevStart && d <= prevEnd;
+      })
+      .reduce((s, t) => s + Math.abs(parseFloat(t.amount)), 0);
+
+    return {
+      current: Math.round(current),
+      previous: Math.round(previous),
+      change: Math.round(current - previous),
+    };
+  }, [transactions]);
+
+  const spendingComparisonData = useMemo(() => {
+    if (!transactions || transactions.length === 0) {
+      return Array.from({ length: 30 }, (_, i) => ({
+        date: `Day ${i + 1}`,
+        current: Math.round((i + 1) * 200),
+        previous: Math.round((i + 1) * 180),
+      }));
+    }
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const curStart = new Date(year, month, 1);
+    const nextStart = new Date(year, month + 1, 1);
+    const prevStart = new Date(year, month - 1, 1);
+
+    const curDays = new Date(year, month + 1, 0).getDate();
+    const prevDays = new Date(year, month, 0).getDate();
+
+    const expenses = transactions.filter((t) => t.type === "expense");
+    const curDaily = Array(curDays).fill(0);
+    const prevDaily = Array(prevDays).fill(0);
+
+    expenses.forEach((t) => {
+      const d = new Date(t.date);
+      const amt = Math.abs(parseFloat(t.amount));
+      if (d >= curStart && d < nextStart) {
+        curDaily[d.getDate() - 1] += amt;
+      } else if (d >= prevStart && d < curStart) {
+        prevDaily[d.getDate() - 1] += amt;
+      }
+    });
+
+    const data = [];
+    const maxDays = Math.max(curDays, prevDays);
+    const today = now.getDate();
+
+    let curRun = 0,
+      prevRun = 0;
+
+    for (let i = 0; i < maxDays; i++) {
+      let currentDateLabel, previousDateLabel;
+
+      if (i < curDays) {
+        const curDate = new Date(year, month, i + 1);
+        currentDateLabel = curDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      if (i < prevDays) {
+        const prevDate = new Date(year, month - 1, i + 1);
+        previousDateLabel = prevDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      if (i < curDays) curRun += curDaily[i];
+      if (i < prevDays) prevRun += prevDaily[i];
+
+      data.push({
+        date: currentDateLabel || previousDateLabel || `Day ${i + 1}`,
+        day: currentDateLabel || previousDateLabel || `Day ${i + 1}`,
+        current: i < today ? Math.round(curRun) : undefined,
+        previous: Math.round(prevRun),
+        currentLabel: currentDateLabel,
+        previousLabel: previousDateLabel,
+        index: i, // optional, helpful for debugging
+      });
+    }
+
+    return data;
+  }, [transactions]);
+
+  const totalSpending = monthlySpendingComparison.current;
+  const spendingChange = monthlySpendingComparison.change;
+
+  return (
+    <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+            Current Spend This Month
+          </CardTitle>
+          <Link href="/spending">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium"
+            >
+              View Spending <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="mb-6">
+          <p className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
+            ${(totalSpending || 0).toLocaleString()}
+          </p>
+          <div className="flex items-center gap-2">
+            {spendingChange >= 0 ? (
+              <ArrowUpRight className="h-4 w-4 text-red-500" />
+            ) : (
+              <ArrowDownRight className="h-4 w-4 text-green-500" />
+            )}
+            <span
+              className={`text-sm font-medium ${
+                spendingChange >= 0
+                  ? "text-red-600 dark:text-red-400"
+                  : "text-green-600 dark:text-green-400"
+              }`}
+            >
+              You've spent ${Math.abs(spendingChange || 0).toLocaleString()}{" "}
+              {spendingChange >= 0 ? "more" : "less"} than last month
+            </span>
+          </div>
+        </div>
+        <div className="h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={spendingComparisonData}>
+              <CartesianGrid
+                vertical={false}
+                horizontal={true}
+                stroke="#E5E7EB"
+              />
+              <defs>
+                <linearGradient
+                  id="previousGradient"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="0%" stopColor="#BFDBFE" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="#BFDBFE" stopOpacity={0.05} />
+                </linearGradient>
+              </defs>
+
+              <XAxis
+                dataKey="day"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#6B7280", fontSize: 12 }}
+                hide
+              />
+
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#6B7280", fontSize: 12 }}
+                tickFormatter={(v) => `$${(v / 1000).toFixed(2)}k`}
+                domain={[
+                  "dataMin",
+                  (dataMax: number) => Math.ceil(dataMax * 1.1),
+                ]}
+              />
+
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div className="space-y-2">
+                          <span className="text-xs text-gray-500 dark:text-gray-300">
+                            {label}
+                          </span>
+                          {payload.map((entry) => (
+                            <div key={entry.dataKey} className="flex flex-col">
+                              <span className="text-xs text-gray-500 dark:text-gray-300">
+                                {entry.name}
+                              </span>
+                              <span className="text-xs font-medium text-gray-900 dark:text-white">
+                                ${(entry.value as number).toLocaleString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+
+              <Area
+                type="monotone"
+                dataKey="previous"
+                fill="url(#previousGradient)"
+                stroke="#93C5FD"
+                strokeWidth={2}
+                dot={false}
+                name="Last Month"
+              />
+
+              <Line
+                type="monotone"
+                dataKey="current"
+                name="This Month"
+                stroke="#3B82F6"
+                strokeWidth={3}
+                dot={false}
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
