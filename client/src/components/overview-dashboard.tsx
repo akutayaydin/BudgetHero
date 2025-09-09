@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BarChart2,
   PieChart,
@@ -19,7 +19,8 @@ import {
   MoreHorizontal,
   GripVertical,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -235,6 +236,27 @@ export default function OverviewDashboard() {
     queryKey: ["/api/financial-health"],
   });
 
+  // Load saved widget layout
+  const { data: savedLayout } = useQuery({
+    queryKey: ["/api/widget-layout"],
+    retry: false,
+  });
+
+  const queryClient = useQueryClient();
+
+  // Save widget layout mutation
+  const saveLayoutMutation = useMutation({
+    mutationFn: async (layoutData: any) => {
+      return await apiRequest("/api/widget-layout", {
+        method: "POST",
+        body: { layoutData },
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to save widget layout:", error);
+    },
+  });
+
   const allWidgets = [
     "spending",
     "netWorth",
@@ -271,6 +293,24 @@ export default function OverviewDashboard() {
 
   const [columns, setColumns] = useState<Record<string, string[]>>(initialColumns);
   const [drawerExpanded, setDrawerExpanded] = useState(false);
+
+  // Load saved layout when data is available
+  useEffect(() => {
+    if (savedLayout?.layoutData) {
+      setColumns(savedLayout.layoutData);
+    }
+  }, [savedLayout]);
+
+  // Save layout changes with debouncing
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (user && !saveLayoutMutation.isPending) {
+        saveLayoutMutation.mutate(columns);
+      }
+    }, 1000); // Debounce for 1 second
+
+    return () => clearTimeout(timeoutId);
+  }, [columns, user, saveLayoutMutation]);
   
   const used = [
     ...columns.left,
