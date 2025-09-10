@@ -26,7 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getIcon } from "@/lib/category-icons";
-import { Check, X, Trash2, Plus, Wallet, PiggyBank, Info, type LucideIcon } from "lucide-react";
+import { Check, X, Trash2, Plus, Wallet, PiggyBank, Info, Pin, PinOff, type LucideIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Props {
@@ -75,8 +75,11 @@ interface RowProps {
   icon: LucideIcon;
   isIncome?: boolean;
   editable?: boolean;
+  isPinned?: boolean;
   onUpdate?: (id: string, value: number) => Promise<void> | void;
   onDelete?: (id: string) => Promise<void> | void;
+  onPin?: (id: string) => Promise<void> | void;
+  onUnpin?: (id: string) => Promise<void> | void;
 }
 
 function BudgetRow({
@@ -87,8 +90,11 @@ function BudgetRow({
   icon: Icon,
   isIncome,
   editable,
+  isPinned,
   onUpdate,
   onDelete,
+  onPin,
+  onUnpin,
 }: RowProps) {
   const remaining = budgeted - actual;
   const percentUsed = budgeted > 0 ? Math.min((actual / budgeted) * 100, 100) : 0;
@@ -137,18 +143,32 @@ function BudgetRow({
           <Icon className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
           <span className="font-medium">{name}</span>
         </div>
-        {onDelete && id && !isEditing && (
-          <Button
-            size="sm"
-            variant="ghost"
-            className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"
-            onClick={() => onDelete(id)}
-            aria-label={`Delete ${name} budget`}
-            data-testid={`button-delete-budget-${id}`}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        )}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
+          {id && (onPin || onUnpin) && !isEditing && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400"
+              onClick={() => isPinned && onUnpin ? onUnpin(id) : onPin && onPin(id)}
+              aria-label={`${isPinned ? 'Unpin' : 'Pin'} ${name} budget`}
+              data-testid={`button-${isPinned ? 'unpin' : 'pin'}-budget-${id}`}
+            >
+              {isPinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+            </Button>
+          )}
+          {onDelete && id && !isEditing && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
+              onClick={() => onDelete(id)}
+              aria-label={`Delete ${name} budget`}
+              data-testid={`button-delete-budget-${id}`}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       </td>
       <td className="p-4 align-middle text-right">
         <div className="flex items-center justify-end gap-1">
@@ -228,8 +248,11 @@ function BudgetCard({
   icon: Icon,
   isIncome,
   editable,
+  isPinned,
   onUpdate,
   onDelete,
+  onPin,
+  onUnpin,
 }: RowProps) {
   const remaining = budgeted - actual;
   const percentUsed = budgeted > 0 ? Math.min((actual / budgeted) * 100, 100) : 0;
@@ -337,18 +360,32 @@ function BudgetCard({
           <span>|</span>
         <span className="font-medium">{fmt.format(actual)}</span>
         </div>
-        {onDelete && id && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
-            onClick={() => onDelete(id)}
-            aria-label={`Delete ${name} budget`}
-            data-testid={`button-delete-budget-${id}`}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        )}
+        <div className="flex gap-1">
+          {id && (onPin || onUnpin) && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-6 w-6 p-0 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400"
+              onClick={() => isPinned && onUnpin ? onUnpin(id) : onPin && onPin(id)}
+              aria-label={`${isPinned ? 'Unpin' : 'Pin'} ${name} budget`}
+              data-testid={`button-${isPinned ? 'unpin' : 'pin'}-budget-${id}`}
+            >
+              {isPinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+            </Button>
+          )}
+          {onDelete && id && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-6 w-6 p-0 text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
+              onClick={() => onDelete(id)}
+              aria-label={`Delete ${name} budget`}
+              data-testid={`button-delete-budget-${id}`}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -606,6 +643,64 @@ export default function ManageBudget({ plan }: Props) {
     }
   }
 
+  async function handleBudgetPin(id: string) {
+    try {
+      const res = await fetch(`/api/budgets/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ isPinned: true }),
+      });
+      if (res.ok) {
+        queryClient.setQueryData<Budget[]>(["/api/budgets"], (old) =>
+          (old || []).map((b) => ((b as any).id === id ? { ...b, isPinned: true } : b)),
+        );
+        await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+        toast({
+          title: "Budget Pinned",
+          description: "Budget has been pinned to the Quick Category Tracker.",
+        });
+      } else {
+        throw new Error('Failed to pin budget');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to pin budget. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }
+
+  async function handleBudgetUnpin(id: string) {
+    try {
+      const res = await fetch(`/api/budgets/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ isPinned: false }),
+      });
+      if (res.ok) {
+        queryClient.setQueryData<Budget[]>(["/api/budgets"], (old) =>
+          (old || []).map((b) => ((b as any).id === id ? { ...b, isPinned: false } : b)),
+        );
+        await queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+        toast({
+          title: "Budget Unpinned",
+          description: "Budget has been removed from the Quick Category Tracker.",
+        });
+      } else {
+        throw new Error('Failed to unpin budget');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to unpin budget. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }
+
 
     const {
       basics,
@@ -659,6 +754,7 @@ export default function ManageBudget({ plan }: Props) {
         actual: actualByCat[((b as any).name || "").toLowerCase()] || 0,
         icon: getIcon((b as any).name || ""),
         editable: true,
+        isPinned: (b as any).isPinned || false,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -1026,8 +1122,11 @@ export default function ManageBudget({ plan }: Props) {
                       actual={c.actual}
                       icon={c.icon}
                       editable
+                      isPinned={c.isPinned}
                       onUpdate={handleBudgetUpdate}
                       onDelete={handleBudgetDelete}
+                      onPin={handleBudgetPin}
+                      onUnpin={handleBudgetUnpin}
                     />
                   ))}
                       <div className="pt-4 space-y-2">
@@ -1081,8 +1180,11 @@ export default function ManageBudget({ plan }: Props) {
                           actual={c.actual}
                           icon={c.icon}
                           editable
+                          isPinned={c.isPinned}
                           onUpdate={handleBudgetUpdate}
                           onDelete={handleBudgetDelete}
+                          onPin={handleBudgetPin}
+                          onUnpin={handleBudgetUnpin}
                         />
                       ))}
                       

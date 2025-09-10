@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupMultiAuth, isAuthenticated } from "./multiAuth";
-import { insertTransactionSchema, updateTransactionSchema, insertBudgetSchema, insertBudgetPlanSchema, insertGoalSchema, transactionFiltersSchema, insertInstitutionSchema, insertAccountSchema, insertAssetSchema, insertLiabilitySchema, insertManualSubscriptionSchema, insertTransactionTagSchema, insertAutomationRuleSchema, insertTransactionSplitSchema, transactions, budgets, accounts, adminCategories, passwordResetTokens, forgotPasswordSchema, resetPasswordSchema, recurringMerchants, insertRecurringMerchantSchema, users, insertWidgetLayoutSchema, insertPinnedCategorySchema } from "@shared/schema";
+import { insertTransactionSchema, updateTransactionSchema, insertBudgetSchema, insertBudgetPlanSchema, insertGoalSchema, transactionFiltersSchema, insertInstitutionSchema, insertAccountSchema, insertAssetSchema, insertLiabilitySchema, insertManualSubscriptionSchema, insertTransactionTagSchema, insertAutomationRuleSchema, insertTransactionSplitSchema, transactions, budgets, accounts, adminCategories, passwordResetTokens, forgotPasswordSchema, resetPasswordSchema, recurringMerchants, insertRecurringMerchantSchema, users, insertWidgetLayoutSchema } from "@shared/schema";
 import { sendEmail, generatePasswordResetEmail } from "./emailService";
 import { getTransactionsNeedingReview } from "./enhancedCategorization";
 import { enhancedRecurringDetection } from './enhancedRecurringDetection';
@@ -4491,61 +4491,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       console.error("Error saving widget layout:", error);
       res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  // Pinned Categories routes
-  app.get('/api/pinned-categories', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = getUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "User ID not found" });
-      }
-      
-      const pinnedCategories = await storage.getPinnedCategories(userId);
-      res.json(pinnedCategories);
-    } catch (error) {
-      console.error("Error fetching pinned categories:", error);
-      res.status(500).json({ message: "Failed to get pinned categories" });
-    }
-  });
-
-  app.post('/api/pinned-categories', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = getUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "User ID not found" });
-      }
-
-      const data = insertPinnedCategorySchema.parse(req.body);
-      const pinnedCategory = await storage.createPinnedCategory({ ...data, userId });
-      res.status(201).json(pinnedCategory);
-    } catch (error) {
-      console.error("Error creating pinned category:", error);
-      if (error instanceof ZodError) {
-        res.status(400).json({ 
-          message: "Invalid pinned category data", 
-          errors: error.errors 
-        });
-      } else {
-        res.status(500).json({ message: "Failed to create pinned category" });
-      }
-    }
-  });
-
-  app.delete('/api/pinned-categories/:id', isAuthenticated, async (req: any, res) => {
-    try {
-      const { id } = req.params;
-      const deleted = await storage.deletePinnedCategory(id);
-      
-      if (!deleted) {
-        return res.status(404).json({ message: "Pinned category not found" });
-      }
-      
-      res.status(204).send();
-    } catch (error) {
-      console.error("Error deleting pinned category:", error);
-      res.status(500).json({ message: "Failed to delete pinned category" });
     }
   });
 
