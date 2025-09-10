@@ -32,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { AccountsPanel } from "@/components/accounts-panel";
 import QuickCategoryTracker from "@/components/quick-category-tracker";
+import { PinBudgetButton } from "@/components/pin-budget-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -800,13 +801,16 @@ export default function OverviewDashboard() {
               }
               subtitle="Track your spending by category"
               action={
-                <button
-                  onClick={() => removeCard("tracker")}
-                  className="text-xs px-2 py-1 rounded-md border border-border"
-                  data-testid="button-remove-tracker"
-                >
-                  Remove
-                </button>
+                <div className="flex gap-1">
+                  <PinBudgetButton className="text-xs px-2 py-1 rounded-md border border-border" />
+                  <button
+                    onClick={() => removeCard("tracker")}
+                    className="text-xs px-2 py-1 rounded-md border border-border"
+                    data-testid="button-remove-tracker"
+                  >
+                    Remove
+                  </button>
+                </div>
               }
             />
             <CardBody>

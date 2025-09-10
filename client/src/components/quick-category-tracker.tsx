@@ -176,7 +176,11 @@ const TimePeriodToggle: React.FC<{
 };
 
 // Main Quick Category Tracker Component
-const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove }) => {
+const QuickCategoryTracker: React.FC<{ 
+  onRemove?: () => void;
+  pinDropdownTrigger?: React.ReactNode;
+  showPinButton?: boolean;
+}> = ({ onRemove, pinDropdownTrigger, showPinButton = false }) => {
   const [timePeriod, setTimePeriod] = useState<'week' | 'month'>('week');
   const [showAddCategory, setShowAddCategory] = useState(false);
   const { toast } = useToast();
@@ -381,25 +385,36 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
     });
   }, [budgets, spendingByCategory, timePeriod, weeklyBudgetMultiplier]);
 
-  // Get categories that aren't currently pinned (same logic as Budget page)
-  const availableCategories = useMemo(() => {
+  // Custom category structure for Quick Category Tracker
+  const categoryStructure = useMemo(() => {
     const pinnedCategoryNames = new Set(
       budgets
         .filter(budget => budget.isPinned)
         .map(budget => (budget.name || budget.category || '').toLowerCase())
     );
     
-    // Filter expense categories that aren't already pinned (same as Budget page)
-    return adminCategories
-      .filter(cat => cat.ledgerType === 'EXPENSE')
-      .map(cat => {
-        // Format category name (include subcategory if exists)
-        const name = cat.subcategory ? `${cat.name} - ${cat.subcategory}` : cat.name;
-        return { name, id: cat.id };
-      })
-      .filter(cat => !pinnedCategoryNames.has(cat.name.toLowerCase()))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [adminCategories, budgets]);
+    const allCategoryNames = [
+      // Recommended categories
+      "Groceries", "Auto & Transport", "Food & Drink", "Shopping",
+      // Less frequent categories
+      "Medical & Healthcare", "Health & Wellness", "Family Care", "Entertainment", 
+      "Travel & Vacation", "Home & Garden", "Personal Care", "Gifts", 
+      "General Services", "Pets", "Software & Tech", "Bank Fees", "Government & Non-Profit"
+    ];
+    
+    const availableCategories = allCategoryNames
+      .filter(name => !pinnedCategoryNames.has(name.toLowerCase()))
+      .map(name => ({ name, id: name.toLowerCase().replace(/\s+/g, '-') }));
+    
+    return {
+      recommended: availableCategories.filter(cat => 
+        ["Groceries", "Auto & Transport", "Food & Drink", "Shopping"].includes(cat.name)
+      ),
+      lessFrequent: availableCategories.filter(cat => 
+        !["Groceries", "Auto & Transport", "Food & Drink", "Shopping"].includes(cat.name)
+      )
+    };
+  }, [budgets]);
 
   // Calculate current pinned count
   const pinnedCount = budgets.filter(budget => budget.isPinned).length;
@@ -472,62 +487,68 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          
-          <DropdownMenu open={showAddCategory} onOpenChange={setShowAddCategory}>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                size="sm" 
-                variant="outline"
-                disabled={pinnedCount >= 5}
-                data-testid="button-add-category"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Pin ({pinnedCount}/5)
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 max-h-80 overflow-y-auto">
-              {pinnedCount >= 5 ? (
-                <DropdownMenuItem disabled>
-                  <span className="text-muted-foreground">Limit reached (5/5)</span>
-                </DropdownMenuItem>
-              ) : availableCategories.length > 0 ? (
-                availableCategories.map((category) => {
-                  const categoryName = category.name;
-                  const Icon = getCategoryIcon(categoryName);
-                  return (
-                    <DropdownMenuItem
-                      key={category.id}
-                      onClick={() => handlePinCategory(categoryName)}
-                      className="flex items-center gap-2"
-                      data-testid={`option-category-${categoryName.toLowerCase().replace(/\s+/g, '-')}`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span className="truncate">{categoryName}</span>
-                      <Pin className="w-3 h-3 ml-auto text-muted-foreground shrink-0" />
-                    </DropdownMenuItem>
-                  );
-                })
-              ) : (
-                <DropdownMenuItem disabled>
-                  <span className="text-muted-foreground">All categories pinned</span>
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {onRemove && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={onRemove}
-              className="text-muted-foreground hover:text-foreground"
-              data-testid="button-remove-tracker"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          )}
         </div>
       </div>
+      
+      {/* Pin dropdown rendered externally in header */}
+      <DropdownMenu open={showAddCategory} onOpenChange={setShowAddCategory}>
+        {pinDropdownTrigger}
+        <DropdownMenuContent align="end" className="w-64 max-h-80 overflow-y-auto">
+          {pinnedCount >= 5 ? (
+            <DropdownMenuItem disabled>
+              <span className="text-muted-foreground">Limit reached (5/5)</span>
+            </DropdownMenuItem>
+          ) : (
+            <>
+              {/* Recommended Section */}
+              <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Recommended
+              </div>
+              {categoryStructure.recommended.map((category) => {
+                const categoryName = category.name;
+                const Icon = getCategoryIcon(categoryName);
+                return (
+                  <DropdownMenuItem
+                    key={category.id}
+                    onClick={() => handlePinCategory(categoryName)}
+                    className="flex items-center gap-2"
+                    data-testid={`option-category-${categoryName.toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="truncate">{categoryName}</span>
+                    <Pin className="w-3 h-3 ml-auto text-muted-foreground shrink-0" />
+                  </DropdownMenuItem>
+                );
+              })}
+              
+              {categoryStructure.lessFrequent.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    Less Frequent Categories
+                  </div>
+                  {categoryStructure.lessFrequent.map((category) => {
+                    const categoryName = category.name;
+                    const Icon = getCategoryIcon(categoryName);
+                    return (
+                      <DropdownMenuItem
+                        key={category.id}
+                        onClick={() => handlePinCategory(categoryName)}
+                        className="flex items-center gap-2"
+                        data-testid={`option-category-${categoryName.toLowerCase().replace(/\s+/g, '-')}`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span className="truncate">{categoryName}</span>
+                        <Pin className="w-3 h-3 ml-auto text-muted-foreground shrink-0" />
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </>
+              )}
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Tracked Categories */}
       <div className="space-y-3">
