@@ -798,37 +798,19 @@ export default function OverviewDashboard() {
                   <CreditCard className="w-4 h-4" />Quick Category Tracker
                 </span>
               }
-              subtitle="Groceries • Week / Month"
+              subtitle="Track your spending by category"
               action={
-                <div className="flex gap-1">
-                  <button className="text-xs px-2 py-1 rounded-md border border-border bg-foreground text-background">
-                    Week
-                  </button>
-                  <button className="text-xs px-2 py-1 rounded-md border border-border">Month</button>
-                  <button
-                    onClick={() => removeCard("tracker")}
-                    className="text-xs px-2 py-1 rounded-md border border-border"
-                  >
-                    Remove
-                  </button>
-                </div>
+                <button
+                  onClick={() => removeCard("tracker")}
+                  className="text-xs px-2 py-1 rounded-md border border-border"
+                  data-testid="button-remove-tracker"
+                >
+                  Remove
+                </button>
               }
             />
             <CardBody>
-              <div className="grid grid-cols-3 gap-3 text-sm">
-                <div className="p-3 rounded-xl bg-muted border border-border">
-                  <div className="text-xs text-muted-foreground">Spent</div>
-                  <div className="font-mono">$146.22</div>
-                </div>
-                <div className="p-3 rounded-xl bg-muted border border-border">
-                  <div className="text-xs text-muted-foreground">Budget</div>
-                  <div className="font-mono">$200.00</div>
-                </div>
-                <div className="p-3 rounded-xl bg-muted border border-border">
-                  <div className="text-xs text-muted-foreground">Left</div>
-                  <div className="font-mono text-emerald-600">$53.78</div>
-                </div>
-              </div>
+              <QuickCategoryTracker onRemove={() => removeCard("tracker")} />
             </CardBody>
           </Card>
         );
