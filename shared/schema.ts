@@ -951,3 +951,24 @@ export const insertWidgetLayoutSchema = createInsertSchema(widgetLayouts).omit({
 
 export type WidgetLayout = typeof widgetLayouts.$inferSelect;
 export type InsertWidgetLayout = z.infer<typeof insertWidgetLayoutSchema>;
+
+// Pinned Categories for Quick Category Tracker
+export const pinnedCategories = pgTable("pinned_categories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  categoryName: text("category_name").notNull(),
+  adminCategoryId: varchar("admin_category_id"), // Link to admin categories if applicable
+  displayOrder: integer("display_order").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPinnedCategorySchema = createInsertSchema(pinnedCategories).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertPinnedCategory = z.infer<typeof insertPinnedCategorySchema>;
+export type PinnedCategory = typeof pinnedCategories.$inferSelect;
