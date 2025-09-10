@@ -1,0 +1,39 @@
+Issue # 1 
+Dropdown Selection 
+The Add Category dropdown should display all available budget categories (including Bills & Utilities). 
+Users should be able to select any category from within the dropdown (up to 5). 
+Do not show already pinned/added categories in the dropdown to prevent duplicates. 
+ 
+Improvements# 1 
+Weekly Calculation Logic 
+Base Calculation 
+Take the monthly budget for the category. 
+Divide it by the number of days in that month (28, 29, 30, or 31). 
+Multiply the daily value by 7 → gives the weekly budget equivalent. 
+Example: $600 ÷ 30 days = $20/day → $20 × 7 = $140 weekly budget. 
+Partial Weeks (Start/End of Month) 
+If the current week doesn’t have 7 applicable days in the month: 
+Multiply the daily budget by the number of days left in that week. 
+This prevents over-allocating in shorter weeks. 
+Example: Last week of February (Feb 27–28, 2 days in month): $600 ÷ 28 = $21.43/day → $21.43 × 2 = $42.86 budget for that partial week. 
+User Display 
+Weekly values stay synced with the monthly budget. 
+The sum of all weeks in a month = the total monthly budget. 
+ 
+1. Dynamic Budget Values 
+When the Month toggle is selected → show each category’s monthly budget, spent, and remaining. 
+When the Week toggle is selected → show each category’s weekly budget, spent, and remaining, calculated with the hybrid daily × 7 method (with prorating for partial weeks). 
+Values update instantly when toggling between Week and Month. 
+ 
+2. Context Display 
+ 
+If Month view is selected → show the month name above the tracker (e.g., September 2025). 
+If Week view is selected → show the week date range above the tracker (e.g., Sep 9 – Sep 15, 2025). 
+For partial weeks at the start or end of the month, the range should begin on the first day of the month or end on the last day of the month, even if the week is fewer than 7 days. 
+Example: Last week of February → Feb 27 – Feb 28. 
+This ensures users know what period the numbers apply to. 
+ 
+ 
+🔹 User-Facing Information Wording 
+Add an info tooltip or small help text near the Week/Month toggle: 
+In Month view, budgets reflect your full monthly amount. In Week view, budgets are calculated daily × 7, and partial weeks (start/end of month) are prorated by the actual number of days. This keeps weekly totals aligned with your monthly budget. 

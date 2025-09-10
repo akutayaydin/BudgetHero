@@ -176,24 +176,56 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
 
 
 
-  // Get current date range for spending calculation
-  const { startDate, endDate } = useMemo(() => {
+  // Get current date range for spending calculation and period context
+  const { startDate, endDate, periodContext, weeklyBudgetMultiplier } = useMemo(() => {
     const now = new Date();
+    
     if (timePeriod === 'week') {
       const startOfWeek = new Date(now);
       startOfWeek.setDate(now.getDate() - now.getDay());
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(startOfWeek.getDate() + 6);
+      
+      // Calculate actual days in current week that fall within the month
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      
+      // Adjust week boundaries to stay within month
+      const adjustedStart = new Date(Math.max(startOfWeek.getTime(), startOfMonth.getTime()));
+      const adjustedEnd = new Date(Math.min(endOfWeek.getTime(), endOfMonth.getTime()));
+      
+      // Calculate days in this week within the month
+      const daysInWeekWithinMonth = Math.ceil((adjustedEnd.getTime() - adjustedStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+      const daysInMonth = endOfMonth.getDate();
+      
+      // Weekly budget multiplier: (monthly budget ÷ days in month) × days in week
+      const weeklyMultiplier = daysInWeekWithinMonth / daysInMonth;
+      
+      // Format date range for display
+      const formatDate = (date: Date) => {
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      };
+      
+      const yearSuffix = adjustedStart.getFullYear() !== now.getFullYear() ? `, ${adjustedStart.getFullYear()}` : '';
+      const periodContext = `${formatDate(adjustedStart)} – ${formatDate(adjustedEnd)}${yearSuffix}`;
+      
       return {
-        startDate: startOfWeek.toISOString().slice(0, 10),
-        endDate: endOfWeek.toISOString().slice(0, 10)
+        startDate: adjustedStart.toISOString().slice(0, 10),
+        endDate: adjustedEnd.toISOString().slice(0, 10),
+        periodContext,
+        weeklyBudgetMultiplier: weeklyMultiplier
       };
     } else {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      
+      const monthName = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      
       return {
         startDate: startOfMonth.toISOString().slice(0, 10),
-        endDate: endOfMonth.toISOString().slice(0, 10)
+        endDate: endOfMonth.toISOString().slice(0, 10),
+        periodContext: monthName,
+        weeklyBudgetMultiplier: 1 // Full monthly budget
       };
     }
   }, [timePeriod]);
@@ -280,27 +312,33 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
     return spending;
   }, [transactions]);
 
-  // Process tracked categories data from pinned budgets
+  // Process tracked categories data from pinned budgets with weekly calculation
   const trackedCategoriesData = useMemo(() => {
     const pinnedBudgets = budgets.filter(budget => budget.isPinned);
     
     return pinnedBudgets.map((budget): TrackedCategoryData => {
       const categoryKey = (budget.name || budget.category || '').toLowerCase();
       const spent = spendingByCategory[categoryKey] || 0;
-      const budgetLimit = parseFloat(budget.limit) || 0;
-      const remaining = Math.max(0, budgetLimit - spent);
-      const overspent = spent > budgetLimit;
+      const monthlyBudgetLimit = parseFloat(budget.limit) || 0;
+      
+      // Apply weekly calculation if in week view
+      const displayBudgetLimit = timePeriod === 'week' 
+        ? monthlyBudgetLimit * weeklyBudgetMultiplier
+        : monthlyBudgetLimit;
+      
+      const remaining = Math.max(0, displayBudgetLimit - spent);
+      const overspent = spent > displayBudgetLimit;
 
       return {
         categoryName: budget.name || budget.category || 'Unknown',
-        budgetLimit,
+        budgetLimit: displayBudgetLimit,
         spent,
         remaining,
         isPinned: true,
         overspent,
       };
     });
-  }, [budgets, spendingByCategory]);
+  }, [budgets, spendingByCategory, timePeriod, weeklyBudgetMultiplier]);
 
   // Get unpinned budgets for the add dropdown
   const unpinnedBudgets = useMemo(() => {
@@ -321,6 +359,16 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
 
   return (
     <div className="space-y-4">
+      {/* Period Context Display */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Calendar className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-muted-foreground">
+            {periodContext}
+          </span>
+        </div>
+      </div>
+
       {/* Header with toggle and add button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -332,9 +380,8 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
                 <Info className="w-4 h-4 text-muted-foreground cursor-help" />
               </TooltipTrigger>
               <TooltipContent>
-                <p className="text-xs max-w-48">
-                  Pin categories to track your spending against budgets. 
-                  Toggle between week and month views.
+                <p className="text-xs max-w-64">
+                  In Month view, budgets reflect your full monthly amount. In Week view, budgets are calculated daily × 7, and partial weeks (start/end of month) are prorated by the actual number of days. This keeps weekly totals aligned with your monthly budget.
                 </p>
               </TooltipContent>
             </Tooltip>
