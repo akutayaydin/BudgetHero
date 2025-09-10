@@ -49,6 +49,7 @@ import { useAccountsOverview } from "@/hooks/useAccountsOverview";
 import { useLastSynced } from "@/hooks/useLastSynced";
 import { useSyncAccounts } from "@/hooks/useSyncAccounts";
 import { formatDistanceToNow } from "date-fns";
+import { formatCurrency } from "@/lib/financial-utils";
 
 // --- Basic UI primitives using theme variables ---
 const Card = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
@@ -215,6 +216,7 @@ interface RecurringTransactionData {
   frequency: string;
   nextDueDate?: string;
   excludeFromBills?: boolean;
+  merchantLogo?: string;
 }
 
 // --- Main component ---
@@ -925,39 +927,48 @@ export default function OverviewDashboard() {
           </Card>
         );
       case "bills":
-        // Calculate upcoming bills for next 7 days
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const twoWeeksOut = new Date(today);
+        twoWeeksOut.setDate(today.getDate() + 13);
+
         const upcomingBills = recurringTransactions
           .filter(item => {
             if (!item.nextDueDate || item.excludeFromBills) return false;
             const dueDate = new Date(item.nextDueDate);
-            const today = new Date();
-            const nextWeek = new Date();
-            nextWeek.setDate(today.getDate() + 7);
-            return dueDate >= today && dueDate <= nextWeek;
+            dueDate.setHours(0, 0, 0, 0);
+            return dueDate >= today && dueDate <= twoWeeksOut;
           })
           .map(item => {
             const dueDate = new Date(item.nextDueDate!);
-            const today = new Date();
+            dueDate.setHours(0, 0, 0, 0);
             const diffTime = dueDate.getTime() - today.getTime();
-            const daysUntilDue = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            return {
-              ...item,
-              daysUntilDue
-            };
+            const daysUntilDue = Math.round(diffTime / (1000 * 60 * 60 * 24));
+            return { ...item, daysUntilDue, dueDate };
           })
-          .sort((a, b) => a.daysUntilDue - b.daysUntilDue)
-          .slice(0, 4); // Show max 4 bills
+          .sort((a, b) => a.daysUntilDue - b.daysUntilDue);
+
+        const totalAmount = upcomingBills.reduce((sum, b) => sum + b.amount, 0);
+        const maxDays = upcomingBills.reduce((max, b) => Math.max(max, b.daysUntilDue), 0);
+
+        const startDate = new Date(today);
+        startDate.setDate(today.getDate() - today.getDay());
+
+        const calendarDays = Array.from({ length: 14 }, (_, i) => {
+          const date = new Date(startDate);
+          date.setDate(startDate.getDate() + i);
+          const billsForDay = upcomingBills.filter(b => b.dueDate.getTime() === date.getTime());
+          return { date, billsForDay };
+        });
 
         return (
           <Card>
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />Upcoming Bills
+                  <Calendar className="w-4 h-4" />Coming Up
                 </span>
               }
-              subtitle="Next 7 days"
               action={
                 <button
                   onClick={() => removeCard("bills")}
@@ -967,33 +978,76 @@ export default function OverviewDashboard() {
                 </button>
               }
             />
-            <CardBody>
+            <CardBody className="space-y-4">
               {upcomingBills.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  {upcomingBills.map((bill) => (
-                    <div key={bill.id} className="p-3 rounded-xl bg-card border border-border">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-semibold">
-                            {bill.name.charAt(0).toUpperCase()}
-                          </span>
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    You have {upcomingBills.length} recurring charge{upcomingBills.length !== 1 ? 's' : ''} due within the next {maxDays} day{maxDays !== 1 ? 's' : ''} for {formatCurrency(totalAmount)}.
+                  </p>
+                  <div className="grid grid-cols-7 gap-1 text-center text-xs">
+                    {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
+                      <div key={d} className="font-medium text-muted-foreground">{d}</div>
+                    ))}
+                    {calendarDays.map(({ date, billsForDay }, idx) => {
+                      const isToday = date.getTime() === today.getTime();
+                      const hasBills = billsForDay.length > 0;
+                      return (
+                        <div key={idx} className="flex justify-center">
+                          <div
+                            className={cn(
+                              'w-8 h-8 flex items-center justify-center rounded-full',
+                              isToday && hasBills
+                                ? 'bg-blue-600 text-white'
+                                : isToday
+                                ? 'border border-blue-600 text-blue-600'
+                                : hasBills
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'text-muted-foreground'
+                            )}
+                          >
+                            {date.getDate()}
+                          </div>
                         </div>
-                        <div className="font-medium truncate">{bill.name}</div>
+                      );
+                    })}
+                  </div>
+                  <div className="space-y-3">
+                    {upcomingBills.map(bill => (
+                      <div key={bill.id} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+                            {bill.merchantLogo ? (
+                              <img
+                                src={bill.merchantLogo}
+                                alt={`${bill.name} logo`}
+                                className="w-8 h-8 object-contain"
+                              />
+                            ) : (
+                              <span className="text-xs font-semibold">
+                                {bill.name.charAt(0).toUpperCase()}
+                              </span>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-medium truncate">{bill.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {bill.daysUntilDue === 0
+                                ? 'today'
+                                : `in ${bill.daysUntilDue} day${bill.daysUntilDue !== 1 ? 's' : ''}`}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-sm font-medium">
+                          {formatCurrency(bill.amount)}
+                        </div>
                       </div>
-                      <div className="text-lg font-bold">${bill.amount.toLocaleString()}</div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        IN {bill.daysUntilDue} DAY{bill.daysUntilDue !== 1 ? 'S' : ''}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {bill.category}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </>
               ) : (
                 <div className="text-center py-4 text-muted-foreground">
                   <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No bills due soon</p>
+                  <p className="text-sm">No upcoming bills</p>
                 </div>
               )}
             </CardBody>
