@@ -21,7 +21,7 @@ export function PlaidLink({
   variant = "default",
   size = "default",
   className,
-  buttonText = "Connect Bank Account",
+  buttonText = "Add Account",
   icon,
 }: PlaidLinkProps) {
   const [linkToken, setLinkToken] = useState<string | null>(null);
