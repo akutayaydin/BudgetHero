@@ -1011,9 +1011,10 @@ export default function OverviewDashboard() {
                       );
                     })}
                   </div>
-                  <div className="space-y-3">
+                  <div className="text-sm divide-y">
+                  
                     {upcomingBills.map(bill => (
-                      <div key={bill.id} className="flex items-center justify-between">
+                      <div key={bill.id} className="flex items-center justify-between py-2">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
                             {bill.merchantLogo ? (
