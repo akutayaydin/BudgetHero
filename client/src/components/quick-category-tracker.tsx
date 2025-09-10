@@ -61,6 +61,14 @@ interface TrackedCategoryData {
   overspent: boolean;
 }
 
+interface AdminCategory {
+  id: string;
+  name: string;
+  subcategory?: string;
+  ledgerType: string;
+  budgetType?: string;
+}
+
 interface EnhancedProgressBarProps {
   spent: number;
   budget: number;
@@ -247,14 +255,14 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
     queryKey: ["/api/budgets"],
   });
 
-  // Fetch all available categories for the dropdown
-  const { data: allCategories = [] } = useQuery<{name: string}[]>({
-    queryKey: ["/api/categories"],
+  // Fetch admin categories (same as Budget page) for the dropdown
+  const { data: adminCategories = [] } = useQuery<AdminCategory[]>({
+    queryKey: ["/api/admin/categories"],
     queryFn: async () => {
-      const res = await fetch("/api/categories", {
+      const res = await fetch("/api/admin/categories", {
         credentials: "include"
       });
-      if (!res.ok) throw new Error("Failed to fetch categories");
+      if (!res.ok) throw new Error("Failed to fetch admin categories");
       return res.json();
     }
   });
@@ -373,7 +381,7 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
     });
   }, [budgets, spendingByCategory, timePeriod, weeklyBudgetMultiplier]);
 
-  // Get categories that aren't currently pinned and aren't income categories
+  // Get categories that aren't currently pinned (same logic as Budget page)
   const availableCategories = useMemo(() => {
     const pinnedCategoryNames = new Set(
       budgets
@@ -381,15 +389,17 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
         .map(budget => (budget.name || budget.category || '').toLowerCase())
     );
     
-    // Filter out income categories and already pinned categories
-    return allCategories
-      .filter(cat => {
-        const name = cat.name.toLowerCase();
-        return !pinnedCategoryNames.has(name) && 
-               !['income', 'salary', 'paycheck', 'business income', 'interest'].includes(name);
+    // Filter expense categories that aren't already pinned (same as Budget page)
+    return adminCategories
+      .filter(cat => cat.ledgerType === 'EXPENSE')
+      .map(cat => {
+        // Format category name (include subcategory if exists)
+        const name = cat.subcategory ? `${cat.name} - ${cat.subcategory}` : cat.name;
+        return { name, id: cat.id };
       })
+      .filter(cat => !pinnedCategoryNames.has(cat.name.toLowerCase()))
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [allCategories, budgets]);
+  }, [adminCategories, budgets]);
 
   // Calculate current pinned count
   const pinnedCount = budgets.filter(budget => budget.isPinned).length;
