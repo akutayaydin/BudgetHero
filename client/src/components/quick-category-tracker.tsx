@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { startOfMonth, startOfWeek, formatISO } from "date-fns";
 import { getIcon } from "@/lib/category-icons";
 import { formatCurrency } from "@/lib/financial-utils";
+import { Plus } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface BudgetApi {
@@ -90,45 +91,57 @@ export default function QuickCategoryTracker() {
     const spent = spending[cat]?.[timeframe] || 0;
     const budget = timeframe === "week" ? weekBudget : monthBudget;
     const remaining = budget - spent;
-    const pct = budget > 0 ? Math.min(100, (spent / budget) * 100) : 0;
+    const pct = budget > 0 ? (spent / budget) * 100 : 0;
+    const isOverspent = pct > 100;
+    const displayPct = Math.min(100, pct);
+    const overspendPct = Math.max(0, pct - 100);
+    
     return (
-      <div key={cat} className="border rounded-md p-3 space-y-1">
+      <div key={cat} className="border rounded-md p-3 space-y-2">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Icon className="w-4 h-4" />
-            <span className="font-medium text-sm">{cat}</span>
-          </div>
+          <span className="font-medium text-sm">{cat}</span>
           <button
-            className="text-xs text-muted-foreground hover:text-red-500"
+            className="text-xs text-muted-foreground hover:text-red-500 w-4 h-4 flex items-center justify-center"
             onClick={() => handleRemove(cat)}
             aria-label="Remove category"
           >
             ✕
           </button>
         </div>
-        <div className="flex w-full h-2 rounded overflow-hidden">
-          <div
-            className="bg-primary"
-            style={{ width: `${pct}%` }}
-            aria-hidden
-          />
-          <div
-            className="bg-muted"
-            style={{ width: `${100 - pct}%` }}
-            aria-hidden
-          />
+        
+        {/* Fancy Progress Bar */}
+        <div className="relative">
+          <div className="w-full h-3 bg-gray-200 rounded-full shadow-inner overflow-hidden">
+            {/* Main progress bar with gradient */}
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300 ease-out"
+              style={{ 
+                width: `${displayPct}%`,
+                background: isOverspent 
+                  ? 'linear-gradient(to right, #ef4444, #dc2626)' 
+                  : 'linear-gradient(to right, #3b82f6, #10b981)'
+              }}
+            />
+            
+            {/* Overspend indicator */}
+            {isOverspent && (
+              <div
+                className="absolute top-0 h-full bg-red-500 rounded-r-full opacity-80"
+                style={{ 
+                  left: '100%',
+                  width: `${Math.min(overspendPct, 50)}%`,
+                  marginLeft: '-2px'
+                }}
+              />
+            )}
+          </div>
         </div>
-        <div className="flex justify-between text-xs font-mono">
-          <span>{formatCurrency(spent)}</span>
-          <span>{formatCurrency(budget)}</span>
-        </div>
-        <div
-          className={`text-xs font-mono ${
-            remaining < 0 ? "text-red-600" : "text-green-600"
-          }`}
-        >
-          {remaining < 0 ? "Over by " : "Remaining "}
-          {formatCurrency(Math.abs(remaining))}
+        
+        {/* Amount display in specified format */}
+        <div className="flex justify-between items-center text-sm font-mono">
+          <span className={isOverspent ? "text-red-600" : "text-gray-700"}>
+            {formatCurrency(spent)} / {formatCurrency(budget)}
+          </span>
         </div>
       </div>
     );
@@ -138,28 +151,51 @@ export default function QuickCategoryTracker() {
     <Card className="mb-6">
       <CardHeader className="pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <CardTitle className="text-lg font-semibold">Quick Category Tracker</CardTitle>
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant={timeframe === "week" ? "default" : "outline"}
-            onClick={() => setTimeframe("week")}
-          >
-            Week
-          </Button>
-          <Button
-            size="sm"
-            variant={timeframe === "month" ? "default" : "outline"}
-            onClick={() => setTimeframe("month")}
-          >
-            Month
-          </Button>
+        
+        {/* Pill-style segmented toggle */}
+        <div className="relative bg-gray-100 p-1 rounded-full">
+          <div className="grid grid-cols-2 relative">
+            {/* Active state background */}
+            <div
+              className={`absolute top-1 bottom-1 bg-blue-500 rounded-full transition-transform duration-200 ease-out`}
+              style={{
+                width: 'calc(50% - 4px)',
+                transform: timeframe === "week" ? 'translateX(2px)' : 'translateX(calc(100% + 2px))'
+              }}
+            />
+            
+            {/* Week button */}
+            <button
+              className={`relative z-10 px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
+                timeframe === "week" ? "text-white" : "text-gray-600 hover:text-gray-800"
+              }`}
+              onClick={() => setTimeframe("week")}
+            >
+              Week
+            </button>
+            
+            {/* Month button */}
+            <button
+              className={`relative z-10 px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
+                timeframe === "month" ? "text-white" : "text-gray-600 hover:text-gray-800"
+              }`}
+              onClick={() => setTimeframe("month")}
+            >
+              Month
+            </button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {selectedCategories.length < 5 && (
+        {selectedCategories.length < 5 && availableCategories.length > 0 && (
           <Select onValueChange={handleAdd}>
             <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Add category" />
+              <SelectValue placeholder={(
+                <div className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Add Category
+                </div>
+              )} />
             </SelectTrigger>
             <SelectContent>
               {availableCategories.map((cat) => (
