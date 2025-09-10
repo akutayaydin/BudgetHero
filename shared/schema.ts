@@ -168,6 +168,7 @@ export const budgets = pgTable("budgets", {
   category: text("category"),
   rationale: text("rationale"), // Explanation of why this amount was chosen
   budgetType: varchar("budget_type", { length: 20 }).default("manual"), // manual, wizard-generated
+  isPinned: boolean("is_pinned").default(false), // Track if budget is pinned to Quick Category Tracker
   createdAt: timestamp("created_at").defaultNow(),
 });
 

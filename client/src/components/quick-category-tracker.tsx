@@ -48,14 +48,9 @@ interface BudgetData {
   category: string;
   limit: string;
   spent: string;
+  isPinned?: boolean;
 }
 
-interface PinnedCategory {
-  id: string;
-  categoryName: string;
-  displayOrder: number;
-  isActive: boolean;
-}
 
 interface TrackedCategoryData {
   categoryName: string;
@@ -179,19 +174,40 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch pinned categories
-  const { data: pinnedCategories = [] } = useQuery<PinnedCategory[]>({
-    queryKey: ["/api/pinned-categories"],
-  });
 
-  // Fetch available categories
-  const { data: allCategories = [] } = useQuery<{ name: string }[]>({
-    queryKey: ["/api/categories"],
-  });
 
-  // Fetch category spending data
-  const { data: categorySpending = [] } = useQuery<CategoryData[]>({
-    queryKey: ["/api/analytics/categories", { type: "expense", period: timePeriod }],
+  // Get current date range for spending calculation
+  const { startDate, endDate } = useMemo(() => {
+    const now = new Date();
+    if (timePeriod === 'week') {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      return {
+        startDate: startOfWeek.toISOString().slice(0, 10),
+        endDate: endOfWeek.toISOString().slice(0, 10)
+      };
+    } else {
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      return {
+        startDate: startOfMonth.toISOString().slice(0, 10),
+        endDate: endOfMonth.toISOString().slice(0, 10)
+      };
+    }
+  }, [timePeriod]);
+
+  // Fetch transactions for the period to calculate actual spending
+  const { data: transactions = [] } = useQuery({
+    queryKey: ["/api/transactions", { startDate, endDate }],
+    queryFn: async () => {
+      const res = await fetch(`/api/transactions?startDate=${startDate}&endDate=${endDate}`, {
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Failed to fetch transactions");
+      return res.json();
+    }
   });
 
   // Fetch budget data
@@ -199,77 +215,84 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
     queryKey: ["/api/budgets"],
   });
 
-  // Pin category mutation
-  const pinCategoryMutation = useMutation({
-    mutationFn: async (categoryName: string) => {
-      return await apiRequest("/api/pinned-categories", "POST", {
-        categoryName,
-        displayOrder: pinnedCategories.length,
+  // Pin budget mutation
+  const pinBudgetMutation = useMutation({
+    mutationFn: async (budgetId: string) => {
+      return await apiRequest(`/api/budgets/${budgetId}`, "PATCH", {
+        isPinned: true
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/pinned-categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
       toast({
-        title: "Category Pinned",
-        description: "Category added to tracker successfully.",
+        title: "Budget Pinned",
+        description: "Budget added to tracker successfully.",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to pin category. Please try again.",
+        description: "Failed to pin budget. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  // Unpin category mutation
-  const unpinCategoryMutation = useMutation({
-    mutationFn: async (categoryId: string) => {
-      return await apiRequest(`/api/pinned-categories/${categoryId}`, "DELETE");
+  // Unpin budget mutation
+  const unpinBudgetMutation = useMutation({
+    mutationFn: async (budgetId: string) => {
+      return await apiRequest(`/api/budgets/${budgetId}`, "PATCH", {
+        isPinned: false
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/pinned-categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
       toast({
-        title: "Category Unpinned",
-        description: "Category removed from tracker.",
+        title: "Budget Unpinned",
+        description: "Budget removed from tracker.",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to unpin category. Please try again.",
+        description: "Failed to unpin budget. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  // Calculate period multiplier for spending
-  const periodMultiplier = useMemo(() => {
-    if (timePeriod === 'week') {
-      // Assuming monthly data, convert to weekly
-      return 1 / 4.33; // Average weeks per month
-    }
-    return 1; // Monthly data as-is
-  }, [timePeriod]);
+  // Calculate spending by category for the selected period
+  const spendingByCategory = useMemo(() => {
+    const spending: Record<string, number> = {};
+    
+    transactions.forEach((transaction: any) => {
+      if (transaction.type !== 'expense') return;
+      
+      const category = transaction.category?.toLowerCase() || '';
+      const amount = parseFloat(transaction.amount) || 0;
+      
+      if (!spending[category]) {
+        spending[category] = 0;
+      }
+      spending[category] += amount;
+    });
+    
+    return spending;
+  }, [transactions]);
 
-  // Process tracked categories data
+  // Process tracked categories data from pinned budgets
   const trackedCategoriesData = useMemo(() => {
-    return pinnedCategories.map((pinned): TrackedCategoryData => {
-      const spending = categorySpending.find(c => 
-        c.category.toLowerCase() === pinned.categoryName.toLowerCase()
-      );
-      const budget = budgets.find(b => 
-        b.category?.toLowerCase() === pinned.categoryName.toLowerCase()
-      );
-
-      const budgetLimit = budget ? parseFloat(budget.limit) * periodMultiplier : 0;
-      const spent = spending ? spending.totalAmount * periodMultiplier : 0;
+    const pinnedBudgets = budgets.filter(budget => budget.isPinned);
+    
+    return pinnedBudgets.map((budget): TrackedCategoryData => {
+      const categoryKey = (budget.name || budget.category || '').toLowerCase();
+      const spent = spendingByCategory[categoryKey] || 0;
+      const budgetLimit = parseFloat(budget.limit) || 0;
       const remaining = Math.max(0, budgetLimit - spent);
       const overspent = spent > budgetLimit;
 
       return {
-        categoryName: pinned.categoryName,
+        categoryName: budget.name || budget.category || 'Unknown',
         budgetLimit,
         spent,
         remaining,
@@ -277,25 +300,22 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
         overspent,
       };
     });
-  }, [pinnedCategories, categorySpending, budgets, periodMultiplier]);
+  }, [budgets, spendingByCategory]);
 
-  // Get unpinned categories for the add dropdown
-  const unpinnedCategories = useMemo(() => {
-    const pinnedNames = pinnedCategories.map(p => p.categoryName.toLowerCase());
-    return allCategories.filter(c => 
-      !pinnedNames.includes(c.name.toLowerCase())
-    );
-  }, [allCategories, pinnedCategories]);
+  // Get unpinned budgets for the add dropdown
+  const unpinnedBudgets = useMemo(() => {
+    return budgets.filter(budget => !budget.isPinned);
+  }, [budgets]);
 
-  const handlePinCategory = (categoryName: string) => {
-    pinCategoryMutation.mutate(categoryName);
+  const handlePinBudget = (budgetId: string) => {
+    pinBudgetMutation.mutate(budgetId);
     setShowAddCategory(false);
   };
 
-  const handleUnpinCategory = (categoryName: string) => {
-    const pinned = pinnedCategories.find(p => p.categoryName === categoryName);
-    if (pinned) {
-      unpinCategoryMutation.mutate(pinned.id);
+  const handleUnpinBudget = (categoryName: string) => {
+    const budget = budgets.find(b => (b.name || b.category) === categoryName);
+    if (budget) {
+      unpinBudgetMutation.mutate(budget.id);
     }
   };
 
@@ -330,29 +350,30 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
                 data-testid="button-add-category"
               >
                 <Plus className="w-4 h-4 mr-1" />
-                Add Category
+                Pin Budget
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              {unpinnedCategories.length > 0 ? (
-                unpinnedCategories.map((category) => {
-                  const Icon = getCategoryIcon(category.name);
+              {unpinnedBudgets.length > 0 ? (
+                unpinnedBudgets.map((budget) => {
+                  const budgetName = budget.name || budget.category || 'Unknown';
+                  const Icon = getCategoryIcon(budgetName);
                   return (
                     <DropdownMenuItem
-                      key={category.name}
-                      onClick={() => handlePinCategory(category.name)}
+                      key={budget.id}
+                      onClick={() => handlePinBudget(budget.id)}
                       className="flex items-center gap-2"
-                      data-testid={`option-category-${category.name.toLowerCase().replace(/\s+/g, '-')}`}
+                      data-testid={`option-budget-${budgetName.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       <Icon className="w-4 h-4" />
-                      <span>{category.name}</span>
+                      <span>{budgetName}</span>
                       <Pin className="w-3 h-3 ml-auto text-muted-foreground" />
                     </DropdownMenuItem>
                   );
                 })
               ) : (
                 <DropdownMenuItem disabled>
-                  <span className="text-muted-foreground">All categories pinned</span>
+                  <span className="text-muted-foreground">All budgets pinned</span>
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -385,9 +406,9 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
               
               {/* Unpin button */}
               <button
-                onClick={() => handleUnpinCategory(category.categoryName)}
+                onClick={() => handleUnpinBudget(category.categoryName)}
                 className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded"
-                title="Unpin category"
+                title="Unpin budget"
                 data-testid={`button-unpin-${category.categoryName.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 <X className="w-3 h-3 text-muted-foreground" />
@@ -397,8 +418,8 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
         ) : (
           <div className="text-center py-6 text-muted-foreground">
             <Pin className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No categories pinned</p>
-            <p className="text-xs">Add categories to track your spending</p>
+            <p className="text-sm">No budgets pinned</p>
+            <p className="text-xs">Pin budgets from your Budget page to track spending</p>
           </div>
         )}
       </div>
