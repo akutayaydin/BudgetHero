@@ -1,5 +1,5 @@
 import { db, migrateDb } from "./db";
-import { transactions, budgets, budgetPlans, goals, users, categories, institutions, accounts, subscriptionPlans, assets, liabilities, recurringTransactions, billNotifications, manualSubscriptions, categorizationRules, transactionTags, transactionTagAssignments, automationRules, transactionSplits, widgetLayouts } from "@shared/schema";
+import { transactions, budgets, budgetPlans, goals, users, categories, institutions, accounts, subscriptionPlans, assets, liabilities, recurringTransactions, billNotifications, manualSubscriptions, categorizationRules, transactionTags, transactionTagAssignments, automationRules, transactionSplits, widgetLayouts, pinnedCategories } from "@shared/schema";
 import { eq, and, gte, lte, like, or, ilike } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 import type {
@@ -10,7 +10,7 @@ import type {
   ManualSubscription, InsertManualSubscription, CategorizationRule, InsertCategorizationRule,
   TransactionTag, InsertTransactionTag, TransactionTagAssignment, InsertTransactionTagAssignment,
   AutomationRule, InsertAutomationRule, TransactionSplit, InsertTransactionSplit,
-  WidgetLayout, InsertWidgetLayout
+  WidgetLayout, InsertWidgetLayout, PinnedCategory, InsertPinnedCategory
 } from "@shared/schema";
 import { defaultCategories } from "../client/src/lib/transaction-classifier";
 
@@ -1619,6 +1619,39 @@ export class DatabaseStorage implements IStorage {
         .values(layoutWithUserId)
         .returning();
       return created;
+    }
+  }
+
+  // Pinned Categories methods
+  async getPinnedCategories(userId: string): Promise<PinnedCategory[]> {
+    return await db
+      .select()
+      .from(pinnedCategories)
+      .where(and(eq(pinnedCategories.userId, userId), eq(pinnedCategories.isActive, true)))
+      .orderBy(pinnedCategories.displayOrder);
+  }
+
+  async createPinnedCategory(pinnedCategory: InsertPinnedCategory): Promise<PinnedCategory> {
+    const [newPinnedCategory] = await db
+      .insert(pinnedCategories)
+      .values(pinnedCategory)
+      .returning();
+    return newPinnedCategory;
+  }
+
+  async deletePinnedCategory(id: string): Promise<boolean> {
+    const result = await db
+      .delete(pinnedCategories)
+      .where(eq(pinnedCategories.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async updatePinnedCategoryOrder(userId: string, categoryOrders: { id: string; displayOrder: number }[]): Promise<void> {
+    for (const item of categoryOrders) {
+      await db
+        .update(pinnedCategories)
+        .set({ displayOrder: item.displayOrder })
+        .where(and(eq(pinnedCategories.id, item.id), eq(pinnedCategories.userId, userId)));
     }
   }
 }
