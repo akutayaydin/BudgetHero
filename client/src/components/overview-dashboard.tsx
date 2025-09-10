@@ -28,6 +28,13 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+<<<<<<< ours
+=======
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { AccountsPanel } from "@/components/accounts-panel";
+import QuickCategoryTracker from "@/components/quick-category-tracker";
+>>>>>>> theirs
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -403,6 +410,7 @@ export default function OverviewDashboard() {
     }
   }, []);
 
+<<<<<<< ours
   // Disable auto-save - user now controls when to save with the save button
   // This prevents the infinite loop and gives users more control
   
@@ -744,6 +752,26 @@ export default function OverviewDashboard() {
                 <div className="p-3 rounded-xl bg-muted border border-border">
                   <div className="text-xs text-muted-foreground">Current Spend</div>
                   <div className="font-semibold">$157</div>
+=======
+      {/* Quick Category Tracker */}
+      <div className="lg:col-start-3">
+        <QuickCategoryTracker />
+      </div>
+
+      {/* Upcoming Recurring Charges */}
+      <Card className="lg:col-start-3">
+        <CardHeader>
+          <CardTitle>Upcoming Charges</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {upcomingCharges.map((charge) => (
+            <div key={charge.id} className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">{charge.name}</p>
+                  <p className="text-sm text-muted-foreground">{charge.date}</p>
+>>>>>>> theirs
                 </div>
               </div>
             </CardBody>

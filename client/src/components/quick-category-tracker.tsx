@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
 import { startOfMonth, startOfWeek, formatISO } from "date-fns";
 import { getIcon } from "@/lib/category-icons";
 import { formatCurrency } from "@/lib/financial-utils";
@@ -107,13 +106,29 @@ export default function QuickCategoryTracker() {
             ✕
           </button>
         </div>
-        <Progress value={pct} className="h-2" />
+        <div className="flex w-full h-2 rounded overflow-hidden">
+          <div
+            className="bg-primary"
+            style={{ width: `${pct}%` }}
+            aria-hidden
+          />
+          <div
+            className="bg-muted"
+            style={{ width: `${100 - pct}%` }}
+            aria-hidden
+          />
+        </div>
         <div className="flex justify-between text-xs font-mono">
           <span>{formatCurrency(spent)}</span>
           <span>{formatCurrency(budget)}</span>
         </div>
-        <div className={`text-xs font-mono ${remaining < 0 ? "text-red-600" : "text-green-600"}`}>
-          {remaining < 0 ? "Over by " : "Remaining "}{formatCurrency(Math.abs(remaining))}
+        <div
+          className={`text-xs font-mono ${
+            remaining < 0 ? "text-red-600" : "text-green-600"
+          }`}
+        >
+          {remaining < 0 ? "Over by " : "Remaining "}
+          {formatCurrency(Math.abs(remaining))}
         </div>
       </div>
     );
