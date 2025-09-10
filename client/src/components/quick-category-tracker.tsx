@@ -446,19 +446,18 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
 
   return (
     <div className="space-y-4">
-      {/* Period Context Display */}
+      {/* Header with date and controls */}
       <div className="flex items-center justify-between mb-3">
+        {/* Left: Date range */}
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-muted-foreground" />
           <span className="text-sm font-medium text-muted-foreground">
             {periodContext}
           </span>
         </div>
-      </div>
-
-      {/* Header with toggle and add button */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        
+        {/* Right: Controls */}
+        <div className="flex items-center gap-2">
           <TimePeriodToggle period={timePeriod} onChange={setTimePeriod} />
           
           <TooltipProvider>
@@ -473,9 +472,7 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </div>
-
-        <div className="flex items-center gap-2">
+          
           <DropdownMenu open={showAddCategory} onOpenChange={setShowAddCategory}>
             <DropdownMenuTrigger asChild>
               <Button 
@@ -485,28 +482,28 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
                 data-testid="button-add-category"
               >
                 <Plus className="w-4 h-4 mr-1" />
-                Pin Budget ({pinnedCount}/5)
+                Pin ({pinnedCount}/5)
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-64 max-h-80 overflow-y-auto">
               {pinnedCount >= 5 ? (
                 <DropdownMenuItem disabled>
                   <span className="text-muted-foreground">Limit reached (5/5)</span>
                 </DropdownMenuItem>
               ) : availableCategories.length > 0 ? (
-                availableCategories.slice(0, 10).map((category) => {
+                availableCategories.map((category) => {
                   const categoryName = category.name;
                   const Icon = getCategoryIcon(categoryName);
                   return (
                     <DropdownMenuItem
-                      key={categoryName}
+                      key={category.id}
                       onClick={() => handlePinCategory(categoryName)}
                       className="flex items-center gap-2"
                       data-testid={`option-category-${categoryName.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       <Icon className="w-4 h-4" />
-                      <span>{categoryName}</span>
-                      <Pin className="w-3 h-3 ml-auto text-muted-foreground" />
+                      <span className="truncate">{categoryName}</span>
+                      <Pin className="w-3 h-3 ml-auto text-muted-foreground shrink-0" />
                     </DropdownMenuItem>
                   );
                 })
@@ -515,19 +512,15 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
                   <span className="text-muted-foreground">All categories pinned</span>
                 </DropdownMenuItem>
               )}
-              {availableCategories.length > 10 && pinnedCount < 5 && (
-                <DropdownMenuItem disabled>
-                  <span className="text-xs text-muted-foreground">+ {availableCategories.length - 10} more...</span>
-                </DropdownMenuItem>
-              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
           {onRemove && (
-            <Button 
-              size="sm" 
-              variant="outline"
+            <Button
+              size="sm"
+              variant="ghost"
               onClick={onRemove}
+              className="text-muted-foreground hover:text-foreground"
               data-testid="button-remove-tracker"
             >
               <X className="w-4 h-4" />
