@@ -19,6 +19,9 @@ import {
   MoreHorizontal,
   GripVertical,
   ArrowRight,
+  Plus,
+  RefreshCw,
+  Loader2,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -36,6 +39,11 @@ import { NetWorthGraph, SpendingGraph } from "@/components/dashboard-graphs";
 import AccountsCard from "@/components/accounts-card";
 import WidgetDrawer from "@/components/widget-drawer";
 import { Link } from "wouter";
+import { PlaidLink } from "@/components/PlaidLink";
+import { useAccountsOverview } from "@/hooks/useAccountsOverview";
+import { useLastSynced } from "@/hooks/useLastSynced";
+import { useSyncAccounts } from "@/hooks/useSyncAccounts";
+import { formatDistanceToNow } from "date-fns";
 
 // --- Basic UI primitives using theme variables ---
 const Card = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
@@ -491,6 +499,79 @@ export default function OverviewDashboard() {
     markLayoutChanged();
   };
 
+  const AccountsSummaryCard = ({ onRemove }: { onRemove: () => void }) => {
+    const { data: accountsData, isLoading, error, refetch } = useAccountsOverview();
+    const { data: lastSynced, isLoading: lastSyncedLoading } = useLastSynced();
+    const syncMutation = useSyncAccounts();
+    const { toast } = useToast();
+
+    const handleSync = () => {
+      syncMutation.mutate();
+    };
+
+    const handlePlaidSuccess = () => {
+      toast({
+        title: "Account Connected!",
+        description: "Your bank account has been linked successfully",
+      });
+      refetch();
+    };
+
+    const lastSyncedText = lastSynced?.lastSyncedAt
+      ? `Synced ${formatDistanceToNow(new Date(lastSynced.lastSyncedAt))} ago`
+      : "Never synced";
+
+    return (
+      <Card>
+        <CardHeader
+          title={
+            <span className="flex items-center gap-2">
+              <Layers className="w-4 h-4" />Accounts Summary
+            </span>
+          }
+          subtitle={lastSyncedLoading ? "Syncing..." : lastSyncedText}
+          action={
+            <div className="flex gap-1">
+              <Link href="/wealth-management?tab=accounts">
+                <button className="text-xs px-2 py-1 rounded-md border border-border">
+                  View All
+                </button>
+              </Link>
+              <PlaidLink
+                onSuccess={handlePlaidSuccess}
+                className="text-xs px-2 py-1 rounded-md border border-border flex items-center"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Account
+              </PlaidLink>
+              <button
+                onClick={handleSync}
+                disabled={syncMutation.isPending}
+                className="text-xs px-2 py-1 rounded-md border border-border flex items-center"
+              >
+                {syncMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4 mr-1" />
+                )}
+                Sync Now
+              </button>
+              <button
+                onClick={onRemove}
+                className="text-xs px-2 py-1 rounded-md border border-border"
+              >
+                Remove
+              </button>
+            </div>
+          }
+        />
+        <CardBody>
+          <AccountsCard accountsData={accountsData} isLoading={isLoading} error={error} />
+        </CardBody>
+      </Card>
+    );
+  };
+
   const renderCard = (id: string) => {
     switch (id) {
       case "spending":
@@ -792,29 +873,7 @@ export default function OverviewDashboard() {
           </Card>
         );
       case "accounts":
-        return (
-          <Card>
-            <CardHeader
-              title={
-                <span className="flex items-center gap-2">
-                  <Layers className="w-4 h-4" />Accounts Summary
-                </span>
-              }
-              subtitle="Checking • Credit • Savings • Investments"
-              action={
-                <button
-                  onClick={() => removeCard("accounts")}
-                  className="text-xs px-2 py-1 rounded-md border border-border"
-                >
-                  Remove
-                </button>
-              }
-            />
-            <CardBody>
-              <AccountsCard />
-            </CardBody>
-          </Card>
-        );
+        return <AccountsSummaryCard onRemove={() => removeCard("accounts")} />;
       case "netIncome":
         return (
           <Card>
