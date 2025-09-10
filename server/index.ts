@@ -41,11 +41,19 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Run database migrations on startup
+  // Check if database is already migrated by looking for a core table
   try {
-    await migrateDb();
+    await db.select().from(require('@shared/schema').accounts).limit(1);
+    console.log("Database already migrated, skipping migration step");
   } catch (error) {
-    console.error("Failed to run migrations:", error);
+    // If accounts table doesn't exist, run migrations
+    try {
+      console.log("Running database migrations...");
+      await migrateDb();
+      console.log("Database migrations completed successfully");
+    } catch (migrationError) {
+      console.error("Failed to run migrations:", migrationError);
+    }
   }
 
   // Seed enhanced admin categories on startup
