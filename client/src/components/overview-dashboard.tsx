@@ -532,11 +532,6 @@ export default function OverviewDashboard() {
           subtitle={lastSyncedLoading ? "Syncing..." : lastSyncedText}
           action={
             <div className="flex gap-1">
-              <Link href="/wealth-management?tab=accounts">
-                <button className="text-xs px-2 py-1 rounded-md border border-border">
-                  View All
-                </button>
-              </Link>
               <PlaidLink
                 onSuccess={handlePlaidSuccess}
                 className="text-xs px-2 py-1 rounded-md border border-border flex items-center"

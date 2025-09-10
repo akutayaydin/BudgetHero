@@ -165,81 +165,10 @@ export default function AccountsCard({ onRemove, isDragging }: AccountsCardProps
 
   return (
     <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
-            Accounts
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Link href="/wealth-management?tab=accounts">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-medium"
-              >
-                View All <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-            </Link>
-            <div className="cursor-grab active:cursor-grabbing">
-              <GripVertical className="h-4 w-4 text-gray-400" />
-            </div>
-            {onRemove && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onRemove}
-                className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </div>
-        
-        {/* Sync Status and Controls */}
-        <div className="flex items-center justify-between pt-2">
-          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-            {lastSyncedLoading ? (
-              <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-            ) : (
-              <span>{lastSyncedText}</span>
-            )}
-            <span>|</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSync}
-              disabled={syncMutation.isPending}
-              className="h-auto p-0 text-xs text-purple-600 hover:text-purple-700"
-            >
-              {syncMutation.isPending ? (
-                <Loader2 className="h-3 w-3 animate-spin mr-1" />
-              ) : (
-                <RefreshCw className="h-3 w-3 mr-1" />
-              )}
-              Sync now
-            </Button>
-          </div>
-          
-        <div className="flex items-center gap-1">
-          <PlaidLink onSuccess={handlePlaidSuccess} className="h-7 px-2 text-xs">
-            <Plus className="h-3 w-3 mr-1" />
-            Connect Bank
-          </PlaidLink>
-        </div>
-        </div>
-      </CardHeader>
       <CardContent className="pt-0">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-600 dark:text-gray-400">Total Balance</span>
-            <span className={`text-2xl font-bold ${
-              totalBalance >= 0 
-                ? 'text-green-600 dark:text-green-400' 
-                : 'text-red-600 dark:text-red-400'
-            }`}>
-              {formatCurrency(totalBalance)}
-            </span>
+            <span className="text-sm text-gray-600 dark:text-gray-400"></span>
           </div>
         </div>
 
