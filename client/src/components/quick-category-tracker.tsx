@@ -247,6 +247,18 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
     queryKey: ["/api/budgets"],
   });
 
+  // Fetch all available categories for the dropdown
+  const { data: allCategories = [] } = useQuery<{name: string}[]>({
+    queryKey: ["/api/categories"],
+    queryFn: async () => {
+      const res = await fetch("/api/categories", {
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Failed to fetch categories");
+      return res.json();
+    }
+  });
+
   // Pin budget mutation
   const pinBudgetMutation = useMutation({
     mutationFn: async (budgetId: string) => {
@@ -265,6 +277,27 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
       toast({
         title: "Error",
         description: "Failed to pin budget. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Create and pin budget mutation
+  const createAndPinBudgetMutation = useMutation({
+    mutationFn: async (budgetData: { name: string; limit: string; category: string; isPinned: boolean }) => {
+      return await apiRequest("/api/budgets", "POST", budgetData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+      toast({
+        title: "Category Pinned",
+        description: "Budget created and added to tracker with $100 default limit.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to create and pin budget. Please try again.",
         variant: "destructive",
       });
     },
@@ -340,13 +373,57 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
     });
   }, [budgets, spendingByCategory, timePeriod, weeklyBudgetMultiplier]);
 
-  // Get unpinned budgets for the add dropdown
-  const unpinnedBudgets = useMemo(() => {
-    return budgets.filter(budget => !budget.isPinned);
-  }, [budgets]);
+  // Get categories that aren't currently pinned and aren't income categories
+  const availableCategories = useMemo(() => {
+    const pinnedCategoryNames = new Set(
+      budgets
+        .filter(budget => budget.isPinned)
+        .map(budget => (budget.name || budget.category || '').toLowerCase())
+    );
+    
+    // Filter out income categories and already pinned categories
+    return allCategories
+      .filter(cat => {
+        const name = cat.name.toLowerCase();
+        return !pinnedCategoryNames.has(name) && 
+               !['income', 'salary', 'paycheck', 'business income', 'interest'].includes(name);
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [allCategories, budgets]);
 
-  const handlePinBudget = (budgetId: string) => {
-    pinBudgetMutation.mutate(budgetId);
+  // Calculate current pinned count
+  const pinnedCount = budgets.filter(budget => budget.isPinned).length;
+
+  const handlePinCategory = (categoryName: string) => {
+    // Check 5-category limit
+    if (pinnedCount >= 5) {
+      toast({
+        title: "Limit Reached",
+        description: "You can only pin up to 5 categories. Unpin one first.",
+        variant: "destructive",
+      });
+      setShowAddCategory(false);
+      return;
+    }
+
+    // Check if budget already exists for this category
+    const existingBudget = budgets.find(b => 
+      (b.name || b.category || '').toLowerCase() === categoryName.toLowerCase()
+    );
+
+    if (existingBudget) {
+      // Pin existing budget
+      pinBudgetMutation.mutate(existingBudget.id);
+    } else {
+      // Create new budget with default $100 limit and pin it
+      createAndPinBudgetMutation.mutate({
+        name: categoryName,
+        limit: "100.00",
+        category: categoryName,
+        isPinned: true
+      });
+    }
+    
     setShowAddCategory(false);
   };
 
@@ -394,33 +471,43 @@ const QuickCategoryTracker: React.FC<{ onRemove?: () => void }> = ({ onRemove })
               <Button 
                 size="sm" 
                 variant="outline"
+                disabled={pinnedCount >= 5}
                 data-testid="button-add-category"
               >
                 <Plus className="w-4 h-4 mr-1" />
-                Pin Budget
+                Pin Budget ({pinnedCount}/5)
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              {unpinnedBudgets.length > 0 ? (
-                unpinnedBudgets.map((budget) => {
-                  const budgetName = budget.name || budget.category || 'Unknown';
-                  const Icon = getCategoryIcon(budgetName);
+            <DropdownMenuContent align="end" className="w-56">
+              {pinnedCount >= 5 ? (
+                <DropdownMenuItem disabled>
+                  <span className="text-muted-foreground">Limit reached (5/5)</span>
+                </DropdownMenuItem>
+              ) : availableCategories.length > 0 ? (
+                availableCategories.slice(0, 10).map((category) => {
+                  const categoryName = category.name;
+                  const Icon = getCategoryIcon(categoryName);
                   return (
                     <DropdownMenuItem
-                      key={budget.id}
-                      onClick={() => handlePinBudget(budget.id)}
+                      key={categoryName}
+                      onClick={() => handlePinCategory(categoryName)}
                       className="flex items-center gap-2"
-                      data-testid={`option-budget-${budgetName.toLowerCase().replace(/\s+/g, '-')}`}
+                      data-testid={`option-category-${categoryName.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       <Icon className="w-4 h-4" />
-                      <span>{budgetName}</span>
+                      <span>{categoryName}</span>
                       <Pin className="w-3 h-3 ml-auto text-muted-foreground" />
                     </DropdownMenuItem>
                   );
                 })
               ) : (
                 <DropdownMenuItem disabled>
-                  <span className="text-muted-foreground">All budgets pinned</span>
+                  <span className="text-muted-foreground">All categories pinned</span>
+                </DropdownMenuItem>
+              )}
+              {availableCategories.length > 10 && pinnedCount < 5 && (
+                <DropdownMenuItem disabled>
+                  <span className="text-xs text-muted-foreground">+ {availableCategories.length - 10} more...</span>
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
