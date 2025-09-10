@@ -165,7 +165,7 @@ export const PinBudgetButton: React.FC<PinBudgetButtonProps> = ({ className }) =
           disabled={pinnedCount >= 5}
           data-testid="button-add-category"
         >
-          Pin Budget ({pinnedCount}/5)
+          + Pin Budget ({pinnedCount}/5)
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64 max-h-80 overflow-y-auto">

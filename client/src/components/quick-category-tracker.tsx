@@ -577,7 +577,7 @@ const QuickCategoryTracker: React.FC<{
           <div className="text-center py-6 text-muted-foreground">
             <Pin className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p className="text-sm">No Budget Categories Pinned</p>
-            <p className="text-xs">Use “+ Pin Category” to start tracking weekly and monthly spending.</p>
+            <p className="text-xs">Use “+ Pin Budget” to start tracking weekly and monthly spending.</p>
           </div>
         )}
       </div>
