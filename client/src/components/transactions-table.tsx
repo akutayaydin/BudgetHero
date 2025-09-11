@@ -1509,7 +1509,7 @@ export default function TransactionsTable({
             </div>
           </div>
         )}
-      </CardHeader>
+
 
       <CardContent className="p-0">
         {paginatedTransactions.length === 0 ? (

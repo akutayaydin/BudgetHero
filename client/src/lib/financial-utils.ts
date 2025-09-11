@@ -52,7 +52,7 @@ export const formatDateShort = (date: Date | string | number): string => {
   }
   
   return new Intl.DateTimeFormat('en-US', {
-    month: 'long',
+    month: 'numeric',
     day: 'numeric'
   }).format(dateObj);
 };
