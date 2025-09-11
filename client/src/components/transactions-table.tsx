@@ -45,7 +45,6 @@ import {
 //import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { TransactionRecurringBadge } from "./transaction-recurring-badge";
 
-import { MerchantSparkline } from "./merchant-sparkline";
 import { MerchantHoverTooltip } from "./merchant-hover-tooltip";
 import { MerchantDetailDialog } from "./merchant-detail-dialog";
 import {
@@ -155,44 +154,6 @@ export default function TransactionsTable({
   const queryClient = useQueryClient();
 
   // Simple Trend Indicator Component
-  const TrendIndicator = ({
-    merchant,
-    amount,
-  }: {
-    merchant: string;
-    amount: number;
-  }) => {
-    // Create consistent trend based on merchant name hash (stable, no randomness)
-    const merchantHash = merchant
-      .toLowerCase()
-      .split("")
-      .reduce((a, b) => {
-        a = (a << 5) - a + b.charCodeAt(0);
-        return a & a;
-      }, 0);
-
-    const isPositiveTrend = Math.abs(merchantHash) % 2 === 0;
-
-    return (
-      <div className="flex items-center ml-1">
-        <div
-          className={`
-          flex items-center justify-center w-3 h-3 rounded-full
-          ${
-            isPositiveTrend
-              ? "bg-green-500 text-white"
-              : "bg-red-500 text-white"
-          }
-        `}
-        >
-          <span className="text-2xs font-medium">
-            {isPositiveTrend ? "↓" : "↑"}
-          </span>
-        </div>
-      </div>
-    );
-  };
-
   // Debounced search to prevent excessive API calls
   const [debouncedSearch, setDebouncedSearch] = useState(search);
 
@@ -962,21 +923,23 @@ export default function TransactionsTable({
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex flex-wrap items-center gap-3">
-          <CardTitle>Transactions</CardTitle>
-          {onAddTransaction && (
-            <Button
-              onClick={onAddTransaction}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-2 shadow-lg"
-              data-testid="button-add-transaction"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Transaction
-            </Button>
-          )}
-          {showFilters && (
-            <>
+        <CardHeader>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <CardTitle>Transactions</CardTitle>
+            <div className="flex items-center gap-2 flex-wrap">
+              {onAddTransaction && (
+                <Button
+                  onClick={onAddTransaction}
+                  variant="outline"
+                  className="gap-2"
+                  data-testid="button-add-transaction"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Transaction
+                </Button>
+              )}
+              {showFilters && (
+                <>
                 {/* Search Button */}
               <Dialog
                 open={showSearchDialog}
@@ -1058,18 +1021,18 @@ export default function TransactionsTable({
                 </Button>
               )}
 
-              {/* Advanced Filters Toggle */}
+                {/* Filters Toggle */}
               <Button
                 variant="outline"
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
                 className="gap-2"
               >
                 <Filter className="w-4 h-4" />
-                Advanced Filters
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform ${showAdvancedFilters ? "rotate-180" : ""}`}
-                />
-              </Button>
+                  Filters
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${showAdvancedFilters ? "rotate-180" : ""}`}
+                  />
+                </Button>
 
               {/* Enhanced bulk selection actions */}
               {selectedTransactions.size > 0 && (
@@ -1154,20 +1117,22 @@ export default function TransactionsTable({
                   >
                     <X className="w-3 h-3" />
                   </Button>
-                </div>
-              )}
+                  </div>
+                )}
 
-            </>
-            )}
-          <Button
-            variant="outline"
-            onClick={handleExport}
-            className="gap-2"
-          >
-            <Download className="w-4 h-4" />
-            Export All
-          </Button>
-        </div>
+              </>
+              )}
+              <Button
+                variant="outline"
+                onClick={handleExport}
+                className="gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Export All
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
 
         {/* Search Results Display */}
         {search && (
@@ -1720,17 +1685,6 @@ export default function TransactionsTable({
                                                 }
                                                 className="text-xs"
                                               />
-                                              {/* Dynamic Trend Indicator */}
-                                              {transaction.merchant && (
-                                                <TrendIndicator
-                                                  merchant={
-                                                    transaction.merchant
-                                                  }
-                                                  amount={parseFloat(
-                                                    transaction.amount,
-                                                  )}
-                                                />
-                                              )}
                                             </div>
                                           </div>
 
@@ -1797,9 +1751,9 @@ export default function TransactionsTable({
             </div>
 
             {/* Desktop Table Layout */}
-            <div className="hidden sm:block overflow-x-auto">
+            <div className="hidden sm:block overflow-auto">
               <table className="w-full">
-                <thead className="bg-muted">
+                <thead className="bg-gray-50 sticky top-0 z-10">
                   <tr>
                     <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-12">
                       <Checkbox
@@ -1814,9 +1768,9 @@ export default function TransactionsTable({
                       />
                     </th>
                     {/* Sortable Date Column */}
-                    <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-20 sm:w-auto">
+                    <th className="px-2 sm:px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-16 sm:w-auto">
                       <button
-                        className="flex items-center gap-1 hover:text-foreground transition-colors"
+                        className="flex items-center justify-center gap-1 hover:text-foreground transition-colors"
                         onClick={() => handleSort("date")}
                       >
                         Date
@@ -1833,12 +1787,12 @@ export default function TransactionsTable({
                     </th>
 
                     {/* Sortable Merchant Column */}
-                    <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-0">
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-0">
                       <button
                         className="flex items-center gap-1 hover:text-foreground transition-colors"
                         onClick={() => handleSort("merchant")}
                       >
-                        Merchant & Description
+                        Merchant
                         {sortField === "merchant" &&
                           (sortDirection === "asc" ? (
                             <ArrowUp className="w-3 h-3" />
@@ -1852,7 +1806,7 @@ export default function TransactionsTable({
                     </th>
 
                     {/* Sortable Category Column */}
-                    <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-24 sm:w-auto hidden sm:table-cell">
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-24 sm:w-auto hidden sm:table-cell">
                       <button
                         className="flex items-center gap-1 hover:text-foreground transition-colors"
                         onClick={() => handleSort("category")}
@@ -1870,13 +1824,8 @@ export default function TransactionsTable({
                       </button>
                     </th>
 
-                      {/* Sparkline Column Header */}
-                    <th className="px-2 sm:px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-24 hidden sm:table-cell">
-                      Trend
-                    </th>
-
                     {/* Sortable Amount Column */}
-                    <th className="px-2 sm:px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider w-28 sm:w-32">
+                    <th className="px-2 sm:px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider w-28 sm:w-32">
                       <button
                         className="flex items-center gap-1 hover:text-foreground transition-colors justify-end w-full"
                         onClick={() => handleSort("amount")}
@@ -1893,7 +1842,7 @@ export default function TransactionsTable({
                         )}
                       </button>
                     </th>
-                    <th className="px-2 sm:px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-20 sm:w-24">
+                    <th className="px-2 sm:px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-20 sm:w-24">
                       Actions
                     </th>
                   </tr>
@@ -1901,9 +1850,9 @@ export default function TransactionsTable({
                 <tbody className="bg-background divide-y divide-border">
                   {paginatedTransactions.map((transaction: Transaction) => {
                     const isEditing = editingId === transaction.id;
-                    return (
-                      <tr key={transaction.id} className="hover:bg-muted/50">
-                        <td className="px-2 sm:px-4 py-3 sm:py-4 whitespace-nowrap">
+                      return (
+                      <tr key={transaction.id} className="hover:bg-gray-50">
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
                           <Checkbox
                             checked={selectedTransactions.has(transaction.id)}
                             onCheckedChange={() =>
@@ -1912,12 +1861,10 @@ export default function TransactionsTable({
                             data-testid={`checkbox-select-${transaction.id}`}
                           />
                         </td>
-                        <td className="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-foreground">
-                          <div className="font-medium">
-                            {formatDateShort(new Date(transaction.date))}
-                          </div>
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-foreground text-center">
+                          {formatDateShort(new Date(transaction.date))}
                         </td>
-                        <td className="px-2 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-foreground min-w-0">
+                        <td className="px-2 sm:px-4 py-3 text-xs sm:text-sm text-foreground min-w-0">
                           {isEditing ? (
                             <div className="space-y-2">
                               <Input
@@ -2021,7 +1968,7 @@ export default function TransactionsTable({
                             </div>
                           )}
                         </td>
-                        <td className="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap hidden sm:table-cell">
                           {editingCategoryId === transaction.id ? (
                             <InlineCategorySelector
                               currentCategoryName={transaction.category}
@@ -2050,42 +1997,25 @@ export default function TransactionsTable({
                             </button>
                           )}
                         </td>
-                        {/* Sparkline Column - Desktop only */}
-                        <td className="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-center hidden sm:table-cell">
-                          {transaction.merchant && (
-                            <MerchantSparkline
-                              merchant={transaction.merchant}
-                              currentAmount={transaction.amount}
-                              transactionDate={
-                                typeof transaction.date === "string"
-                                  ? transaction.date
-                                  : transaction.date.toISOString()
-                              }
-                            />
-                          )}
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-sm font-medium text-right">
+                          <span
+                            className={`font-bold text-sm sm:text-base ${
+                              transaction.ignoreType &&
+                              transaction.ignoreType !== "none"
+                                ? "text-gray-400 dark:text-gray-500"
+                                : transaction.type === "income"
+                                  ? "text-green-600 dark:text-green-400"
+                                  : "text-red-600 dark:text-red-400"
+                            }`}
+                          >
+                            {transaction.type === "income" ? "+" : "-"}
+                            {formatCurrency(
+                              Math.abs(parseFloat(transaction.amount)),
+                            )}
+                          </span>
                         </td>
 
-                        <td className="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="text-right">
-                            <span
-                              className={`font-bold text-sm sm:text-base ${
-                                transaction.ignoreType &&
-                                transaction.ignoreType !== "none"
-                                  ? "text-gray-400 dark:text-gray-500"
-                                  : transaction.type === "income"
-                                    ? "text-green-600 dark:text-green-400"
-                                    : "text-red-600 dark:text-red-400"
-                              }`}
-                            >
-                              {transaction.type === "income" ? "+" : "-"}
-                              {formatCurrency(
-                                Math.abs(parseFloat(transaction.amount)),
-                              )}
-                            </span>
-                          </div>
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
                           {isEditing ? (
                             <div className="flex space-x-2">
                               <Button
@@ -2155,17 +2085,17 @@ export default function TransactionsTable({
                 {paginatedTransactions.length > 0 &&
                   (() => {
                     const totals = calculatePageTotals();
-                    return (
-                      <tfoot className="bg-muted/30 border-t-2 border-border">
-                        <tr className="font-semibold">
-                          <td
-                            colSpan={7}
-                            className="px-2 sm:px-6 py-3 text-right text-sm"
-                          >
-                            Page Summary:
-                          </td>
-                          <td className="px-2 sm:px-6 py-3 text-right">
-                            <div className="space-y-1">
+                      return (
+                        <tfoot className="bg-muted/30 border-t-2 border-border">
+                          <tr className="font-semibold">
+                            <td
+                              colSpan={4}
+                              className="px-2 sm:px-4 py-3 text-right text-sm"
+                            >
+                              Page Summary:
+                            </td>
+                            <td className="px-2 sm:px-4 py-3 text-right">
+                              <div className="space-y-1">
                               <div className="text-green-600 text-xs">
                                 Income: +{formatCurrency(totals.income)}
                               </div>
@@ -2179,12 +2109,12 @@ export default function TransactionsTable({
                                 {formatCurrency(Math.abs(totals.net))}
                               </div>
                             </div>
-                          </td>
-                          <td className="px-2 sm:px-6 py-3"></td>
-                        </tr>
-                      </tfoot>
-                    );
-                  })()}
+                            </td>
+                            <td className="px-2 sm:px-4 py-3"></td>
+                          </tr>
+                        </tfoot>
+                      );
+                    })()}
               </table>
             </div>
           </>

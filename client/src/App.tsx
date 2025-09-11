@@ -27,6 +27,7 @@ import HealthPage from "@/pages/health";
 import SpendingPage from "@/pages/spending";
 import EarningsPage from "@/pages/earnings";
 import SpendingCategoriesPage from "@/pages/spending-categories";
+import SpendingPageMock from "@/pages/spending-page";
 import { AccountsPage } from "@/pages/accounts";
 import AssetsLiabilities from "@/pages/assets-liabilities";
 import WealthManagement from "@/pages/wealth-management";
@@ -110,6 +111,7 @@ function Router() {
             <Route path="/spending" component={SpendingPage} />
             <Route path="/earnings" component={EarningsPage} />
             <Route path="/spending-categories" component={SpendingCategoriesPage} />
+            <Route path="/spending-demo" component={SpendingPageMock} />
             <Route path="/budgets/setup" component={BudgetSetup} />
             <Route path="/budgets" component={BudgetsIndex} />
             <Route path="/budget-plan" component={BudgetPlanPage} />

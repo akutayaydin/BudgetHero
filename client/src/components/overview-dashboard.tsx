@@ -652,14 +652,14 @@ export default function OverviewDashboard() {
               }
               subtitle="Monthly spending overview"
               action={
-                <Link href="/spending">
+                <Link href="/spending-demo">
                   <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
                     View Spending
                   </button>
                 </Link>
               }
               menuAction={
-                <Link href="/spending" className="text-xs">
+                <Link href="/spending-demo" className="text-xs">
                   View Spending
                 </Link>
               }
