@@ -1054,8 +1054,10 @@ export default function OverviewDashboard() {
       <header className="sticky top-0 z-40 bg-background/70 backdrop-blur border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-end">
           <div className="flex items-center gap-2 text-sm">
-            <ThemeToggle />
-            <Button variant="ghost" size="icon" className="relative">
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
+            <Button variant="ghost" size="icon" className="relative hidden md:inline-flex">
               <Bell className="h-5 w-5" />
             </Button>
             {layoutChanged && (
