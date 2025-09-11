@@ -27,7 +27,6 @@ import {
   Save,
   X,
   Trash2,
-  Building2,
   Upload,
   Filter,
   ChevronDown,
@@ -41,6 +40,7 @@ import {
   ArrowUpDown,
   ChevronLeft,
   EllipsisVertical,
+  Plus,
 } from "lucide-react";
 //import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { TransactionRecurringBadge } from "./transaction-recurring-badge";
@@ -85,12 +85,14 @@ interface TransactionsTableProps {
   limit?: number;
   showFilters?: boolean;
   filterByCategory?: string; // New prop to filter by specific category
+  onAddTransaction?: () => void;
 }
 
 export default function TransactionsTable({
   limit,
   showFilters = false,
   filterByCategory,
+  onAddTransaction,
 }: TransactionsTableProps) {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -691,7 +693,6 @@ export default function TransactionsTable({
         "Category",
         "Amount",
         "Type",
-        "Account",
       ],
       ...filteredTransactions.map((t: Transaction) => [
         formatDate(new Date(t.date)),
@@ -700,16 +701,6 @@ export default function TransactionsTable({
         formatCSVField(t.category),
         formatCSVField(`${t.type === "income" ? "+" : "-"}$${t.amount}`),
         formatCSVField(t.type),
-        formatCSVField(
-          (() => {
-            const account = Array.isArray(accounts)
-              ? accounts.find((acc: any) => acc.id === t.accountId)
-              : null;
-            return account
-              ? account.name || account.officialName || "Account"
-              : "Manual";
-          })(),
-        ),
       ]),
     ]
       .map((row) => row.join(","))
@@ -974,9 +965,20 @@ export default function TransactionsTable({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Recent Transactions</CardTitle>
-          {showFilters && (
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Search Button */}
+          <div className="flex flex-wrap items-center gap-3">
+            {onAddTransaction && (
+              <Button
+                onClick={onAddTransaction}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-2 shadow-lg"
+                data-testid="button-add-transaction"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Transaction
+              </Button>
+            )}
+            {showFilters && (
+              <>
+                {/* Search Button */}
               <Dialog
                 open={showSearchDialog}
                 onOpenChange={setShowSearchDialog}
@@ -1178,8 +1180,9 @@ export default function TransactionsTable({
                 <Download className="w-4 h-4" />
                 Export All ({filteredTransactions.length})
               </Button>
-            </div>
-          )}
+            </>
+            )}
+          </div>
         </div>
 
         {/* Search Results Display */}
@@ -1883,11 +1886,7 @@ export default function TransactionsTable({
                       </button>
                     </th>
 
-                    <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-20 sm:w-auto hidden md:table-cell">
-                      Account
-                    </th>
-
-                    {/* Sparkline Column Header */}
+                      {/* Sparkline Column Header */}
                     <th className="px-2 sm:px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-24 hidden sm:table-cell">
                       Trend
                     </th>
@@ -2066,49 +2065,6 @@ export default function TransactionsTable({
                               />
                             </button>
                           )}
-                        </td>
-                        <td className="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden md:table-cell">
-                          <div className="flex items-center gap-2">
-                            <Building2 className="h-4 w-4 text-muted-foreground" />
-                            <div className="min-w-0">
-                              <div
-                                className="text-xs sm:text-sm font-medium text-foreground"
-                                data-testid={`account-name-${transaction.id}`}
-                              >
-                                {(() => {
-                                  const account = Array.isArray(accounts)
-                                    ? accounts.find(
-                                        (acc: any) =>
-                                          acc.id === transaction.accountId,
-                                      )
-                                    : null;
-                                  return account
-                                    ? account.name ||
-                                        account.officialName ||
-                                        "Account"
-                                    : "Manual";
-                                })()}
-                              </div>
-                              <div
-                                className="text-xs text-muted-foreground"
-                                data-testid={`account-institution-${transaction.id}`}
-                              >
-                                {(() => {
-                                  const account = Array.isArray(accounts)
-                                    ? accounts.find(
-                                        (acc: any) =>
-                                          acc.id === transaction.accountId,
-                                      )
-                                    : null;
-                                  return account
-                                    ? account.institutionName ||
-                                        transaction.source ||
-                                        "Bank"
-                                    : transaction.source || "Manual";
-                                })()}
-                              </div>
-                            </div>
-                          </div>
                         </td>
                         {/* Sparkline Column - Desktop only */}
                         <td className="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-center hidden sm:table-cell">

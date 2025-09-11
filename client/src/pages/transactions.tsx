@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { List, Upload, Plus } from "lucide-react";
+import { Upload } from "lucide-react";
 import TransactionsTable from "@/components/transactions-table";
 import { ManualTransactionDialog } from "@/components/manual-transaction-dialog";
 import { useQuery } from "@tanstack/react-query";
@@ -35,25 +33,10 @@ export default function TransactionsPage() {
           </div>
         )}
 
-        <Card>
-          <CardHeader className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <List className="h-5 w-5" />
-              Transaction History
-            </CardTitle>
-            <Button
-              onClick={() => setShowAddTransaction(true)}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-2 shadow-lg"
-              data-testid="button-add-transaction"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Transaction
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <TransactionsTable showFilters={true} />
-          </CardContent>
-        </Card>
+        <TransactionsTable
+          showFilters={true}
+          onAddTransaction={() => setShowAddTransaction(true)}
+        />
 
         {/* Manual Transaction Dialog */}
         <ManualTransactionDialog
