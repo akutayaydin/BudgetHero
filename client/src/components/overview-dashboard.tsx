@@ -976,8 +976,8 @@ export default function OverviewDashboard() {
                   <p className="text-sm text-muted-foreground">
                     You have {upcomingBills.length} recurring charge{upcomingBills.length !== 1 ? 's' : ''} due within the next {maxDays} day{maxDays !== 1 ? 's' : ''} for {formatCurrency(totalAmount)}.
                   </p>
-                  <div className="p-2 border rounded-xl inline-block">
-                    <div className="grid grid-cols-7 gap-1 text-center text-xs">
+                  <div className="p-2 border rounded-xl w-full">
+                    <div className="grid grid-cols-7 gap-1 text-center text-xs w-full">
                       {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
                         <div key={d} className="font-medium text-muted-foreground">
                           {d}
@@ -991,7 +991,7 @@ export default function OverviewDashboard() {
                           <div key={idx} className="flex justify-center">
                             <div
                               className={cn(
-                                'w-8 h-8 flex items-center justify-center rounded-full',
+                                'flex items-center justify-center rounded-full w-full aspect-square',
                                 isPast
                                   ? 'text-muted-foreground opacity-50'
                                   : isToday && hasBills
