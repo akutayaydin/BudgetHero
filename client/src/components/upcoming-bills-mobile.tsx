@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, DollarSign } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
+import { getClearbitLogoUrl } from "@/lib/merchant-logo";
 
 interface RecurringTransaction {
   id: string;
@@ -111,9 +112,9 @@ export function UpcomingBillsMobile() {
             {upcomingBills.map((bill) => (
             <div key={bill.id} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 text-center">
               <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-1 overflow-hidden bg-gray-100 dark:bg-gray-700">
-                {bill.merchantLogo ? (
-                  <img 
-                    src={bill.merchantLogo} 
+                {bill.merchantLogo || getClearbitLogoUrl(bill.name) ? (
+                  <img
+                    src={bill.merchantLogo || getClearbitLogoUrl(bill.name)}
                     alt={`${bill.name} logo`}
                     className="w-7 h-7 object-contain"
                     onError={(e) => {
@@ -124,7 +125,7 @@ export function UpcomingBillsMobile() {
                     }}
                   />
                 ) : null}
-                <div className={`w-8 h-8 ${bill.color} rounded-full flex items-center justify-center ${bill.merchantLogo ? 'hidden' : ''}`}>
+                <div className={`w-8 h-8 ${bill.color} rounded-full flex items-center justify-center ${(bill.merchantLogo || getClearbitLogoUrl(bill.name)) ? 'hidden' : ''}`}>
                   <span className="text-white text-xs font-bold">
                     {bill.name.charAt(0)}
                   </span>
