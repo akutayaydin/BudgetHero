@@ -47,7 +47,7 @@ import { getClearbitLogoUrl } from "@/lib/merchant-logo";
 
 // --- Basic UI primitives using theme variables ---
 const Card = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
-  <div className={cn("rounded-2xl border border-border bg-card text-card-foreground shadow-sm", className)}>
+  <div className={cn("w-full rounded-2xl border border-border bg-card text-card-foreground shadow-sm", className)}>
     {children}
   </div>
 );
@@ -61,12 +61,12 @@ const CardHeader = ({
   subtitle?: React.ReactNode;
   action?: React.ReactNode;
 }) => (
-  <div className="flex items-center justify-between p-4 border-b border-border">
+  <div className="flex flex-col gap-2 p-4 border-b border-border sm:flex-row sm:items-center sm:justify-between">
     <div>
       <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">{title}</h3>
       {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
     </div>
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       {action}
       <GripVertical className="w-4 h-4 text-muted-foreground cursor-move" />
     </div>
@@ -731,7 +731,7 @@ export default function OverviewDashboard() {
               }
             />
             <CardBody>
-              <div className="grid grid-cols-3 gap-3 text-sm">
+              <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
                 <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
                   <div className="text-xs text-emerald-700">Left to Spend</div>
                   <div className="text-xl font-extrabold">$563</div>
@@ -771,8 +771,8 @@ export default function OverviewDashboard() {
               }
             />
             <CardBody>
-              <div className="grid grid-cols-3 gap-3 text-sm">
-                <div className="col-span-2">
+              <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
+                <div className="sm:col-span-2">
                   <LineSkeleton />
                 </div>
                 <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-100">
@@ -873,7 +873,7 @@ export default function OverviewDashboard() {
               }
             />
             <CardBody>
-              <div className="grid grid-cols-3 gap-3 text-center">
+              <div className="grid grid-cols-1 gap-3 text-center sm:grid-cols-3">
                 <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
                   <div className="text-xs text-emerald-700">Income</div>
                   <div className="text-lg font-bold">$4,500</div>
