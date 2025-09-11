@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Home,
   List,
@@ -231,6 +232,14 @@ export default function ModernSidebar({
             <HeroShieldLogo size="sm" showText={true} showTagline={false} />
           </Link>
           <div className="flex items-center gap-2">
+            <Link
+              href="/notifications"
+              onClick={() => setIsMobileMenuOpen?.(false)}
+            >
+              <Button variant="ghost" size="icon">
+                <Bell className="h-4 w-4" />
+              </Button>
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -325,15 +334,16 @@ export default function ModernSidebar({
         </nav>
       </CardBody>
 
-      {/* Footer with logout */}
-      <div className="p-4 border-t border-border">
+      {/* Footer with logout and theme toggle */}
+      <div className="p-4 border-t border-border flex items-center justify-between">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-lg transition-colors w-full text-left"
+          className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-lg transition-colors"
         >
           <LogOut className="w-4 h-4" />
           <span>Sign Out</span>
         </button>
+        <ThemeToggle />
       </div>
     </Card>
   );

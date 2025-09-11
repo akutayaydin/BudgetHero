@@ -13,26 +13,39 @@ import {
   Home,
   List,
   ChartPie,
-  Bell,
   GripVertical,
   ArrowRight,
   Plus,
   RefreshCw,
   Loader2,
   Save,
+  MoreHorizontal,
+  X,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { AccountsPanel } from "@/components/accounts-panel";
 import QuickCategoryTracker from "@/components/quick-category-tracker";
 import { PinBudgetButton } from "@/components/pin-budget-button";
 import { cn } from "@/lib/utils";
-import { NetWorthGraph, SpendingGraph } from "@/components/dashboard-graphs";
+import { NetWorthGraph, SpendingGraph, Period } from "@/components/dashboard-graphs";
 import AccountsCard from "@/components/accounts-card";
 import WidgetDrawer from "@/components/widget-drawer";
 import { Link } from "wouter";
@@ -46,8 +59,25 @@ import { MerchantLogo } from "./merchant-logo";
 import { getClearbitLogoUrl } from "@/lib/merchant-logo";
 
 // --- Basic UI primitives using theme variables ---
-const Card = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
-  <div className={cn("w-full rounded-2xl border border-border bg-card text-card-foreground shadow-sm", className)}>
+const Card = ({
+  children,
+  className = "",
+  onRemove,
+}: React.PropsWithChildren<{ className?: string; onRemove?: () => void }>) => (
+  <div
+    className={cn(
+      "relative w-full rounded-2xl border border-border bg-card text-card-foreground shadow-sm",
+      className,
+    )}
+  >
+    {onRemove && (
+      <button
+        onClick={onRemove}
+        className="absolute -top-2 -right-2 text-muted-foreground hover:text-foreground"
+      >
+        <X className="w-4 h-4" />
+      </button>
+    )}
     {children}
   </div>
 );
@@ -56,19 +86,42 @@ const CardHeader = ({
   title,
   subtitle,
   action,
+  mobileAction,
+  menuAction,
+  showMenu = true,
 }: {
   title: React.ReactNode;
   subtitle?: React.ReactNode;
   action?: React.ReactNode;
+  mobileAction?: React.ReactNode;
+  menuAction?: React.ReactNode;
+  showMenu?: boolean;
 }) => (
-  <div className="flex flex-col gap-2 p-4 border-b border-border sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">{title}</h3>
-      {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
+  <div className="flex items-start justify-between p-4 border-b border-border">
+    <div className="flex items-start gap-2">
+      <GripVertical className="w-4 h-4 text-muted-foreground cursor-move mt-1" />
+      <div>
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">{title}</h3>
+        {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
+      </div>
     </div>
-    <div className="flex flex-wrap items-center gap-2">
-      {action}
-      <GripVertical className="w-4 h-4 text-muted-foreground cursor-move" />
+    <div className="flex items-center gap-2">
+      {mobileAction && <div className="md:hidden">{mobileAction}</div>}
+      <div className="hidden md:flex flex-wrap items-center gap-2">{action}</div>
+      {showMenu && (menuAction ?? action) && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <MoreHorizontal className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {React.Children.map((menuAction ?? action) as any, (child, index) => (
+              <DropdownMenuItem asChild key={index}>{child}</DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   </div>
 );
@@ -226,6 +279,7 @@ export default function OverviewDashboard() {
     queryKey: ["/api/net-worth"],
   });
 
+  const [netWorthPeriod, setNetWorthPeriod] = useState<Period>("1M");
 
   const { data: transactionsData = [] } = useQuery<TransactionData[]>({
     queryKey: ["/api/transactions"],
@@ -523,7 +577,7 @@ export default function OverviewDashboard() {
       : "Never synced";
 
     return (
-      <Card>
+      <Card onRemove={onRemove}>
         <CardHeader
           title={
             <span className="flex items-center gap-2">
@@ -532,7 +586,7 @@ export default function OverviewDashboard() {
           }
           subtitle={lastSyncedLoading ? "Syncing..." : lastSyncedText}
           action={
-            <div className="flex gap-1">
+            <>
               <PlaidLink
                 onSuccess={handlePlaidSuccess}
                 className="text-xs px-2 py-1 rounded-md border border-border flex items-center"
@@ -552,13 +606,30 @@ export default function OverviewDashboard() {
                 )}
                 Sync Now
               </button>
-              <button
-                onClick={onRemove}
-                className="text-xs px-2 py-1 rounded-md border border-border"
-              >
-                Remove
-              </button>
-            </div>
+            </>
+          }
+          mobileAction={
+            <PlaidLink
+              onSuccess={handlePlaidSuccess}
+              className="text-xs px-2 py-1 rounded-md border border-border flex items-center"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Account
+            </PlaidLink>
+          }
+          menuAction={
+            <button
+              onClick={handleSync}
+              disabled={syncMutation.isPending}
+              className="text-xs px-2 py-1 rounded-md border border-border flex items-center"
+            >
+              {syncMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-1" />
+              )}
+              Sync Now
+            </button>
           }
         />
         <CardBody>
@@ -572,7 +643,7 @@ export default function OverviewDashboard() {
     switch (id) {
       case "spending":
         return (
-          <Card>
+          <Card onRemove={() => removeCard("spending")}> 
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -581,19 +652,11 @@ export default function OverviewDashboard() {
               }
               subtitle="Monthly spending overview"
               action={
-                <>
-                  <Link href="/spending">
-                    <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
-                      View Spending
-                    </button>
-                  </Link>
-                  <button
-                    onClick={() => removeCard("spending")}
-                    className="text-xs px-2 py-1 rounded-md border border-border"
-                  >
-                    Remove
+                <Link href="/spending">
+                  <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
+                    View Spending
                   </button>
-                </>
+                </Link>
               }
             />
             <CardBody className="pt-2">
@@ -603,7 +666,7 @@ export default function OverviewDashboard() {
         );
       case "netWorth":
         return (
-          <Card>
+          <Card onRemove={() => removeCard("netWorth")}> 
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -612,23 +675,38 @@ export default function OverviewDashboard() {
               }
               subtitle="Net worth over time"
               action={
+                <Link href="/wealth-management">
+                  <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
+                    View Net Worth
+                  </button>
+                </Link>
+              }
+              mobileAction={
                 <>
                   <Link href="/wealth-management">
                     <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
                       View Net Worth
                     </button>
                   </Link>
-                  <button
-                    onClick={() => removeCard("netWorth")}
-                    className="text-xs px-2 py-1 rounded-md border border-border"
+                  <Select
+                    value={netWorthPeriod}
+                    onValueChange={(v) => setNetWorthPeriod(v as Period)}
                   >
-                    Remove
-                  </button>
+                    <SelectTrigger className="h-7 px-2 w-20 text-xs">
+                      <SelectValue placeholder={netWorthPeriod} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1M">1M</SelectItem>
+                      <SelectItem value="3M">3M</SelectItem>
+                      <SelectItem value="6M">6M</SelectItem>
+                      <SelectItem value="1Y">1Y</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </>
               }
             />
             <CardBody className="pt-2">
-              <NetWorthGraph />
+              <NetWorthGraph period={netWorthPeriod} onPeriodChange={setNetWorthPeriod} />
             </CardBody>
           </Card>
         );
@@ -654,7 +732,7 @@ export default function OverviewDashboard() {
         };
 
         return (
-          <Card>
+          <Card onRemove={() => removeCard("transactions")}> 
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -663,15 +741,7 @@ export default function OverviewDashboard() {
               }
               subtitle="Latest 6 transactions"
               action={
-                <div className="flex gap-1">
-                  <button className="text-xs px-2 py-1 rounded-md border border-border">See all</button>
-                  <button
-                    onClick={() => removeCard("transactions")}
-                    className="text-xs px-2 py-1 rounded-md border border-border"
-                  >
-                    Remove
-                  </button>
-                </div>
+                <button className="text-xs px-2 py-1 rounded-md border border-border">See all</button>
               }
             />
             <CardBody>
@@ -710,7 +780,7 @@ export default function OverviewDashboard() {
         );
       case "budgets":
         return (
-          <Card>
+          <Card onRemove={() => removeCard("budgets")}> 
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -719,15 +789,7 @@ export default function OverviewDashboard() {
               }
               subtitle="This month"
               action={
-                <div className="flex gap-1">
-                  <button className="text-xs px-2 py-1 rounded-md border border-border">Manage</button>
-                  <button
-                    onClick={() => removeCard("budgets")}
-                    className="text-xs px-2 py-1 rounded-md border border-border"
-                  >
-                    Remove
-                  </button>
-                </div>
+                <button className="text-xs px-2 py-1 rounded-md border border-border">Manage</button>
               }
             />
             <CardBody>
@@ -750,7 +812,7 @@ export default function OverviewDashboard() {
         );
       case "cashflow":
         return (
-          <Card>
+          <Card onRemove={() => removeCard("cashflow")}> 
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -759,15 +821,7 @@ export default function OverviewDashboard() {
               }
               subtitle="30‑day projection"
               action={
-                <div className="flex gap-1">
-                  <button className="text-xs px-2 py-1 rounded-md border border-border">Calendar</button>
-                  <button
-                    onClick={() => removeCard("cashflow")}
-                    className="text-xs px-2 py-1 rounded-md border border-border"
-                  >
-                    Remove
-                  </button>
-                </div>
+                <button className="text-xs px-2 py-1 rounded-md border border-border">Calendar</button>
               }
             />
             <CardBody>
@@ -786,7 +840,7 @@ export default function OverviewDashboard() {
         );
       case "tracker":
         return (
-          <Card>
+          <Card onRemove={() => removeCard("tracker")}> 
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -795,16 +849,7 @@ export default function OverviewDashboard() {
               }
               subtitle="Track your spending by category"
               action={
-                <div className="flex gap-1">
-                  <PinBudgetButton className="text-xs px-2 py-1 rounded-md border border-border" />
-                  <button
-                    onClick={() => removeCard("tracker")}
-                    className="text-xs px-2 py-1 rounded-md border border-border"
-                    data-testid="button-remove-tracker"
-                  >
-                    Remove
-                  </button>
-                </div>
+                <PinBudgetButton className="text-xs px-2 py-1 rounded-md border border-border" />
               }
             />
             <CardBody>
@@ -814,7 +859,7 @@ export default function OverviewDashboard() {
         );
       case "goals":
         return (
-          <Card>
+          <Card onRemove={() => removeCard("goals")}> 
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -822,14 +867,6 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="Emergency • Vacation • Debt"
-              action={
-                <button
-                  onClick={() => removeCard("goals")}
-                  className="text-xs px-2 py-1 rounded-md border border-border"
-                >
-                  Remove
-                </button>
-              }
             />
             <CardBody>
               <div className="space-y-2 text-sm">
@@ -855,7 +892,7 @@ export default function OverviewDashboard() {
         return <AccountsSummaryCard onRemove={() => removeCard("accounts")} />;
       case "netIncome":
         return (
-          <Card>
+          <Card onRemove={() => removeCard("netIncome")}> 
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -863,14 +900,6 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="Income – Expenses = Net"
-              action={
-                <button
-                  onClick={() => removeCard("netIncome")}
-                  className="text-xs px-2 py-1 rounded-md border border-border"
-                >
-                  Remove
-                </button>
-              }
             />
             <CardBody>
               <div className="grid grid-cols-1 gap-3 text-center sm:grid-cols-3">
@@ -892,7 +921,7 @@ export default function OverviewDashboard() {
         );
       case "insights":
         return (
-          <Card>
+          <Card onRemove={() => removeCard("insights")}> 
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -900,14 +929,6 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="Nudges • Anomalies • Tips"
-              action={
-                <button
-                  onClick={() => removeCard("insights")}
-                  className="text-xs px-2 py-1 rounded-md border border-border"
-                >
-                  Remove
-                </button>
-              }
             />
             <CardBody>
               <ul className="space-y-2 text-sm">
@@ -954,20 +975,12 @@ export default function OverviewDashboard() {
         });
 
         return (
-          <Card>
+          <Card onRemove={() => removeCard("bills")}> 
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />Coming Up
                 </span>
-              }
-              action={
-                <button
-                  onClick={() => removeCard("bills")}
-                  className="text-xs px-2 py-1 rounded-md border border-border"
-                >
-                  Remove
-                </button>
               }
             />
             <CardBody className="space-y-4">
@@ -1067,12 +1080,6 @@ export default function OverviewDashboard() {
       <header className="sticky top-0 z-40 bg-background/70 backdrop-blur border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-end">
           <div className="flex items-center gap-2 text-sm">
-            <div className="hidden md:block">
-              <ThemeToggle />
-            </div>
-            <Button variant="ghost" size="icon" className="relative hidden md:inline-flex">
-              <Bell className="h-5 w-5" />
-            </Button>
             {layoutChanged && (
               <Button
                 onClick={handleSaveLayout}

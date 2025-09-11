@@ -23,7 +23,7 @@ import {
   Legend,
 } from "recharts";
 
-type Period = "1M" | "3M" | "6M" | "1Y";
+export type Period = "1M" | "3M" | "6M" | "1Y";
 
 interface NetWorthData {
   totalAssets: number;
@@ -349,13 +349,13 @@ export function DashboardGraphs() {
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-1">
               {(["1M", "3M", "6M", "1Y"] as const).map((p) => (
                 <Button
                   key={p}
                   variant="ghost"
                   size="sm"
-                  onClick={() => setNetWorthPeriod(p)}
+                  onClick={() => onPeriodChange(p)}
                   className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                     netWorthPeriod === p
                       ? "bg-purple-600 hover:bg-purple-700 text-white shadow-sm"
@@ -408,19 +408,10 @@ export function DashboardGraphs() {
 
                     if (value === undefined) return null;
 
-                    // 🗓️ Reconstruct date from `day` field
-                    const now = new Date();
-                    const reconstructedDate = new Date(
-                      now.getFullYear(),
-                      now.getMonth(),
-                      dataPoint.label,
-                    );
-
-                    // Format as "Aug 10"
                     const formattedDate = new Date(
                       dataPoint.date,
                     ).toLocaleDateString("en-US", {
-                      month: "short",
+                      month: "long",
                       day: "numeric",
                     });
 
@@ -429,14 +420,9 @@ export function DashboardGraphs() {
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                           {formattedDate}
                         </p>
-                        <div className="flex justify-between">
-                          <span className="text-xs text-gray-500 dark:text-gray-300">
-                            Net Worth
-                          </span>
-                          <span className="text-xs font-medium text-gray-900 dark:text-white ">
-                            {formatFullCurrency(value)}
-                          </span>
-                        </div>
+                        <p className="text-xs font-medium text-gray-900 dark:text-white">
+                          Net Worth {formatFullCurrency(value)}
+                        </p>
                       </div>
                     );
                   }
@@ -629,8 +615,14 @@ export function DashboardGraphs() {
 }
 
 // Export individual chart components for use as drag-and-drop widgets
-export function NetWorthGraph() {
-  const [netWorthPeriod, setNetWorthPeriod] = useState<Period>("1M");
+export function NetWorthGraph({
+  period,
+  onPeriodChange,
+}: {
+  period: Period;
+  onPeriodChange: (p: Period) => void;
+}) {
+  const netWorthPeriod = period;
 
   const { data: netWorthSummary } = useQuery<NetWorthData>({
     queryKey: ["/api/net-worth"],
@@ -758,18 +750,13 @@ export function NetWorthGraph() {
                     const value = payload[0].value;
                     if (!data?.isValidData) return null;
                     return (
-                      <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-                        <div className="space-y-1">
-                          <span className="text-xs text-gray-500 dark:text-gray-300">
-                            {formatTooltipDate(data)}
-                          </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-300">
-                            Net Worth
-                          </span>
-                          <span className="text-xs font-medium text-gray-900 dark:text-white ">
-                            {formatFullCurrency(value)}
-                          </span>
-                        </div>
+                      <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 min-w-[140px]">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                          {formatTooltipDate(data)}
+                        </p>
+                        <p className="text-xs font-medium text-gray-900 dark:text-white">
+                          Net Worth {formatFullCurrency(value)}
+                        </p>
                       </div>
                     );
                   }
