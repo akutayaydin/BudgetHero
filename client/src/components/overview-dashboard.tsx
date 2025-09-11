@@ -43,6 +43,7 @@ import { useSyncAccounts } from "@/hooks/useSyncAccounts";
 import { formatDistanceToNow } from "date-fns";
 import { formatCurrency } from "@/lib/financial-utils";
 import { MerchantLogo } from "./merchant-logo";
+import { getClearbitLogoUrl } from "@/lib/merchant-logo";
 
 // --- Basic UI primitives using theme variables ---
 const Card = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
@@ -975,50 +976,62 @@ export default function OverviewDashboard() {
                   <p className="text-sm text-muted-foreground">
                     You have {upcomingBills.length} recurring charge{upcomingBills.length !== 1 ? 's' : ''} due within the next {maxDays} day{maxDays !== 1 ? 's' : ''} for {formatCurrency(totalAmount)}.
                   </p>
-                  <div className="grid grid-cols-7 gap-1 text-center text-xs">
-                    {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
-                      <div key={d} className="font-medium text-muted-foreground">{d}</div>
-                    ))}
-                    {calendarDays.map(({ date, billsForDay }, idx) => {
-                      const isToday = date.getTime() === today.getTime();
-                      const hasBills = billsForDay.length > 0;
-                      return (
-                        <div key={idx} className="flex justify-center">
-                          <div
-                            className={cn(
-                              'w-8 h-8 flex items-center justify-center rounded-full',
-                              isToday && hasBills
-                                ? 'bg-blue-600 text-white'
-                                : isToday
-                                ? 'border border-blue-600 text-blue-600'
-                                : hasBills
-                                ? 'bg-blue-100 text-blue-600'
-                                : 'text-muted-foreground'
-                            )}
-                          >
-                            {date.getDate()}
-                          </div>
+                  <div className="p-2 border rounded-xl inline-block">
+                    <div className="grid grid-cols-7 gap-1 text-center text-xs">
+                      {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
+                        <div key={d} className="font-medium text-muted-foreground">
+                          {d}
                         </div>
-                      );
-                    })}
+                      ))}
+                      {calendarDays.map(({ date, billsForDay }, idx) => {
+                        const isToday = date.getTime() === today.getTime();
+                        const hasBills = billsForDay.length > 0;
+                        const isPast = date.getTime() < today.getTime();
+                        return (
+                          <div key={idx} className="flex justify-center">
+                            <div
+                              className={cn(
+                                'w-8 h-8 flex items-center justify-center rounded-full',
+                                isPast
+                                  ? 'text-muted-foreground opacity-50'
+                                  : isToday && hasBills
+                                  ? 'bg-blue-600 text-white'
+                                  : isToday
+                                  ? 'border border-blue-600 text-blue-600'
+                                  : hasBills
+                                  ? 'bg-blue-100 text-blue-600'
+                                  : 'text-muted-foreground'
+                              )}
+                            >
+                              {date.getDate()}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                   <div className="text-sm divide-y">
-                  
+
                     {upcomingBills.map(bill => (
                       <div key={bill.id} className="flex items-center justify-between py-2">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-                            {bill.merchantLogo ? (
+                            {bill.merchantLogo || getClearbitLogoUrl(bill.name) ? (
                               <img
-                                src={bill.merchantLogo}
+                                src={bill.merchantLogo || getClearbitLogoUrl(bill.name)}
                                 alt={`${bill.name} logo`}
                                 className="w-8 h-8 object-contain"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  const nextSibling = target.nextElementSibling as HTMLElement;
+                                  if (nextSibling) nextSibling.style.display = 'flex';
+                                }}
                               />
-                            ) : (
-                              <span className="text-xs font-semibold">
-                                {bill.name.charAt(0).toUpperCase()}
-                              </span>
-                            )}
+                            ) : null}
+                            <span className={cn('text-xs font-semibold', (bill.merchantLogo || getClearbitLogoUrl(bill.name)) && 'hidden')}>
+                              {bill.name.charAt(0).toUpperCase()}
+                            </span>
                           </div>
                           <div className="min-w-0">
                             <div className="font-medium truncate">{bill.name}</div>
