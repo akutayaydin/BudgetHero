@@ -11,6 +11,7 @@ import {
   XCircle,
   CheckCircle2,
 } from "lucide-react";
+import IncomeExpenseBarChart from "@/components/charts/income-expense-bar-chart";
 
 interface CardProps {
   className?: string;
@@ -374,6 +375,9 @@ export default function SpendingPage() {
             <Card>
               <CardHeader title="Categories" subtitle="Percent of spend · vs last month" />
               <CardBody className="p-0">
+                <div className="p-4">
+                  <IncomeExpenseBarChart />
+                </div>
                 <div className="divide-y divide-gray-100 dark:divide-zinc-800">
                   {sampleCategories.map((c, idx) => {
                     const pal =
