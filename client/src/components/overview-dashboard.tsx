@@ -73,7 +73,7 @@ const Card = ({
     {onRemove && (
       <button
         onClick={onRemove}
-        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gray-700 text-white hover:bg-gray-600 flex items-center justify-center"
+        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gray-300 text-white hover:bg-gray-200 flex items-center justify-center"
       >
         <X className="w-3 h-3" />
       </button>
