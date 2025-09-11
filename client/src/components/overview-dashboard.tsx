@@ -1058,7 +1058,6 @@ export default function OverviewDashboard() {
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
             </Button>
-            {user?.name && <span className="px-2">{user.name}</span>}
             {layoutChanged && (
               <Button
                 onClick={handleSaveLayout}
