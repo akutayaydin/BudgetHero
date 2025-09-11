@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, DollarSign, TrendingUp, Building2 } from "lucide-react";
+import { Calendar, TrendingUp, Building2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { formatCurrency } from "@/lib/financial-utils";
+import { getClearbitLogoUrl, getMerchantInitials } from "@/lib/merchant-logo";
+import { cn } from "@/lib/utils";
 
 interface RecurringTransaction {
   id: string;
@@ -65,6 +67,43 @@ function getCategoryColor(category: string): string {
   return 'bg-gray-500';
 }
 
+const MerchantLogo = ({
+  merchant,
+  size = 48,
+  fallbackColor = "bg-gray-100 dark:bg-gray-800",
+}: {
+  merchant?: string | null;
+  size?: number;
+  fallbackColor?: string;
+}) => {
+  const [error, setError] = useState(false);
+  const logoUrl = merchant ? getClearbitLogoUrl(merchant) : "";
+  const initials = merchant ? getMerchantInitials(merchant) : "";
+
+  return (
+    <div
+      className={cn(
+        "rounded-full flex items-center justify-center overflow-hidden",
+        fallbackColor
+      )}
+      style={{ width: size, height: size }}
+    >
+      {!error && logoUrl ? (
+        <img
+          src={logoUrl}
+          alt={`${merchant} logo`}
+          className="object-contain w-full h-full"
+          onError={() => setError(true)}
+        />
+      ) : (
+        <span className="text-xs font-bold text-gray-600 dark:text-gray-300">
+          {initials || "?"}
+        </span>
+      )}
+    </div>
+  );
+};
+
 export function UpcomingBillsDesktop() {
   const [selectedBill, setSelectedBill] = useState<UpcomingBill | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -75,19 +114,19 @@ export function UpcomingBillsDesktop() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Calculate upcoming bills for next 7 days
+  const today = useMemo(() => new Date(), []);
+
+  // Calculate upcoming bills for next 14 days
   const upcomingBills: UpcomingBill[] = recurringTransactions
     .filter(item => {
       if (!item.nextDueDate || item.excludeFromBills) return false;
       const dueDate = new Date(item.nextDueDate);
-      const today = new Date();
-      const nextWeek = new Date();
-      nextWeek.setDate(today.getDate() + 7);
-      return dueDate >= today && dueDate <= nextWeek;
+      const nextTwoWeeks = new Date(today);
+      nextTwoWeeks.setDate(today.getDate() + 14);
+      return dueDate >= today && dueDate <= nextTwoWeeks;
     })
     .map(item => {
       const dueDate = new Date(item.nextDueDate!);
-      const today = new Date();
       const diffTime = dueDate.getTime() - today.getTime();
       const daysUntilDue = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
@@ -110,6 +149,27 @@ export function UpcomingBillsDesktop() {
     })
     .sort((a, b) => a.daysUntilDue - b.daysUntilDue)
     .slice(0, 4); // Show max 4 bills
+
+  const calendarDays = useMemo(() => {
+    const days: Date[] = [];
+    for (let i = -7; i < 7; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      days.push(d);
+    }
+    return days;
+  }, [today]);
+
+  const billsByDate = useMemo(() => {
+    const map: Record<string, UpcomingBill[]> = {};
+    upcomingBills.forEach((bill) => {
+      if (bill.nextDueDate) {
+        const key = bill.nextDueDate.split("T")[0];
+        map[key] = map[key] ? [...map[key], bill] : [bill];
+      }
+    });
+    return map;
+  }, [upcomingBills]);
 
   const handleBillClick = (bill: UpcomingBill) => {
     setSelectedBill(bill);
@@ -174,6 +234,30 @@ export function UpcomingBillsDesktop() {
         </CardTitle>
       </CardHeader>
       <CardContent className="border-t border-border pt-6 space-y-4">
+        <div className="grid grid-cols-7 gap-1 mb-4">
+          {calendarDays.map((day) => {
+            const key = day.toISOString().split("T")[0];
+            const isPast = day < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const isToday = key === today.toISOString().split("T")[0];
+            const hasBill = billsByDate[key];
+            return (
+              <div
+                key={key}
+                className={cn(
+                  "flex flex-col items-center justify-center h-12 rounded border text-xs",
+                  isPast
+                    ? "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500"
+                    : "bg-white dark:bg-gray-700", 
+                  isToday && "border-blue-500",
+                  hasBill && !isPast && "bg-blue-50 dark:bg-blue-900/20"
+                )}
+              >
+                {day.getDate()}
+                {hasBill && <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1" />}
+              </div>
+            );
+          })}
+        </div>
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
             <div className="text-gray-500 dark:text-gray-400">Loading bills...</div>
@@ -186,29 +270,14 @@ export function UpcomingBillsDesktop() {
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {upcomingBills.map((bill) => (
-            <div 
-              key={bill.id} 
+            <div
+              key={bill.id}
               onClick={() => handleBillClick(bill)}
               className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/70"
               data-testid={`upcoming-bill-${bill.id}`}
             >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 overflow-hidden bg-gray-100 dark:bg-gray-700">
-                {bill.merchantLogo ? (
-                  <img 
-                    src={bill.merchantLogo} 
-                    alt={`${bill.name} logo`}
-                    className="w-10 h-10 object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      const nextSibling = target.nextElementSibling as HTMLElement;
-                      if (nextSibling) nextSibling.style.display = 'flex';
-                    }}
-                  />
-                ) : null}
-                <div className={`w-12 h-12 ${bill.color} rounded-full flex items-center justify-center ${bill.merchantLogo ? 'hidden' : ''}`}>
-                  <DollarSign className="w-6 h-6 text-white" />
-                </div>
+              <div className="mx-auto mb-3">
+                <MerchantLogo merchant={bill.name} size={48} fallbackColor={bill.color} />
               </div>
               <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-1">
                 {bill.name}
@@ -236,29 +305,7 @@ export function UpcomingBillsDesktop() {
           <DialogHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {selectedBill?.merchantLogo ? (
-                  <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center overflow-hidden">
-                    <img 
-                      src={selectedBill.merchantLogo} 
-                      alt={`${selectedBill.name} logo`}
-                      className="w-10 h-10 object-contain"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const parent = target.parentElement;
-                        if (parent) {
-                          parent.innerHTML = `<div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center"><span class="text-white font-bold text-lg">${selectedBill?.name?.charAt(0) || 'B'}</span></div>`;
-                        }
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">
-                      {selectedBill?.name?.charAt(0) || 'B'}
-                    </span>
-                  </div>
-                )}
+                <MerchantLogo merchant={selectedBill?.name} size={48} fallbackColor="bg-green-500" />
                 <div>
                   <DialogTitle className="text-lg font-semibold">
                     {selectedBill?.name}
