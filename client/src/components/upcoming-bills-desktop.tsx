@@ -26,7 +26,6 @@ interface RecurringTransaction {
   amountVariance: number;
   dayOfMonth?: number;
   excludeFromBills?: boolean;
-  merchantLogo?: string;
   linkedTransactionIds?: string[];
 }
 
@@ -37,7 +36,6 @@ interface UpcomingBill {
   daysUntilDue: number;
   category: string;
   color: string;
-  merchantLogo?: string;
   frequency?: string;
   nextDueDate?: string;
   lastTransactionDate?: string;
@@ -100,7 +98,6 @@ export function UpcomingBillsDesktop() {
         daysUntilDue,
         category: item.category,
         color: getCategoryColor(item.category),
-        merchantLogo: item.merchantLogo,
         frequency: item.frequency,
         nextDueDate: item.nextDueDate,
         lastTransactionDate: item.lastTransactionDate,
