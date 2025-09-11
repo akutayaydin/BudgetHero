@@ -5,13 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 
 import { SubscriptionBanner } from "@/components/subscription-banner";
 import { DashboardGraphs } from "@/components/dashboard-graphs";
-import { AccountsSection } from "@/components/accounts-section";
-import { SavingsInvestmentsSection } from "@/components/savings-investments-section";
 import { CompleteSetupSection } from "@/components/complete-setup-section";
-import { UpcomingBillsWidget } from "@/components/upcoming-bills-widget";
-import { RecentTransactionsSection } from "@/components/recent-transactions-section";
-import { BudgetSection } from "@/components/budget-section";
-import { SmartRecommendations } from "@/components/smart-recommendations";
 import OverviewDashboard from "@/components/overview-dashboard";
 
 export default function Dashboard() {
@@ -28,35 +22,8 @@ export default function Dashboard() {
         <SubscriptionBanner />
         <OverviewDashboard />
 
-        {/* === Two independent columns (no sticky, no sidebar scroll) === */}
-        <div className="xl:flex xl:items-start xl:gap-6">
-          {/* LEFT column: graphs + recent transactions (won't move when Accounts expands) */}
-          <div className="flex-1 min-w-0 space-y-6">
-            <DashboardGraphs />
-            <RecentTransactionsSection />
-          </div>
-
-          {/* RIGHT column: accounts + other right-side widgets */}
-          <div className="w-full xl:w-[380px] shrink-0 mt-6 xl:mt-0 space-y-6">
-            <AccountsSection />
-
-            {/* Example: Category Review / any other right-side card */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-sm text-muted-foreground mb-3">
-                  <UpcomingBillsWidget />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Rest of the page */}
-        <SavingsInvestmentsSection />
+        <DashboardGraphs />
         <CompleteSetupSection />
-
-        <BudgetSection />
-        <SmartRecommendations />
 
         {accounts.length === 0 && (
           <Card className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border border-green-200 dark:border-green-700">
