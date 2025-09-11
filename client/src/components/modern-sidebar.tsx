@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -185,8 +184,6 @@ export default function ModernSidebar({
   setIsMobileMenuOpen,
 }: ModernSidebarProps) {
   const [location] = useLocation();
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
-
   // Fetch current user data
   const { data: user } = useQuery<{
     id: string;
@@ -223,7 +220,7 @@ export default function ModernSidebar({
 
   const SidebarContent = () => (
     <Card className="h-full flex flex-col">
-      {/* Header with logo and theme toggle */}
+        {/* Header with logo and settings menu */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
           <Link
@@ -234,14 +231,13 @@ export default function ModernSidebar({
             <HeroShieldLogo size="sm" showText={true} showTagline={false} />
           </Link>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <DropdownMenu open={showMoreMenu} onOpenChange={setShowMoreMenu}>
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <Settings className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="right" align="end" className="w-56">
+              <DropdownMenuContent align="end" side="bottom" className="w-56">
                 {moreNavigation.map((item) => (
                   <DropdownMenuItem key={item.name} asChild>
                     <Link href={item.href} onClick={() => setIsMobileMenuOpen?.(false)}>

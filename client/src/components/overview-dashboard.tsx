@@ -15,12 +15,12 @@ import {
   ChartPie,
   Settings,
   Bell,
-  MoreHorizontal,
   GripVertical,
   ArrowRight,
   Plus,
   RefreshCw,
   Loader2,
+  Save,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -1069,26 +1069,33 @@ export default function OverviewDashboard() {
             {layoutChanged && (
               <Button
                 onClick={handleSaveLayout}
-                variant="outline"
+                variant="default"
                 size="sm"
                 disabled={saveLayoutMutation.isPending}
-                className="text-xs"
+                className="gap-2"
               >
-                {saveLayoutMutation.isPending ? "Saving..." : "Save Layout"}
+                {saveLayoutMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Save Layout
+                  </>
+                )}
               </Button>
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-5 w-5" />
+                  <Settings className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" side="bottom">
                 <DropdownMenuItem>Personal</DropdownMenuItem>
                 <DropdownMenuItem>Household</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSaveLayout}>
-                  Save Layout ({deviceType})
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
