@@ -1,29 +1,8 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AvatarSelection } from "@/components/avatar-selection";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { 
-  Menu,
-  User,
-  Settings,
-  LogOut,
-  TrendingUp,
-  Bell,
-  ChevronDown,
-  Sparkles,
-  Shield
-} from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { HeroShieldLogo } from "./hero-shield-logo";
 
 interface MobileTopNavProps {
@@ -42,22 +21,7 @@ export default function MobileTopNav({ onMenuClick, showMenuButton = true }: Mob
     queryKey: ["/api/auth/user"],
   });
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
-      
-      if (response.ok) {
-        window.location.href = '/';
-      } else {
-        console.error('Logout failed');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
+  
 
   const getUserInitials = () => {
     if (user?.name) {
@@ -87,20 +51,8 @@ export default function MobileTopNav({ onMenuClick, showMenuButton = true }: Mob
         <HeroShieldLogo size="sm" showText={true} showTagline={false} />
       </div>
 
-      {/* Right side - User profile and notifications */}
-      <div className="flex items-center space-x-3">
-        {/* Theme Toggle */}
-        <ThemeToggle />
-        
-        {/* Notifications */}
-        <Button variant="ghost" size="sm" className="p-2 relative">
-          <Bell className="h-5 w-5 text-muted-foreground" />
-          <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-red-500 text-white">
-            2
-          </Badge>
-        </Button>
-
-        {/* User Profile Avatar Selector */}
+      {/* Right side - User profile */}
+      <div className="flex items-center">
         {user ? (
           <AvatarSelection
             currentAvatar={user.avatar}
@@ -116,40 +68,7 @@ export default function MobileTopNav({ onMenuClick, showMenuButton = true }: Mob
           </Avatar>
         )}
 
-        {/* Settings Menu */}
-        {user && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="p-2">
-                <Settings className="h-5 w-5 text-muted-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={() => window.location.href = '/profile'}>
-                <User className="mr-2 h-4 w-4" />
-                <div>
-                  <p className="font-medium">{user.name || 'Profile'}</p>
-                  <p className="text-xs text-muted-foreground">View and edit profile</p>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => window.location.href = '/settings'}>
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => window.location.href = '/api/switch-account'} className="text-blue-600">
-                <User className="mr-2 h-4 w-4" />
-                Switch Account
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        
       </div>
     </div>
   );
