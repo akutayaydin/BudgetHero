@@ -99,7 +99,7 @@ const navigation = [
   },
   {
     name: "Spending",
-    href: "/spending-demo",
+    href: "/spending",
     icon: ChartPie,
   },
   {
