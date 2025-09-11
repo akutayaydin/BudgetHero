@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Home,
   List,
@@ -16,22 +16,14 @@ import {
   Goal,
   Sparkles,
   Settings,
-  RefreshCw,
   LogOut,
   Building,
-  TrendingUp,
   Bell,
   User,
   Tag,
   CreditCard,
   Upload,
   Shield,
-  DollarSign,
-  PieChart,
-  Zap,
-  MoreHorizontal,
-  Menu,
-  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -193,8 +185,6 @@ export default function ModernSidebar({
   setIsMobileMenuOpen,
 }: ModernSidebarProps) {
   const [location] = useLocation();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   // Fetch current user data
@@ -202,11 +192,16 @@ export default function ModernSidebar({
     id: string;
     email: string;
     name?: string;
+    firstName?: string;
+    lastName?: string;
     avatar?: string;
     isAdmin?: boolean;
+    isPremium?: boolean;
   }>({
     queryKey: ["/api/auth/user"],
   });
+  const firstName =
+    user?.firstName || user?.name?.split(" ")[0] || user?.email?.split("@")[0];
 
   const handleLogout = async () => {
     try {
@@ -225,32 +220,6 @@ export default function ModernSidebar({
     }
   };
 
-  // Quick action handlers
-  const syncAllMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/accounts/sync-all", {
-        method: "POST",
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to sync accounts");
-      return response.json();
-    },
-    onSuccess: (data) => {
-      toast({
-        title: "Accounts Synced",
-        description: `Updated ${data.syncedAccounts} accounts with latest transactions.`,
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/accounts"] });
-    },
-    onError: () => {
-      toast({
-        title: "Sync Failed",
-        description: "Unable to sync accounts. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
 
   const SidebarContent = () => (
     <Card className="h-full flex flex-col">
@@ -266,9 +235,37 @@ export default function ModernSidebar({
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-4 w-4" />
-            </Button>
+            <DropdownMenu open={showMoreMenu} onOpenChange={setShowMoreMenu}>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="right" align="end" className="w-56">
+                {moreNavigation.map((item) => (
+                  <DropdownMenuItem key={item.name} asChild>
+                    <Link href={item.href} onClick={() => setIsMobileMenuOpen?.(false)}>
+                      <item.icon className="w-4 h-4 mr-2" />
+                      {item.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+
+                {user?.isAdmin && (
+                  <>
+                    <div className="h-px bg-border my-1" />
+                    {adminNavigation.map((item) => (
+                      <DropdownMenuItem key={item.name} asChild>
+                        <Link href={item.href} onClick={() => setIsMobileMenuOpen?.(false)}>
+                          <item.icon className="w-4 h-4 mr-2" />
+                          {item.name}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -289,14 +286,21 @@ export default function ModernSidebar({
                   : "U"}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0">
-              <Link
-                href="/settings"
-                className="text-sm font-medium text-foreground truncate hover:opacity-75 transition-opacity cursor-pointer block"
-                onClick={() => setIsMobileMenuOpen?.(false)}
-              >
-                {user.name || "Profile"}
-              </Link>
+            <div className="flex flex-col flex-1 min-w-0">
+              <div className="text-sm font-medium text-foreground truncate">
+                Hi, {firstName}! 👋
+              </div>
+              {user.isPremium ? (
+                <Badge variant="secondary" className="mt-1 w-fit">Premium</Badge>
+              ) : (
+                <Link
+                  href="/subscription/plans"
+                  className="text-xs text-primary hover:underline mt-1"
+                  onClick={() => setIsMobileMenuOpen?.(false)}
+                >
+                  Go Premium
+                </Link>
+              )}
             </div>
           </div>
         )}
@@ -322,66 +326,11 @@ export default function ModernSidebar({
               />
             );
           })}
-
-          {/* More menu with dropdown */}
-          <div className="pt-2 border-t border-border mt-2">
-            <DropdownMenu open={showMoreMenu} onOpenChange={setShowMoreMenu}>
-              <DropdownMenuTrigger asChild>
-                <div>
-                  <MenuItem
-                    icon={Settings}
-                    label="More ▾"
-                    onClick={() => setShowMoreMenu(!showMoreMenu)}
-                  />
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="right" align="start" className="w-56">
-                {moreNavigation.map((item) => (
-                  <DropdownMenuItem key={item.name} asChild>
-                    <Link href={item.href} onClick={() => setIsMobileMenuOpen?.(false)}>
-                      <item.icon className="w-4 h-4 mr-2" />
-                      {item.name}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-                
-                {user?.isAdmin && (
-                  <>
-                    <div className="h-px bg-border my-1" />
-                    {adminNavigation.map((item) => (
-                      <DropdownMenuItem key={item.name} asChild>
-                        <Link href={item.href} onClick={() => setIsMobileMenuOpen?.(false)}>
-                          <item.icon className="w-4 h-4 mr-2" />
-                          {item.name}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
         </nav>
       </CardBody>
 
-      {/* Footer with quick actions and logout */}
-      <div className="p-4 border-t border-border space-y-2">
-        <button
-          onClick={() => syncAllMutation.mutate()}
-          disabled={syncAllMutation.isPending}
-          className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors w-full text-left disabled:opacity-50"
-        >
-          <RefreshCw
-            className={cn(
-              "w-4 h-4",
-              syncAllMutation.isPending && "animate-spin",
-            )}
-          />
-          <span>
-            {syncAllMutation.isPending ? "Syncing..." : "Sync All Accounts"}
-          </span>
-        </button>
-
+      {/* Footer with logout */}
+      <div className="p-4 border-t border-border">
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-lg transition-colors w-full text-left"

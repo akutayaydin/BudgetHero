@@ -1059,29 +1059,24 @@ export default function OverviewDashboard() {
     <div className="min-h-screen bg-gradient-to-b from-background to-background text-foreground">
       {/* Top bar */}
       <header className="sticky top-0 z-40 bg-background/70 backdrop-blur border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-primary grid place-items-center text-primary-foreground font-bold">BH</div>
-            <div>
-              <div className="font-semibold tracking-tight">BudgetHero</div>
-              <div className="text-xs text-muted-foreground">Level Up Your Money</div>
-            </div>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-end">
           <div className="flex items-center gap-2 text-sm">
             <ThemeToggle />
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
             </Button>
             {user?.name && <span className="px-2">{user.name}</span>}
-            <Button
-              onClick={handleSaveLayout}
-              variant="outline"
-              size="sm"
-              disabled={saveLayoutMutation.isPending || !layoutChanged}
-              className="text-xs"
-            >
-              {saveLayoutMutation.isPending ? "Saving..." : "Save Layout"}
-            </Button>
+            {layoutChanged && (
+              <Button
+                onClick={handleSaveLayout}
+                variant="outline"
+                size="sm"
+                disabled={saveLayoutMutation.isPending}
+                className="text-xs"
+              >
+                {saveLayoutMutation.isPending ? "Saving..." : "Save Layout"}
+              </Button>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
