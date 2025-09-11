@@ -615,13 +615,7 @@ export function DashboardGraphs() {
 }
 
 // Export individual chart components for use as drag-and-drop widgets
-export function NetWorthGraph({
-  period,
-  onPeriodChange,
-}: {
-  period: Period;
-  onPeriodChange: (p: Period) => void;
-}) {
+export function NetWorthGraph({ period }: { period: Period }) {
   const netWorthPeriod = period;
 
   const { data: netWorthSummary } = useQuery<NetWorthData>({
@@ -690,24 +684,6 @@ export function NetWorthGraph({
                         : "last year"}
                 </span>
               </div>
-            </div>
-
-            <div className="flex items-center gap-1">
-              {(["1M", "3M", "6M", "1Y"] as const).map((p) => (
-                <Button
-                  key={p}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setNetWorthPeriod(p)}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                    netWorthPeriod === p
-                      ? "bg-purple-600 hover:bg-purple-700 text-white shadow-sm"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  {p}
-                </Button>
-              ))}
             </div>
           </div>
         </div>

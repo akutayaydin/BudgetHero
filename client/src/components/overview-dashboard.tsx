@@ -21,6 +21,7 @@ import {
   Save,
   MoreHorizontal,
   X,
+  Timer,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -39,7 +40,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { AccountsPanel } from "@/components/accounts-panel";
 import QuickCategoryTracker from "@/components/quick-category-tracker";
@@ -682,31 +682,30 @@ export default function OverviewDashboard() {
                 </Link>
               }
               mobileAction={
-                <>
-                  <Link href="/wealth-management">
-                    <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
-                      View Net Worth
-                    </button>
-                  </Link>
-                  <Select
-                    value={netWorthPeriod}
-                    onValueChange={(v) => setNetWorthPeriod(v as Period)}
-                  >
-                    <SelectTrigger className="h-7 px-2 w-20 text-xs">
-                      <SelectValue placeholder={netWorthPeriod} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1M">1M</SelectItem>
-                      <SelectItem value="3M">3M</SelectItem>
-                      <SelectItem value="6M">6M</SelectItem>
-                      <SelectItem value="1Y">1Y</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </>
+                <Select
+                  value={netWorthPeriod}
+                  onValueChange={(v) => setNetWorthPeriod(v as Period)}
+                >
+                  <SelectTrigger className="h-7 px-2 text-xs w-auto flex items-center gap-1">
+                    <Timer className="w-3 h-3" />
+                    <span className="whitespace-nowrap">Range: {netWorthPeriod}</span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1M">1M</SelectItem>
+                    <SelectItem value="3M">3M</SelectItem>
+                    <SelectItem value="6M">6M</SelectItem>
+                    <SelectItem value="1Y">1Y</SelectItem>
+                  </SelectContent>
+                </Select>
+              }
+              menuAction={
+                <Link href="/wealth-management" className="text-xs">
+                  View Net Worth
+                </Link>
               }
             />
             <CardBody className="pt-2">
-              <NetWorthGraph period={netWorthPeriod} onPeriodChange={setNetWorthPeriod} />
+              <NetWorthGraph period={netWorthPeriod} />
             </CardBody>
           </Card>
         );
