@@ -923,7 +923,7 @@ export default function TransactionsTable({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
+          <CardTitle>Transactions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -944,7 +944,7 @@ export default function TransactionsTable({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
+          <CardTitle>Transactions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-12">
@@ -963,21 +963,20 @@ export default function TransactionsTable({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Recent Transactions</CardTitle>
-          <div className="flex flex-wrap items-center gap-3">
-            {onAddTransaction && (
-              <Button
-                onClick={onAddTransaction}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-2 shadow-lg"
-                data-testid="button-add-transaction"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Transaction
-              </Button>
-            )}
-            {showFilters && (
-              <>
+        <div className="flex flex-wrap items-center gap-3">
+          <CardTitle>Transactions</CardTitle>
+          {onAddTransaction && (
+            <Button
+              onClick={onAddTransaction}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-2 shadow-lg"
+              data-testid="button-add-transaction"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Transaction
+            </Button>
+          )}
+          {showFilters && (
+            <>
                 {/* Search Button */}
               <Dialog
                 open={showSearchDialog}
@@ -1158,31 +1157,16 @@ export default function TransactionsTable({
                 </div>
               )}
 
-              <Button
-                variant="outline"
-                onClick={() => handleBulkDelete(true)}
-                disabled={
-                  bulkDeleteMutation.isPending ||
-                  !Array.isArray(transactions) ||
-                  transactions.length === 0
-                }
-                className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                {bulkDeleteMutation.isPending ? "Deleting..." : "Delete All"}
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={handleExport}
-                className="gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Export All ({filteredTransactions.length})
-              </Button>
             </>
             )}
-          </div>
+          <Button
+            variant="outline"
+            onClick={handleExport}
+            className="gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Export All
+          </Button>
         </div>
 
         {/* Search Results Display */}
