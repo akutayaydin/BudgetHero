@@ -621,12 +621,12 @@ export default function OverviewDashboard() {
             <button
               onClick={handleSync}
               disabled={syncMutation.isPending}
-              className="text-xs px-2 py-1 rounded-md border border-border flex items-center"
+              className="text-xs flex items-center gap-1"
             >
               {syncMutation.isPending ? (
-                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <RefreshCw className="h-4 w-4 mr-1" />
+                <RefreshCw className="h-4 w-4" />
               )}
               Sync Now
             </button>
@@ -643,7 +643,7 @@ export default function OverviewDashboard() {
     switch (id) {
       case "spending":
         return (
-          <Card onRemove={() => removeCard("spending")}> 
+          <Card onRemove={() => removeCard("spending")}>
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -658,6 +658,11 @@ export default function OverviewDashboard() {
                   </button>
                 </Link>
               }
+              menuAction={
+                <Link href="/spending" className="text-xs">
+                  View Spending
+                </Link>
+              }
             />
             <CardBody className="pt-2">
               <SpendingGraph />
@@ -665,8 +670,25 @@ export default function OverviewDashboard() {
           </Card>
         );
       case "netWorth":
+        const netWorthRangeSelect = (
+          <Select
+            value={netWorthPeriod}
+            onValueChange={(v) => setNetWorthPeriod(v as Period)}
+          >
+            <SelectTrigger className="h-7 px-2 text-xs w-auto flex items-center gap-1">
+              <Timer className="w-3 h-3" />
+              <span className="whitespace-nowrap">Range: {netWorthPeriod}</span>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1M">1M</SelectItem>
+              <SelectItem value="3M">3M</SelectItem>
+              <SelectItem value="6M">6M</SelectItem>
+              <SelectItem value="1Y">1Y</SelectItem>
+            </SelectContent>
+          </Select>
+        );
         return (
-          <Card onRemove={() => removeCard("netWorth")}> 
+          <Card onRemove={() => removeCard("netWorth")}>
             <CardHeader
               title={
                 <span className="flex items-center gap-2">
@@ -674,30 +696,8 @@ export default function OverviewDashboard() {
                 </span>
               }
               subtitle="Net worth over time"
-              action={
-                <Link href="/wealth-management">
-                  <button className="text-xs px-2 py-1 rounded-md border border-border flex items-center">
-                    View Net Worth
-                  </button>
-                </Link>
-              }
-              mobileAction={
-                <Select
-                  value={netWorthPeriod}
-                  onValueChange={(v) => setNetWorthPeriod(v as Period)}
-                >
-                  <SelectTrigger className="h-7 px-2 text-xs w-auto flex items-center gap-1">
-                    <Timer className="w-3 h-3" />
-                    <span className="whitespace-nowrap">Range: {netWorthPeriod}</span>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1M">1M</SelectItem>
-                    <SelectItem value="3M">3M</SelectItem>
-                    <SelectItem value="6M">6M</SelectItem>
-                    <SelectItem value="1Y">1Y</SelectItem>
-                  </SelectContent>
-                </Select>
-              }
+              action={netWorthRangeSelect}
+              mobileAction={netWorthRangeSelect}
               menuAction={
                 <Link href="/wealth-management" className="text-xs">
                   View Net Worth
@@ -741,6 +741,11 @@ export default function OverviewDashboard() {
               subtitle="Latest 6 transactions"
               action={
                 <button className="text-xs px-2 py-1 rounded-md border border-border">See all</button>
+              }
+              menuAction={
+                <Link href="/transactions" className="text-xs">
+                  See all
+                </Link>
               }
             />
             <CardBody>
@@ -789,6 +794,11 @@ export default function OverviewDashboard() {
               subtitle="This month"
               action={
                 <button className="text-xs px-2 py-1 rounded-md border border-border">Manage</button>
+              }
+              menuAction={
+                <Link href="/budgets" className="text-xs">
+                  Manage
+                </Link>
               }
             />
             <CardBody>
@@ -850,6 +860,7 @@ export default function OverviewDashboard() {
               action={
                 <PinBudgetButton className="text-xs px-2 py-1 rounded-md border border-border" />
               }
+              menuAction={<PinBudgetButton className="text-xs" />}
             />
             <CardBody>
               <QuickCategoryTracker onRemove={() => removeCard("tracker")} />
