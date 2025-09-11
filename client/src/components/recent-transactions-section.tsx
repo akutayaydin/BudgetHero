@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Receipt, ArrowRight, Calendar, CreditCard } from "lucide-react";
 import { Link } from "wouter";
 import { formatCurrency } from "@/lib/financial-utils";
+import { MerchantLogo } from "./merchant-logo";
 
 interface Transaction {
   id: string;
@@ -57,48 +57,6 @@ export function RecentTransactionsSection() {
       'Income': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     };
     return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
-  };
-
-  const MerchantLogo = ({ merchant, size = 8 }: { merchant?: string | null; size?: number }) => {
-    const [imageError, setImageError] = useState(false);
-    
-    // Handle null/empty merchant names with generic icon
-    if (!merchant || merchant.trim() === '') {
-      return (
-        <div className={`w-${size} h-${size} bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center`}>
-          <Receipt className="w-4 h-4 text-gray-500" />
-        </div>
-      );
-    }
-    
-    const cleanMerchant = merchant.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const logoUrl = `https://logo.clearbit.com/${cleanMerchant}.com`;
-    
-    // Generate fallback initials and color for valid merchant names
-    const initials = merchant.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
-    const colors = [
-      'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-pink-500', 
-      'bg-indigo-500', 'bg-yellow-500', 'bg-red-500', 'bg-teal-500'
-    ];
-    const colorIndex = merchant.length % colors.length;
-    const bgColor = colors[colorIndex];
-    
-    if (imageError) {
-      return (
-        <div className={`w-${size} h-${size} ${bgColor} rounded-full flex items-center justify-center text-white text-xs font-semibold`}>
-          {initials}
-        </div>
-      );
-    }
-    
-    return (
-      <img
-        src={logoUrl}
-        alt={`${merchant} logo`}
-        className={`w-${size} h-${size} rounded-full object-cover border border-gray-200`}
-        onError={() => setImageError(true)}
-      />
-    );
   };
 
   return (

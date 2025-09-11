@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar, TrendingUp, Building2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { formatCurrency } from "@/lib/financial-utils";
-import { getClearbitLogoUrl, getMerchantInitials } from "@/lib/merchant-logo";
 import { cn } from "@/lib/utils";
+import { MerchantLogo } from "./merchant-logo";
 
 interface RecurringTransaction {
   id: string;
@@ -66,43 +66,6 @@ function getCategoryColor(category: string): string {
   }
   return 'bg-gray-500';
 }
-
-const MerchantLogo = ({
-  merchant,
-  size = 48,
-  fallbackColor = "bg-gray-100 dark:bg-gray-800",
-}: {
-  merchant?: string | null;
-  size?: number;
-  fallbackColor?: string;
-}) => {
-  const [error, setError] = useState(false);
-  const logoUrl = merchant ? getClearbitLogoUrl(merchant) : "";
-  const initials = merchant ? getMerchantInitials(merchant) : "";
-
-  return (
-    <div
-      className={cn(
-        "rounded-full flex items-center justify-center overflow-hidden",
-        fallbackColor
-      )}
-      style={{ width: size, height: size }}
-    >
-      {!error && logoUrl ? (
-        <img
-          src={logoUrl}
-          alt={`${merchant} logo`}
-          className="object-contain w-full h-full"
-          onError={() => setError(true)}
-        />
-      ) : (
-        <span className="text-xs font-bold text-gray-600 dark:text-gray-300">
-          {initials || "?"}
-        </span>
-      )}
-    </div>
-  );
-};
 
 export function UpcomingBillsDesktop() {
   const [selectedBill, setSelectedBill] = useState<UpcomingBill | null>(null);
@@ -277,7 +240,7 @@ export function UpcomingBillsDesktop() {
               data-testid={`upcoming-bill-${bill.id}`}
             >
               <div className="mx-auto mb-3">
-                <MerchantLogo merchant={bill.name} size={48} fallbackColor={bill.color} />
+                <MerchantLogo merchant={bill.name} size={12} fallbackColor={bill.color} showBorder={false} />
               </div>
               <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-1">
                 {bill.name}
@@ -305,7 +268,7 @@ export function UpcomingBillsDesktop() {
           <DialogHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <MerchantLogo merchant={selectedBill?.name} size={48} fallbackColor="bg-green-500" />
+                <MerchantLogo merchant={selectedBill?.name} size={12} fallbackColor="bg-green-500" showBorder={false} />
                 <div>
                   <DialogTitle className="text-lg font-semibold">
                     {selectedBill?.name}

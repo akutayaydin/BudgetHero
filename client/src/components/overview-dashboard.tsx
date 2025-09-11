@@ -13,7 +13,6 @@ import {
   Home,
   List,
   ChartPie,
-  Receipt,
   Settings,
   Bell,
   MoreHorizontal,
@@ -50,7 +49,7 @@ import { useLastSynced } from "@/hooks/useLastSynced";
 import { useSyncAccounts } from "@/hooks/useSyncAccounts";
 import { formatDistanceToNow } from "date-fns";
 import { formatCurrency } from "@/lib/financial-utils";
-import { getClearbitLogoUrl, getMerchantInitials } from "@/lib/merchant-logo";
+import { MerchantLogo } from "./merchant-logo";
 
 // --- Basic UI primitives using theme variables ---
 const Card = ({ children, className = "" }: React.PropsWithChildren<{ className?: string }>) => (
@@ -355,52 +354,6 @@ export default function OverviewDashboard() {
     netIncome: "Net Income",
     insights: "AI Insights",
     bills: "Upcoming Bills",
-  };
-
-  const MerchantLogo = ({ merchant, size = 7 }: { merchant?: string | null; size?: number }) => {
-    const [imageError, setImageError] = useState(false);
-
-    if (!merchant || merchant.trim() === "") {
-      return (
-        <div className={`w-${size} h-${size} bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center`}>
-          <Receipt className="w-3 h-3 text-gray-500" />
-        </div>
-      );
-    }
-
-    const logoUrl = getClearbitLogoUrl(merchant);
-    const initials = getMerchantInitials(merchant);
-    const colors = [
-      "bg-blue-500",
-      "bg-green-500",
-      "bg-purple-500",
-      "bg-pink-500",
-      "bg-indigo-500",
-      "bg-yellow-500",
-      "bg-red-500",
-      "bg-teal-500",
-    ];
-    const colorIndex = merchant.length % colors.length;
-    const bgColor = colors[colorIndex];
-
-    if (imageError) {
-      return (
-        <div
-          className={`w-${size} h-${size} ${bgColor} rounded-full flex items-center justify-center text-white text-xs font-semibold`}
-        >
-          {initials}
-        </div>
-      );
-    }
-
-    return (
-      <img
-        src={logoUrl}
-        alt={`${merchant} logo`}
-        className={`w-${size} h-${size} rounded-full object-cover border border-gray-200`}
-        onError={() => setImageError(true)}
-      />
-    );
   };
 
   // Device-specific default layouts
