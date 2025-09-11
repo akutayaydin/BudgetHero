@@ -13,7 +13,6 @@ import {
   Home,
   List,
   ChartPie,
-  Settings,
   Bell,
   GripVertical,
   ArrowRight,
@@ -32,12 +31,6 @@ import { Progress } from "@/components/ui/progress";
 import { AccountsPanel } from "@/components/accounts-panel";
 import QuickCategoryTracker from "@/components/quick-category-tracker";
 import { PinBudgetButton } from "@/components/pin-budget-button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { NetWorthGraph, SpendingGraph } from "@/components/dashboard-graphs";
 import AccountsCard from "@/components/accounts-card";
@@ -1087,17 +1080,6 @@ export default function OverviewDashboard() {
                 )}
               </Button>
             )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Settings className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" side="bottom">
-                <DropdownMenuItem>Personal</DropdownMenuItem>
-                <DropdownMenuItem>Household</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </div>
       </header>
