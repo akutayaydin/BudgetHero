@@ -1,695 +1,577 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { TrendingDown, TrendingUp, PieChart, BarChart3, Calendar, ArrowLeft, DollarSign, CreditCard, ChevronDown, Repeat, ShoppingBag, AlertCircle } from "lucide-react";
-import { Link, useLocation } from "wouter";
-import { ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import React, { useMemo, useState } from "react";
+import {
+  MoreHorizontal,
+  Calendar as CalendarIcon,
+  PieChart,
+  BarChart2,
+  TrendingUp,
+  TrendingDown,
+  AlertCircle,
+  BadgeDollarSign,
+  XCircle,
+  CheckCircle2,
+} from "lucide-react";
 
-interface Transaction {
-  id: string;
-  date: string;
-  description: string;
-  amount: string;
-  category: string;
-  type: string;
-  merchant?: string;
+interface CardProps {
+  className?: string;
+  children: React.ReactNode;
 }
+const Card: React.FC<CardProps> = ({ className = "", children }) => (
+  <div className={`rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-zinc-900 shadow-sm ${className}`}>
+    {children}
+  </div>
+);
 
-interface SpendingData {
-  category: string;
+interface CardHeaderProps {
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+  action?: React.ReactNode;
+}
+const CardHeader: React.FC<CardHeaderProps> = ({ title, subtitle, action }) => (
+  <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-zinc-800">
+    <div>
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-zinc-100 flex items-center gap-2">{title}</h3>
+      {subtitle && <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">{subtitle}</p>}
+    </div>
+    {action}
+  </div>
+);
+
+interface CardBodyProps {
+  className?: string;
+  children: React.ReactNode;
+}
+const CardBody: React.FC<CardBodyProps> = ({ className = "", children }) => (
+  <div className={`p-4 ${className}`}>{children}</div>
+);
+
+interface TagProps {
+  children: React.ReactNode;
+}
+const Tag: React.FC<TagProps> = ({ children }) => (
+  <span className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-200">{children}</span>
+);
+
+interface SmallStatProps {
+  label: string;
+  value: React.ReactNode;
+  tone?: "neutral" | "up" | "down";
+}
+const SmallStat: React.FC<SmallStatProps> = ({ label, value, tone = "neutral" }) => (
+  <div className="flex items-center justify-between text-sm py-1">
+    <span className="text-gray-500 dark:text-zinc-400">{label}</span>
+    <span
+      className={
+        tone === "up"
+          ? "text-emerald-600"
+          : tone === "down"
+          ? "text-rose-600"
+          : "text-gray-900 dark:text-zinc-100"
+      }
+    >
+      {value}
+    </span>
+  </div>
+);
+
+// ---------- Demo data ----------
+const categoryPalette: { key: string; color: string; icon: string }[] = [
+  { key: "Bills & Utilities", color: "#3B82F6", icon: "💡" },
+  { key: "Shopping", color: "#F59E0B", icon: "🛍️" },
+  { key: "Groceries", color: "#10B981", icon: "🛒" },
+  { key: "Auto & Transport", color: "#8B5CF6", icon: "🚗" },
+  { key: "Dining", color: "#EF4444", icon: "🍽️" },
+  { key: "Personal Care", color: "#14B8A6", icon: "🧴" },
+  { key: "Software & Tech", color: "#06B6D4", icon: "💾" },
+  { key: "Uncategorized", color: "#9CA3AF", icon: "❓" },
+];
+
+interface Category {
+  name: string;
   amount: number;
-  color: string;
-  percentage: number;
+  lastMonth: number;
 }
 
-export default function SpendingPage() {
-  const [activeTab, setActiveTab] = useState<'week' | 'month' | 'year'>('month');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [, setLocation] = useLocation();
-  
-  const { data: transactions } = useQuery<Transaction[]>({
-    queryKey: ["/api/transactions"],
+const sampleCategories: Category[] = [
+  { name: "Bills & Utilities", amount: 1325.64, lastMonth: 1203.11 },
+  { name: "Shopping", amount: 960.03, lastMonth: 1020.9 },
+  { name: "Groceries", amount: 446.23, lastMonth: 430.11 },
+  { name: "Auto & Transport", amount: 328.56, lastMonth: 210.38 },
+  { name: "Dining", amount: 287.31, lastMonth: 300.2 },
+  { name: "Software & Tech", amount: 240.7, lastMonth: 199.99 },
+  { name: "Personal Care", amount: 200, lastMonth: 185.5 },
+  { name: "Uncategorized", amount: 226.36, lastMonth: 50.0 },
+];
+
+interface Merchant {
+  name: string;
+  domain: string;
+  count: number;
+  avg: number;
+  amount: number;
+}
+
+const merchants: Merchant[] = [
+  { name: "Tesla Supercharging", domain: "tesla.com", count: 11, avg: 18.7, amount: 288.38 },
+  { name: "Trader Joe's", domain: "traderjoes.com", count: 5, avg: 45.9, amount: 275.0 },
+  { name: "Target", domain: "target.com", count: 3, avg: 63.5, amount: 151.6 },
+];
+
+// ---------- Helpers ----------
+function formatUSD(n: number): string {
+  return n.toLocaleString(undefined, {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
   });
+}
 
-  // Enhanced category emoji mapping for Gen Alpha visual appeal
-  const getCategoryEmoji = (category: string) => {
-    const emojiMap: Record<string, string> = {
-      'Dining': '🍽️',
-      'Food': '🍕',
-      'Transport': '🚗',
-      'Entertainment': '🎮',
-      'Shopping': '🛍️',
-      'Housing': '🏠',
-      'Health': '💊',
-      'Travel': '✈️',
-      'Bills': '📄',
-      'Subscriptions': '📱',
-      'Gas': '⛽',
-      'Groceries': '🛒',
-      'Coffee': '☕',
-      'Fitness': '💪',
-      'Education': '📚',
-      'Insurance': '🛡️',
-      'Banking': '🏦',
-      'Investment': '📈',
-      'Other': '💳'
-    };
-    return emojiMap[category] || '💰';
-  };
+interface DonutSegment {
+  label: string;
+  value: number;
+  ratio: number;
+  from: number;
+  to: number;
+  color: string;
+  icon: string;
+}
 
-  // Calculate financial data based on time period
-  const getFinancialData = (period: 'week' | 'month' | 'year') => {
-    if (!transactions) return { incomeTotal: 0, spendTotal: 0, netIncome: 0, categories: [], incomeTransactions: [] };
+interface DonutData {
+  segments: DonutSegment[];
+  total: number;
+}
 
-    const now = new Date();
-    let currentStart: Date, currentEnd: Date;
-
-    switch (period) {
-      case 'week':
-        const currentWeekStart = new Date(now);
-        currentWeekStart.setDate(now.getDate() - now.getDay()); // Start of current week
-        currentStart = currentWeekStart;
-        currentEnd = new Date(currentWeekStart);
-        currentEnd.setDate(currentWeekStart.getDate() + 6); // End of current week
-        break;
-        
-      case 'month':
-        currentStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        currentEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-        break;
-        
-      case 'year':
-        currentStart = new Date(now.getFullYear(), 0, 1);
-        currentEnd = new Date(now.getFullYear(), 11, 31);
-        break;
-    }
-
-    const currentTransactions = transactions.filter(t => {
-      const transactionDate = new Date(t.date);
-      return transactionDate >= currentStart && transactionDate <= currentEnd;
+// Build segments derived from categories + colors
+const useDonutData = (categories: Category[]): DonutData => {
+  return useMemo(() => {
+    const total = categories.reduce((s, c) => s + c.amount, 0);
+    let acc = 0;
+    const segs = categories.map((c) => {
+      const pal = categoryPalette.find((p) => p.key === c.name) || categoryPalette[0];
+      const v = c.amount / total;
+      const from = acc;
+      const to = acc + v;
+      acc = to;
+      return {
+        label: c.name,
+        value: c.amount,
+        ratio: v,
+        from,
+        to,
+        color: pal.color,
+        icon: pal.icon,
+      };
     });
+    return { segments: segs, total };
+  }, [categories]);
+};
 
-    const incomeTransactions = currentTransactions.filter(t => t.type === 'income');
-    const expenseTransactions = currentTransactions.filter(t => t.type === 'expense');
-    
-    const incomeTotal = incomeTransactions.reduce((sum, t) => sum + Math.abs(parseFloat(t.amount)), 0);
-    const spendTotal = expenseTransactions.reduce((sum, t) => sum + Math.abs(parseFloat(t.amount)), 0);
-    const netIncome = incomeTotal - spendTotal;
-
-    // Group expenses by category
-    const categorySpending = expenseTransactions.reduce((acc, transaction) => {
-      const category = transaction.category || 'Other';
-      const amount = Math.abs(parseFloat(transaction.amount));
-      acc[category] = (acc[category] || 0) + amount;
-      return acc;
-    }, {} as Record<string, number>);
-
-    // Gen Alpha friendly vibrant colors with gradients
-    const colors = ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#6B7280', '#FF6B6B', '#4ECDC4', '#FF69B4', '#00CED1'];
-    const categories = Object.entries(categorySpending)
-      .map(([category, amount], index) => ({
-        category,
-        amount: Math.round(amount),
-        color: colors[index % colors.length],
-        percentage: spendTotal > 0 ? Math.round((amount / spendTotal) * 100) : 0
-      }))
-      .sort((a, b) => b.amount - a.amount);
-
-    return {
-      incomeTotal: Math.round(incomeTotal),
-      spendTotal: Math.round(spendTotal),
-      netIncome: Math.round(netIncome),
-      categories,
-      incomeTransactions
-    };
+// Convert [0..1] arc to SVG polar path
+function arcPath(cx: number, cy: number, r: number, from: number, to: number): string {
+  const start = angleToPoint(cx, cy, r, tau * from);
+  const end = angleToPoint(cx, cy, r, tau * to);
+  const large = to - from > 0.5 ? 1 : 0;
+  return `M ${start.x} ${start.y} A ${r} ${r} 0 ${large} 1 ${end.x} ${end.y}`;
+}
+const tau = Math.PI * 2;
+function angleToPoint(cx: number, cy: number, r: number, a: number): { x: number; y: number } {
+  return {
+    x: cx + r * Math.cos(a - Math.PI / 2),
+    y: cy + r * Math.sin(a - Math.PI / 2),
   };
+}
 
-  const financialData = getFinancialData(activeTab);
+// ---------- Donut Chart ----------
+interface DonutChartProps {
+  data: DonutData;
+  active: number | null;
+  setActive: (index: number | null) => void;
+}
 
-  const getPeriodLabel = (period: 'week' | 'month' | 'year') => {
-    switch (period) {
-      case 'week': return 'This Week';
-      case 'month': return 'This Month';
-      case 'year': return 'This Year';
-    }
-  };
+const DonutChart: React.FC<DonutChartProps> = ({ data, active, setActive }) => {
+  const size = 220;
+  const center = size / 2;
+  const radius = 90;
+  return (
+    <svg width={size} height={size} className="select-none">
+      {/* background ring */}
+      <circle
+        cx={center}
+        cy={center}
+        r={radius}
+        className="fill-none stroke-gray-200 dark:stroke-zinc-800"
+        strokeWidth={24}
+      />
+      {data.segments.map((s, i) => {
+        const d = arcPath(center, center, radius, s.from, s.to);
+        const isActive = active === i;
+        return (
+          <g key={i} onMouseEnter={() => setActive(i)} onMouseLeave={() => setActive(null)}>
+            <path
+              d={d}
+              stroke={s.color}
+              strokeWidth={isActive ? 26 : 24}
+              className={`fill-none transition-all duration-200 ${
+                active !== null && !isActive ? "opacity-30" : "opacity-100"
+              }`}
+              strokeLinecap="round"
+            />
+          </g>
+        );
+      })}
+      {/* inner disc */}
+      <circle cx={center} cy={center} r={64} className="fill-white dark:fill-zinc-900" />
+    </svg>
+  );
+};
 
-  // Generate comparison bar chart data for the selected period
-  const getComparisonData = () => {
-    if (!transactions) return [];
-    
-    const now = new Date();
-    const periods: { 
-      name: string; 
-      income: number; 
-      spending: number; 
-      periodStart: Date; 
-      periodEnd: Date;
-      incomeTransactions: Transaction[];
-      spendingTransactions: Transaction[];
-    }[] = [];
-    
-    for (let i = 7; i >= 0; i--) {
-      let periodStart: Date, periodEnd: Date, name: string;
-      
-      switch (activeTab) {
-        case 'week':
-          periodStart = new Date(now);
-          periodStart.setDate(now.getDate() - (i * 7) - now.getDay());
-          periodEnd = new Date(periodStart);
-          periodEnd.setDate(periodStart.getDate() + 6);
-          // Format as M/d for week labels (e.g., 7/21, 7/28)
-          name = `${periodStart.getMonth() + 1}/${periodStart.getDate()}`;
-          break;
-          
-        case 'month':
-          periodStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
-          periodEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
-          name = periodStart.toLocaleDateString('en-US', { month: 'short' });
-          break;
-          
-        case 'year':
-          periodStart = new Date(now.getFullYear() - i, 0, 1);
-          periodEnd = new Date(now.getFullYear() - i, 11, 31);
-          name = periodStart.getFullYear().toString();
-          break;
-      }
-      
-      const periodTransactions = transactions.filter(t => {
-        const transactionDate = new Date(t.date);
-        return transactionDate >= periodStart && transactionDate <= periodEnd;
-      });
-      
-      const incomeTransactions = periodTransactions.filter(t => t.type === 'income');
-      const spendingTransactions = periodTransactions.filter(t => t.type === 'expense');
-      
-      const income = incomeTransactions.reduce((sum, t) => sum + Math.abs(parseFloat(t.amount)), 0);
-      const spending = spendingTransactions.reduce((sum, t) => sum + Math.abs(parseFloat(t.amount)), 0);
-      
-      periods.push({ 
-        name, 
-        income: Math.round(income), 
-        spending: Math.round(spending),
-        periodStart,
-        periodEnd,
-        incomeTransactions,
-        spendingTransactions
-      });
-    }
-    
-    return periods;
-  };
+// ---------- Main Page ----------
+export default function SpendingPage() {
+  const [mode, setMode] = useState("pie");
+  const [range, setRange] = useState("This Month");
+  const [active, setActive] = useState<number | null>(null);
 
-  const comparisonData = getComparisonData();
-
-  // Get all expense transactions for analysis
-  const allExpenseTransactions = transactions?.filter(t => t.type === 'expense') || [];
-  
-  // Calculate frequent spends
-  const getFrequentSpends = () => {
-    const merchantCounts = allExpenseTransactions.reduce((acc, transaction) => {
-      const merchant = transaction.merchant || transaction.description;
-      if (!acc[merchant]) {
-        acc[merchant] = { count: 0, totalAmount: 0, category: transaction.category };
-      }
-      acc[merchant].count++;
-      acc[merchant].totalAmount += Math.abs(parseFloat(transaction.amount));
-      return acc;
-    }, {} as Record<string, { count: number; totalAmount: number; category: string }>);
-
-    return Object.entries(merchantCounts)
-      .map(([merchant, data]) => ({ merchant, ...data }))
-      .filter(item => item.count > 1) // Only show merchants with multiple purchases
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
-  };
-
-  // Calculate largest purchases
-  const getLargestPurchases = () => {
-    return allExpenseTransactions
-      .map(t => ({ ...t, numericAmount: Math.abs(parseFloat(t.amount)) }))
-      .sort((a, b) => b.numericAmount - a.numericAmount)
-      .slice(0, 10);
-  };
-
-  // Get uncategorized transactions
-  const getUncategorizedTransactions = () => {
-    return allExpenseTransactions.filter(t => !t.category || t.category === 'Other');
-  };
-
-  const frequentSpends = getFrequentSpends();
-  const largestPurchases = getLargestPurchases();
-  const uncategorizedTransactions = getUncategorizedTransactions();
+  const donut = useDonutData(sampleCategories);
+  const totalSpend = donut.total;
+  const lastMonthTotal = sampleCategories.reduce((s, c) => s + c.lastMonth, 0);
+  const delta = totalSpend - lastMonthTotal;
+  const deltaPct = Math.abs(delta) / (lastMonthTotal || 1);
+  const trendingTone = delta > 0 ? "down" : delta < 0 ? "up" : "neutral";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Enhanced Header with Gen Alpha styling */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-2xl border-2 border-purple-100 dark:border-purple-700 mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-xl transition-all duration-200">
-                  <ArrowLeft className="h-4 w-4 mr-1" />
-                  Back to Dashboard
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-3">
-                  📊 Spending Analysis
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400 text-lg mt-1">
-                  Track and analyze your spending patterns across different time periods ✨
-                </p>
-              </div>
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-zinc-100">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-semibold">Spending</h1>
+            <div className="hidden md:flex items-center gap-2">
+              {["Last Month", "This Month", "Custom"].map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRange(r)}
+                  className={`text-xs rounded-full px-3 py-1 border transition ${
+                    range === r
+                      ? "border-gray-900 dark:border-zinc-300 bg-gray-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                      : "border-gray-200 dark:border-zinc-800 hover:bg-gray-100/60 dark:hover:bg-zinc-800/60"
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className={`inline-flex items-center gap-2 text-xs rounded-full px-3 py-1 border border-gray-200 dark:border-zinc-800 hover:bg-gray-100/60 dark:hover:bg-zinc-800/60`}>
+              <CalendarIcon className="h-4 w-4" /> {range}
+            </button>
+            <div className="flex rounded-full border border-gray-200 dark:border-zinc-800 overflow-hidden">
+              <button
+                onClick={() => setMode("pie")}
+                className={`px-3 py-1 text-xs flex items-center gap-1 ${
+                  mode === "pie"
+                    ? "bg-gray-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                    : "hover:bg-gray-100/60 dark:hover:bg-zinc-800/60"
+                }`}
+              >
+                <PieChart className="h-4 w-4" />Pie
+              </button>
+              <button
+                onClick={() => setMode("bar")}
+                className={`px-3 py-1 text-xs flex items-center gap-1 ${
+                  mode === "bar"
+                    ? "bg-gray-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                    : "hover:bg-gray-100/60 dark:hover:bg-zinc-800/60"
+                }`}
+              >
+                <BarChart2 className="h-4 w-4" />Bars
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Enhanced Time Period Tabs with Gen Alpha styling */}
-        <Card className="mb-8 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-2 border-blue-100 dark:border-blue-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-              <Calendar className="h-6 w-6 text-blue-600" />
-              📅 Time Period
-            </CardTitle>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Choose your timeframe to analyze spending patterns</p>
-          </CardHeader>
-          <CardContent>
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'week' | 'month' | 'year')}>
-              <TabsList className="grid w-full grid-cols-3 bg-white dark:bg-gray-800 rounded-xl p-1">
-                <TabsTrigger value="week" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-lg transition-all duration-200">
-                  <Calendar className="h-4 w-4" />
-                  📅 Week
-                </TabsTrigger>
-                <TabsTrigger value="month" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-lg transition-all duration-200">
-                  <Calendar className="h-4 w-4" />
-                  🗓️ Month
-                </TabsTrigger>
-                <TabsTrigger value="year" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-lg transition-all duration-200">
-                  <Calendar className="h-4 w-4" />
-                  📆 Year
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        {/* Financial Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Enhanced Income Card */}
-          <Card 
-            className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 border-2 border-green-200 dark:border-green-700 cursor-pointer hover:shadow-xl hover:scale-105 transition-all duration-300 hover:border-green-300"
-            onClick={() => setLocation('/earnings')}
-          >
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                <span className="text-2xl">💰</span>
-                Income
-              </CardTitle>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Click to explore earnings! 🎯</p>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                ${(financialData.incomeTotal || 0).toLocaleString()}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {getPeriodLabel(activeTab)}
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Enhanced Total Spend Card */}
-          <Card 
-            className="bg-gradient-to-br from-red-50 to-pink-100 dark:from-red-900/30 dark:to-pink-900/30 border-2 border-red-200 dark:border-red-700 cursor-pointer hover:shadow-xl hover:scale-105 transition-all duration-300 hover:border-red-300"
-            onClick={() => setLocation('/spending-categories')}
-          >
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                <span className="text-2xl">💳</span>
-                Total Spend
-              </CardTitle>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Click to explore categories! 🔍</p>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                ${(financialData.spendTotal || 0).toLocaleString()}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {getPeriodLabel(activeTab)}
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Enhanced Net Income Card */}
-          <Card className="bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 border-2 border-blue-200 dark:border-blue-700 hover:shadow-xl transition-all duration-300">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                <span className="text-2xl">📈</span>
-                Net Income
-              </CardTitle>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Your financial balance ⚖️</p>
-            </CardHeader>
-            <CardContent>
-              <p className={`text-3xl font-bold ${
-                financialData.netIncome >= 0 
-                  ? 'text-green-600 dark:text-green-400' 
-                  : 'text-red-600 dark:text-red-400'
-              }`}>
-                {(financialData.netIncome || 0) >= 0 ? '+' : ''}${(financialData.netIncome || 0).toLocaleString()}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {getPeriodLabel(activeTab)}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Income vs Spending Comparison Chart */}
-        <Card className="mb-8 bg-white dark:bg-gray-800">
-          <CardContent className="pt-6">
-            {/* Custom Legend */}
-            <div className="flex items-center justify-center gap-8 mb-6">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Income</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-red-500 rounded"></div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Spend</span>
-              </div>
-            </div>
-            
-            <div className="h-80" style={{ backgroundColor: 'white' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={comparisonData} 
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                  style={{ backgroundColor: 'white' }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis 
-                    dataKey="name" 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: '#6B7280', fontSize: 12 }}
-                  />
-                  <YAxis 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: '#6B7280', fontSize: 12 }}
-                    tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
-                  />
-                  <Tooltip 
-                    formatter={(value: any, name: string) => [`$${(typeof value === 'number' ? value : parseFloat(value) || 0).toLocaleString()}`, name === 'income' ? 'Income' : 'Total Spend']}
-                    labelStyle={{ color: '#374151' }}
-                    contentStyle={{ 
-                      backgroundColor: 'white',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '6px'
-                    }}
-                  />
-                  <Bar 
-                    dataKey="income" 
-                    fill="#10B981"
-                    name="income"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar 
-                    dataKey="spending" 
-                    fill="#EF4444"
-                    name="spending"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Interactive Spending Pie Chart - Gen Alpha Style */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <Card className="bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 border-2 border-purple-100 dark:border-purple-700">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                <PieChart className="h-6 w-6 text-purple-600" />
-                Spending by Category
-              </CardTitle>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Click any slice to see details! ✨</p>
-            </CardHeader>
-            <CardContent>
-              {financialData.categories.length > 0 ? (
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        data={financialData.categories}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={120}
-                        innerRadius={40}
-                        paddingAngle={4}
-                        dataKey="amount"
-                        onClick={(data) => setSelectedCategory(data.category)}
-                        className="cursor-pointer transition-all duration-300 hover:scale-105"
-                      >
-                        {financialData.categories.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={selectedCategory === entry.category ? '#6366F1' : entry.color}
-                            stroke={selectedCategory === entry.category ? '#4F46E5' : 'transparent'}
-                            strokeWidth={selectedCategory === entry.category ? 3 : 0}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        formatter={(value: any) => [`$${(typeof value === 'number' ? value : parseFloat(value) || 0).toLocaleString()}`, 'Amount']}
-                        labelStyle={{ color: '#374151' }}
-                      />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-              ) : (
-                <div className="h-80 flex items-center justify-center text-gray-500 dark:text-gray-400">
-                  No spending data available
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Category Details - Enhanced */}
-          <Card className="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 border-2 border-blue-100 dark:border-blue-700">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl font-bold">
-                {selectedCategory ? (
-                  <>
-                    <span className="text-2xl">{getCategoryEmoji(selectedCategory)}</span>
-                    <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                      {selectedCategory} Transactions
-                    </span>
-                  </>
-                ) : (
-                  <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                    🎯 Category Details
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* LEFT: Breakdown & table */}
+          <div className="lg:col-span-2 space-y-4">
+            <Card>
+              <CardHeader
+                title={
+                  <span className="flex items-center gap-2">
+                    Spending Breakdown
+                    <Tag>
+                      {delta === 0 ? (
+                        "no change"
+                      ) : delta > 0 ? (
+                        <span className="inline-flex items-center gap-1">
+                          <TrendingUp className="h-3 w-3" /> {Math.round(deltaPct * 100)}% ↑ vs last month
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1">
+                          <TrendingDown className="h-3 w-3" /> {Math.round(deltaPct * 100)}% ↓ vs last month
+                        </span>
+                      )}
+                    </Tag>
                   </span>
-                )}
-              </CardTitle>
-              {!selectedCategory && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">Click a category in the chart to explore! 🔍</p>
-              )}
-            </CardHeader>
-            <CardContent>
-              {selectedCategory ? (
-                <div className="space-y-3 max-h-80 overflow-y-auto">
-                  {allExpenseTransactions
-                    .filter(t => t.category === selectedCategory)
-                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                    .map((transaction) => (
-                      <div key={transaction.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-xl border-2 border-red-200 dark:border-red-700 hover:shadow-lg transition-all duration-200 hover:scale-102">
-                        <div>
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
-                            {transaction.description}
-                          </span>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {new Date(transaction.date).toLocaleDateString('en-US', { 
-                              month: 'short', 
-                              day: 'numeric',
-                              year: 'numeric' 
-                            })}
-                          </p>
+                }
+                action={
+                  <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800">
+                    <MoreHorizontal className="h-5 w-5" />
+                  </button>
+                }
+              />
+              <CardBody>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Donut + center total */}
+                  <div className="relative flex items-center justify-center">
+                    <DonutChart data={donut} active={active} setActive={setActive} />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="text-center">
+                        <div className="text-xs text-gray-500 dark:text-zinc-400">TOTAL SPEND</div>
+                        <div className="text-2xl font-semibold">{formatUSD(totalSpend)}</div>
+                        <div className="mt-1 text-[11px] text-gray-500 dark:text-zinc-400">
+                          {active !== null ? donut.segments[active].label : "All categories"}
                         </div>
-                        <span className="text-sm font-semibold text-red-600 dark:text-red-400">
-                          -${Math.abs(parseFloat(transaction.amount)).toLocaleString()}
-                        </span>
-                      </div>
-                    ))}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setSelectedCategory(null)}
-                    className="w-full mt-4"
-                  >
-                    View All Categories
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    Click on a category in the pie chart to view detailed transactions
-                  </p>
-                  {financialData.categories.slice(0, 6).map((category) => (
-                    <div 
-                      key={category.category} 
-                      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                      onClick={() => setSelectedCategory(category.category)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div 
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: category.color }}
-                        />
-                        <span className="font-medium text-gray-900 dark:text-white">
-                          {category.category}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-lg font-bold text-gray-900 dark:text-white">
-                          ${category.amount.toLocaleString()}
-                        </span>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {category.percentage}%
-                        </p>
                       </div>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Legend / mini bars */}
+                  <div className="flex flex-col gap-2">
+                    {donut.segments.map((s, i) => {
+                      const pct = Math.round(s.ratio * 100);
+                      return (
+                        <button
+                          key={i}
+                          onMouseEnter={() => setActive(i)}
+                          onMouseLeave={() => setActive(null)}
+                          className={`w-full text-left rounded-xl p-2 transition ${
+                            active === i
+                              ? "bg-gray-100 dark:bg-zinc-800"
+                              : "hover:bg-gray-50 dark:hover:bg-zinc-900"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg" aria-hidden>
+                                {s.icon}
+                              </span>
+                              <span className="text-sm">{s.label}</span>
+                            </div>
+                            <div className="text-sm font-medium">{formatUSD(s.value)}</div>
+                          </div>
+                          <div className="mt-2 h-2 rounded-full bg-gray-100 dark:bg-zinc-800 overflow-hidden">
+                            <div className="h-2" style={{ width: `${pct}%`, background: s.color }} />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardBody>
+            </Card>
+
+            {/* Category Table */}
+            <Card>
+              <CardHeader title="Categories" subtitle="Percent of spend · vs last month" />
+              <CardBody className="p-0">
+                <div className="divide-y divide-gray-100 dark:divide-zinc-800">
+                  {sampleCategories.map((c, idx) => {
+                    const pal =
+                      categoryPalette.find((p) => p.key === c.name) || categoryPalette[0];
+                    const pct = Math.round((c.amount / totalSpend) * 100);
+                    const diff = c.amount - c.lastMonth;
+                    const tone = diff > 0 ? "down" : diff < 0 ? "up" : "neutral";
+                    return (
+                      <div
+                        key={idx}
+                        className="p-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-zinc-900/60"
+                      >
+                        <div
+                          className="h-8 w-8 rounded-full flex items-center justify-center text-sm"
+                          style={{ background: pal.color + "22", color: pal.color }}
+                        >
+                          {pal.icon}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div className="text-sm font-medium">{c.name}</div>
+                            <div className="text-sm font-semibold">{formatUSD(c.amount)}</div>
+                          </div>
+                          <div className="mt-1 flex items-center justify-between text-xs text-gray-500 dark:text-zinc-400">
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-1.5 rounded-full bg-gray-100 dark:bg-zinc-800 overflow-hidden">
+                                <div
+                                  className="h-1.5"
+                                  style={{ width: `${pct}%`, background: pal.color }}
+                                />
+                              </div>
+                              <span>{pct}% of spend</span>
+                            </div>
+                            <div
+                              className={`inline-flex items-center gap-1 ${
+                                tone === "down"
+                                  ? "text-rose-600"
+                                  : tone === "up"
+                                  ? "text-emerald-600"
+                                  : "text-gray-500 dark:text-zinc-400"
+                              }`}
+                            >
+                              {tone === "down" ? (
+                                <TrendingUp className="h-3 w-3" />
+                              ) : tone === "up" ? (
+                                <TrendingDown className="h-3 w-3" />
+                              ) : null}
+                              {tone === "neutral"
+                                ? "–"
+                                : `${Math.abs(Math.round((diff / (c.lastMonth || 1)) * 100))}%`}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+
+          {/* RIGHT: Insights */}
+          <div className="space-y-4">
+            <Card>
+              <CardHeader
+                title="Needs Categorization"
+                action={
+                  <button className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                    Update {6}
+                  </button>
+                }
+              />
+              <CardBody>
+                <div className="flex items-start gap-3 text-sm">
+                  <AlertCircle className="h-5 w-5 text-amber-500" />
+                  <p className="text-gray-600 dark:text-zinc-300">
+                    You have 6 uncategorized transactions. Review them to improve insights.
+                  </p>
+                </div>
+              </CardBody>
+            </Card>
+
+            <Card>
+              <CardHeader title="Summary" subtitle="Aug 1 – Aug 31" />
+              <CardBody>
+                <SmallStat label="Income" value={`+ ${formatUSD(3482)}`} tone="up" />
+                <SmallStat label="Bills" value={`${formatUSD(3254)}`} />
+                <SmallStat
+                  label="Spending"
+                  value={`${formatUSD(totalSpend)}`}
+                  tone={trendingTone as "neutral" | "up" | "down"}
+                />
+                <div className="mt-3 text-xs text-gray-500 dark:text-zinc-400">Left for Savings</div>
+                <div className="flex items-center justify-between mt-1">
+                  <div className="text-sm font-medium">You saved 40% more than you expected</div>
+                  <div className="text-sm text-emerald-600">{formatUSD(4273)}</div>
+                </div>
+              </CardBody>
+            </Card>
+
+            <Card>
+              <CardHeader title="Frequent Spend" subtitle="This month" />
+              <CardBody className="space-y-3">
+                {merchants.map((m) => (
+                  <div key={m.name} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <img
+                        className="h-6 w-6 rounded"
+                        alt={m.name}
+                        src={`https://logo.clearbit.com/${m.domain}`}
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                          e.currentTarget.src =
+                            "https://dummyimage.com/48x48/eee/aaa.png&text=%F0%9F%92%B0";
+                        }}
+                      />
+                      <div>
+                        <div className="text-sm font-medium">{m.name}</div>
+                        <div className="text-xs text-gray-500 dark:text-zinc-400">
+                          {m.count} tx · avg ${m.avg}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-semibold">{formatUSD(m.amount)}</div>
+                  </div>
+                ))}
+              </CardBody>
+            </Card>
+
+            <Card>
+              <CardHeader title="Largest Purchases" />
+              <CardBody className="space-y-3">
+                {[
+                  { n: "Trader Joe's", d: "Aug 26", a: 63.9, domain: "traderjoes.com" },
+                  { n: "Flight Tickets", d: "Aug 18", a: 252.5, domain: "delta.com" },
+                  { n: "Target", d: "Aug 05", a: 151.6, domain: "target.com" },
+                ].map((x) => (
+                  <div key={x.n} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <img
+                        className="h-6 w-6 rounded"
+                        alt={x.n}
+                        src={`https://logo.clearbit.com/${x.domain}`}
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                          e.currentTarget.src =
+                            "https://dummyimage.com/48x48/eee/aaa.png&text=%F0%9F%93%A6";
+                        }}
+                      />
+                      <div>
+                        <div className="text-sm font-medium">{x.n}</div>
+                        <div className="text-xs text-gray-500 dark:text-zinc-400">{x.d}</div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-semibold">{formatUSD(x.a)}</div>
+                  </div>
+                ))}
+              </CardBody>
+            </Card>
+
+            <Card>
+              <CardBody>
+                <div className="flex items-center gap-3">
+                  <BadgeDollarSign className="h-5 w-5 text-emerald-600" />
+                  <div>
+                    <div className="text-sm font-semibold">
+                      Want to spend less next month?
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-zinc-400">
+                      Create a category budget and track during the month.
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 flex gap-2">
+                  <button className="text-sm px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">
+                    Set a Budget
+                  </button>
+                  <button className="text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900">
+                    Learn More
+                  </button>
+                </div>
+              </CardBody>
+            </Card>
+          </div>
         </div>
 
-        {/* Frequent Spends Section */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Repeat className="h-5 w-5 text-purple-600" />
-              Frequent Spends
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {frequentSpends.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {frequentSpends.map((item) => (
-                  <div key={item.merchant} className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 dark:text-white truncate">
-                        {item.merchant}
-                      </h4>
-                      <span className="text-xs bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-300 px-2 py-1 rounded">
-                        {item.category}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {item.count} purchases
-                      </span>
-                      <span className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                        ${item.totalAmount.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                No frequent spending patterns found
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Largest Purchases Section */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ShoppingBag className="h-5 w-5 text-orange-600" />
-              Largest Purchases
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {largestPurchases.map((transaction, index) => (
-                <div key={transaction.id} className="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center justify-center w-8 h-8 bg-orange-100 dark:bg-orange-800 text-orange-600 dark:text-orange-400 rounded-full text-sm font-bold">
-                      #{index + 1}
-                    </span>
-                    <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white">
-                        {transaction.description}
-                      </h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {new Date(transaction.date).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric',
-                          year: 'numeric' 
-                        })} • {transaction.category}
-                      </p>
-                    </div>
-                  </div>
-                  <span className="text-xl font-bold text-orange-600 dark:text-orange-400">
-                    ${transaction.numericAmount.toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Uncategorized Transactions */}
-        {uncategorizedTransactions.length > 0 && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-yellow-600" />
-                Needs Categorization ({uncategorizedTransactions.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {uncategorizedTransactions.slice(0, 5).map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                    <div>
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {transaction.description}
-                      </span>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {new Date(transaction.date).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric',
-                          year: 'numeric' 
-                        })}
-                      </p>
-                    </div>
-                    <span className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">
-                      ${Math.abs(parseFloat(transaction.amount)).toLocaleString()}
-                    </span>
-                  </div>
-                ))}
-                {uncategorizedTransactions.length > 5 && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 text-center pt-2">
-                    ... and {uncategorizedTransactions.length - 5} more transactions
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-
+        {/* Footer CTA / Data controls */}
+        <div className="mt-6 flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="text-xs text-gray-500 dark:text-zinc-400">
+            It’s important to keep your data accurate for better insights.
+          </div>
+          <div className="flex gap-2">
+            <button className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900 flex items-center gap-1">
+              <CheckCircle2 className="h-4 w-4" />Adjust your data
+            </button>
+            <button className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900 flex items-center gap-1">
+              <XCircle className="h-4 w-4" />Report a problem
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
