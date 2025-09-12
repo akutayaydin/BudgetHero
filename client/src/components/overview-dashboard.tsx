@@ -781,7 +781,7 @@ export default function OverviewDashboard() {
                             </div>
                           </div>
                         </div>
-                        <div className={cn("font-mono", isIncome ? "text-emerald-600" : "text-foreground")}>
+                        <div className={cn(isIncome ? "text-emerald-600" : "text-foreground")}>
                           {isIncome ? '+' : ''}${amount.toLocaleString()}
                         </div>
                       </li>
@@ -896,14 +896,14 @@ export default function OverviewDashboard() {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span>Emergency Fund</span>
-                  <span className="font-mono">$2,300 / $5,000</span>
+                  <span>$2,300 / $5,000</span>
                 </div>
                 <div className="w-full h-2 bg-muted rounded-full">
                   <div className="h-2 bg-emerald-500 rounded-full w-[46%]" />
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Vacation</span>
-                  <span className="font-mono">$900 / $1,500</span>
+                  <span>$900 / $1,500</span>
                 </div>
                 <div className="w-full h-2 bg-muted rounded-full">
                   <div className="h-2 bg-indigo-500 rounded-full w-[60%]" />
