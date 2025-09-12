@@ -400,12 +400,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTransaction(transaction: InsertTransaction): Promise<Transaction> {
-    // Auto-categorize using enhanced categorizer
+    // Auto-categorize using comprehensive categorizer with Plaid mapping
     if (!transaction.categoryId) {
       try {
-        const { enhancedCategorizer } = await import('./enhancedCategorizer');
-        const match = await enhancedCategorizer.categorizeTransaction({
-          id: '', // Will be generated
+        const { ComprehensiveCategorizer } = await import('./comprehensiveCategorizer');
+        const categorizer = new ComprehensiveCategorizer();
+        const match = await categorizer.categorizeTransaction({
+          userId: transaction.userId,
           description: transaction.description || '',
           merchant: transaction.merchant,
           source: transaction.source || 'manual',
@@ -417,12 +418,12 @@ export class DatabaseStorage implements IStorage {
         if (match) {
           transaction.categoryId = match.categoryId;
           transaction.category = match.subcategory || match.categoryName;
-          console.log(`✅ Enhanced categorization: "${transaction.description}" → "${match.categoryName}${match.subcategory ? ` > ${match.subcategory}` : ''}" (${match.source}, confidence: ${match.confidence})`);
+          console.log(`🎯 Comprehensive categorization: "${transaction.description}" → "${match.categoryName}${match.subcategory ? ` > ${match.subcategory}` : ''}" (${match.source}, confidence: ${(match.confidence * 100).toFixed(1)}%)`);
         } else {
           transaction.category = transaction.category || 'Uncategorized';
         }
       } catch (error) {
-        console.error('Enhanced auto-categorization failed:', error);
+        console.error('Comprehensive auto-categorization failed:', error);
         transaction.category = transaction.category || 'Uncategorized';
       }
     }
@@ -454,8 +455,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTransactions(transactionList: InsertTransaction[]): Promise<Transaction[]> {
-    // Auto-categorize transactions using enhanced categorizer
-    const { enhancedCategorizer } = await import('./enhancedCategorizer');
+    // Auto-categorize transactions using comprehensive categorizer with Plaid mapping
+    const { ComprehensiveCategorizer } = await import('./comprehensiveCategorizer');
+    const categorizer = new ComprehensiveCategorizer();
     
     const insertData = [];
     let categorizedCount = 0;
@@ -464,8 +466,8 @@ export class DatabaseStorage implements IStorage {
       // Auto-categorize if categoryId is not provided
       if (!transaction.categoryId) {
         try {
-          const match = await enhancedCategorizer.categorizeTransaction({
-            id: '', // Will be generated
+          const match = await categorizer.categorizeTransaction({
+            userId: transaction.userId,
             description: transaction.description || '',
             merchant: transaction.merchant,
             source: transaction.source || 'manual',
@@ -482,7 +484,7 @@ export class DatabaseStorage implements IStorage {
             transaction.category = transaction.category || 'Uncategorized';
           }
         } catch (error) {
-          console.error('Enhanced auto-categorization failed for transaction:', transaction.description, error);
+          console.error('Comprehensive auto-categorization failed for transaction:', transaction.description, error);
           transaction.category = transaction.category || 'Uncategorized';
         }
       }
