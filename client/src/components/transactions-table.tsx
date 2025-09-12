@@ -165,9 +165,9 @@ export default function TransactionsTable({
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Use admin categories for consistency with new categorization system
+  // Use budget categories to match available budget options
   const { data: adminCategories = [] } = useQuery({
-    queryKey: ["/api/admin/categories"],
+    queryKey: ["/api/budget-categories"],
   });
 
   // Organize categories by type for better filtering, with subcategory display
