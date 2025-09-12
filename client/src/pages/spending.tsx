@@ -33,7 +33,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ title, subtitle, action }) => (
     <div>
       <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide flex items-center gap-2">{title}</h3>
       {subtitle && (
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 normal-case">{subtitle}</p>
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 normal-case">{subtitle}</div>
       )}
     </div>
     {action}
@@ -224,14 +224,14 @@ const PeriodSpendingChart = ({
               <div
                 className="w-1/2 mx-0.5 bg-white rounded-t-sm min-h-[2px]"
                 style={{ 
-                  height: d.income > 0 ? `${Math.max((d.income / max) * 100, 5)}%` : '0%'
+                  height: d.income > 0 ? `${Math.max((d.income / max) * 100, 10)}%` : '2px'
                 }}
                 title={`Income: $${d.income.toFixed(2)}`}
               />
               <div
                 className="w-1/2 mx-0.5 rounded-t-sm bg-white/20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:2px_2px] min-h-[2px]"
                 style={{ 
-                  height: d.spend > 0 ? `${Math.max((d.spend / max) * 100, 5)}%` : '0%'
+                  height: d.spend > 0 ? `${Math.max((d.spend / max) * 100, 10)}%` : '2px'
                 }}
                 title={`Spend: $${d.spend.toFixed(2)}`}
               />
