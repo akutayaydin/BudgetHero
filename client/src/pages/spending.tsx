@@ -119,8 +119,12 @@ const generatePeriodData = (
     let spend = 0;
     periodTx.forEach((t) => {
       const amt = Math.abs(parseFloat(t.amount));
-      if (t.type === "income") income += amt;
-      else spend += amt;
+      if (t.type === "income") {
+        income += amt;
+        console.log(`✅ Income transaction: ${t.description} - $${amt} (type: ${t.type}, category: ${t.category})`);
+      } else {
+        spend += amt;
+      }
     });
     
     // Debug logging for chart calculation

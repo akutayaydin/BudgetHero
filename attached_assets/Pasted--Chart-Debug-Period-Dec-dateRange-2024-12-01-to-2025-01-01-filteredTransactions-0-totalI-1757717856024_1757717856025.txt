@@ -1,0 +1,12 @@
+📊 Chart Debug - Period: Dec {dateRange: '2024-12-01 to 2025-01-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:127 📊 Chart Debug - Period: Jan {dateRange: '2025-01-01 to 2025-02-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:127 📊 Chart Debug - Period: Feb {dateRange: '2025-02-01 to 2025-03-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:127 📊 Chart Debug - Period: Mar {dateRange: '2025-03-01 to 2025-04-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:127 📊 Chart Debug - Period: Apr {dateRange: '2025-04-01 to 2025-05-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:127 📊 Chart Debug - Period: May {dateRange: '2025-05-01 to 2025-06-01', filteredTransactions: 7, totalIncome: 500, totalSpend: 73.46, sampleTransactions: Array(2)}
+spending.tsx:127 📊 Chart Debug - Period: Jun {dateRange: '2025-06-01 to 2025-07-01', filteredTransactions: 19, totalIncome: 5208.4400000000005, totalSpend: 2619.92, sampleTransactions: Array(2)}
+spending.tsx:127 📊 Chart Debug - Period: Jul {dateRange: '2025-07-01 to 2025-08-01', filteredTransactions: 24, totalIncome: 5208.4400000000005, totalSpend: 5220.719999999999, sampleTransactions: Array(2)}
+spending.tsx:127 📊 Chart Debug - Period: Aug {dateRange: '2025-08-01 to 2025-09-01', filteredTransactions: 34, totalIncome: 5208.4400000000005, totalSpend: 4789.539999999999, sampleTransactions: Array(2)}
+spending.tsx:127 📊 Chart Debug - Period: Sep {dateRange: '2025-09-01 to 2025-10-01', filteredTransactions: 23, totalIncome: 8.44, totalSpend: 3642.6800000000003, sampleTransactions: Array(2)}
+spending.tsx:369 Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
+spending.tsx:369 Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
