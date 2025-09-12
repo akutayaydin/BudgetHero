@@ -589,7 +589,11 @@ export default function OverviewDashboard() {
             <>
               <PlaidLink
                 onSuccess={handlePlaidSuccess}
-                className="text-xs px-2 py-1 rounded-md border border-border flex items-center"
+                size="sm"
+                className="h-7 px-2 py-1 text-xs leading-none rounded-md
+                   border border-border flex items-center
+                   bg-white text-gray-900 hover:bg-gray-50
+                   dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Add Account
@@ -611,7 +615,12 @@ export default function OverviewDashboard() {
           mobileAction={
             <PlaidLink
               onSuccess={handlePlaidSuccess}
-              className="text-xs px-2 py-1 rounded-md border border-border flex items-center"
+              variant="white"                   // <— add
+              size="sm"                         // (optional) tighter padding
+              className="px-2 py-1 border border-gray-200
+                 text-gray-900 hover:bg-gray-50
+                 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100
+                 rounded-md flex items-center"
             >
               <Plus className="h-4 w-4 mr-1" />
               Add Account
