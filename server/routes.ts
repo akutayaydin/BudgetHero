@@ -8,6 +8,7 @@ import { getTransactionsNeedingReview } from "./enhancedCategorization";
 import { enhancedRecurringDetection } from './enhancedRecurringDetection';
 import { registerTrialRoutes } from "./routes-trial";
 import { seedNewMerchants, bulkImportMerchants } from "./seedNewMerchants";
+import { seedRealisticTransactions } from "./seedRealisticTransactions";
 import Stripe from "stripe";
 import { z, ZodError } from "zod";
 import { and, count, desc, eq, gte, ilike, lte, or, sql } from "drizzle-orm";
@@ -2739,6 +2740,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting recurring merchant:", error);
       res.status(500).json({ error: "Failed to delete recurring merchant" });
+    }
+  });
+
+  // Seed realistic transaction data for testing
+  app.post("/api/admin/seed-realistic-transactions", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      await seedRealisticTransactions();
+      res.json({ 
+        success: true, 
+        message: "Successfully seeded realistic transaction data for testing"
+      });
+    } catch (error) {
+      console.error("Error seeding realistic transactions:", error);
+      res.status(500).json({ error: "Failed to seed realistic transactions" });
     }
   });
 
