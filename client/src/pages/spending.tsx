@@ -133,13 +133,12 @@ const generatePeriodData = (
       addPoint(d, d, label);
     }
   } else if (period === "month") {
-    for (let i = 3; i >= 0; i--) {
-      const end = new Date(now);
-      end.setDate(now.getDate() - i * 7);
-      const start = new Date(end);
-      start.setDate(end.getDate() - 6);
-      const label = `${end.getMonth() + 1}/${end.getDate()}`;
-      addPoint(start, end, label);
+    // last 30 days, grouped by day
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      const label = `${d.getMonth() + 1}/${d.getDate()}`;
+      addPoint(d, d, label);
     }
   } else if (period === "quarter") {
     for (let i = 2; i >= 0; i--) {
