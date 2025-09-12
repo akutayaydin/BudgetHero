@@ -56,12 +56,12 @@ app.use((req, res, next) => {
     }
   }
 
-  // Seed enhanced admin categories on startup
+  // Seed comprehensive admin categories with Plaid mapping on startup
   try {
-    const { seedEnhancedCategories } = await import("./seedEnhancedCategories");
-    await seedEnhancedCategories();
+    const { seedComprehensiveCategories } = await import("./seedComprehensiveCategories");
+    await seedComprehensiveCategories();
   } catch (error) {
-    console.error("Failed to seed enhanced admin categories:", error);
+    console.error("Failed to seed comprehensive admin categories:", error);
   }
 
   // Seed subscription plans on startup
