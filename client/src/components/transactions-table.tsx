@@ -313,10 +313,19 @@ export default function TransactionsTable({
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
+      // Invalidate all transaction-related queries including budget page queries
+      queryClient.invalidateQueries({ 
+        queryKey: ["/api/transactions"],
+        type: "all"  // This will invalidate all queries that start with this key
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/analytics/summary"] });
       queryClient.invalidateQueries({
         queryKey: ["/api/analytics/categories"],
+      });
+      // Also invalidate budget plan queries to refresh income calculations
+      queryClient.invalidateQueries({ 
+        queryKey: ["/api/budget/plan"],
+        type: "all"
       });
       setEditingId(null);
       setEditForm({});
@@ -342,10 +351,19 @@ export default function TransactionsTable({
       if (!response.ok) throw new Error("Failed to delete transaction");
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
+      // Invalidate all transaction-related queries including budget page queries
+      queryClient.invalidateQueries({ 
+        queryKey: ["/api/transactions"],
+        type: "all"  // This will invalidate all queries that start with this key
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/analytics/summary"] });
       queryClient.invalidateQueries({
         queryKey: ["/api/analytics/categories"],
+      });
+      // Also invalidate budget plan queries to refresh income calculations
+      queryClient.invalidateQueries({ 
+        queryKey: ["/api/budget/plan"],
+        type: "all"
       });
       toast({
         title: "Success",
