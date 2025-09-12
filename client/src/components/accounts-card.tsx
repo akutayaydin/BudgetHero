@@ -18,7 +18,7 @@ import {
   TrendingUp,
   Plus,
   ChevronDown,
-  ChevronRight,
+  ChevronUp,
   RefreshCw,
   Loader2,
   Building2,
@@ -208,9 +208,9 @@ export default function AccountsCard({ onRemove, isDragging }: AccountsCardProps
                     </p>
                     {hasChildren && (
                       isOpen ? (
-                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                        <ChevronUp className="h-4 w-4 text-gray-400" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                        <ChevronDown className="h-4 w-4 text-gray-400" />
                       )
                     )}
                   </div>
