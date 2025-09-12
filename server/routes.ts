@@ -453,13 +453,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Transaction not found" });
       }
       
+      // If category is being updated, automatically set the correct type
+      if (updates.category) {
+        if (updates.category.toLowerCase() === 'income') {
+          updates.type = 'income';
+          console.log(`🔄 Setting transaction type to 'income' for category: ${updates.category}`);
+        } else {
+          // For all other categories, check if it should be income or expense based on admin categories
+          try {
+            const adminCategories = await storage.getAdminCategories();
+            const categoryMatch = adminCategories.find(cat => 
+              cat.name.toLowerCase() === updates.category!.toLowerCase()
+            );
+            
+            if (categoryMatch) {
+              updates.type = categoryMatch.ledgerType === 'INCOME' ? 'income' : 'expense';
+              console.log(`🔄 Setting transaction type to '${updates.type}' based on category '${updates.category}' ledger type: ${categoryMatch.ledgerType}`);
+            } else {
+              // Default to expense for unknown categories
+              updates.type = 'expense';
+              console.log(`🔄 Setting transaction type to 'expense' for unknown category: ${updates.category}`);
+            }
+          } catch (error) {
+            console.warn("Failed to determine type from admin categories:", error);
+            // Fallback: Income if category contains 'income', otherwise expense
+            updates.type = updates.category.toLowerCase().includes('income') ? 'income' : 'expense';
+            console.log(`🔄 Setting transaction type to '${updates.type}' via fallback for category: ${updates.category}`);
+          }
+        }
+      }
+      
       const updated = await storage.updateTransaction(id, updates);
       
       if (!updated) {
         return res.status(404).json({ message: "Transaction not found" });
       }
       
-      console.log(`Transaction ${id} updated successfully`);
+      console.log(`Transaction ${id} updated successfully with type: ${updated.type}`);
       res.json(updated);
     } catch (error) {
       console.error("Transaction update error:", error);
