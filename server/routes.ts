@@ -2886,15 +2886,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get standard categories for both budgets and transactions
+  // Get categories for budgets only (17 standard categories)
   app.get("/api/budget-categories", async (req, res) => {
     try {
-      // Return all standard categories - both budgets and transactions should use the same categories
-      const standardCategories = await storage.getAdminCategories();
-      res.json(standardCategories);
+      const { adminCategories } = await import("@shared/schema");
+      const { lt } = await import("drizzle-orm");
+      
+      // Get only the 17 budget categories (sortOrder < 200)
+      const budgetCategories = await db
+        .select()
+        .from(adminCategories)
+        .where(lt(adminCategories.sortOrder, 200))
+        .orderBy(adminCategories.sortOrder);
+      
+      // Remove duplicates by name
+      const uniqueCategories = budgetCategories.filter((cat, index, arr) => 
+        arr.findIndex(c => c.name === cat.name) === index
+      );
+      
+      res.json(uniqueCategories);
     } catch (error) {
       console.error("Error fetching budget categories:", error);
       res.status(500).json({ error: "Failed to fetch budget categories" });
+    }
+  });
+
+  // Get categories for transactions (all 30 categories: 17 budget + 13 transaction-specific)
+  app.get("/api/transaction-categories", async (req, res) => {
+    try {
+      const allCategories = await storage.getAdminCategories();
+      
+      // Remove duplicates by name, keep the first occurrence
+      const uniqueCategories = allCategories.filter((cat: any, index: number, arr: any[]) => 
+        arr.findIndex((c: any) => c.name === cat.name) === index
+      );
+      
+      // Sort by sort order
+      uniqueCategories.sort((a: any, b: any) => a.sortOrder - b.sortOrder);
+      
+      res.json(uniqueCategories);
+    } catch (error) {
+      console.error("Error fetching transaction categories:", error);
+      res.status(500).json({ error: "Failed to fetch transaction categories" });
     }
   });
 

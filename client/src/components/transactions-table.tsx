@@ -165,9 +165,9 @@ export default function TransactionsTable({
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Use budget categories to match available budget options
+  // Use transaction categories for transaction management
   const { data: adminCategories = [] } = useQuery({
-    queryKey: ["/api/budget-categories"],
+    queryKey: ["/api/transaction-categories"],
   });
 
   // Organize categories by type for better filtering, with subcategory display

@@ -82,9 +82,9 @@ export function InlineCategorySelector({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  // Fetch budget categories to match available budget options
+  // Fetch transaction categories for transaction categorization  
   const { data: adminCategories = [], isLoading } = useQuery({
-    queryKey: ["/api/budget-categories"],
+    queryKey: ["/api/transaction-categories"],
   });
 
   // Transform admin categories into grouped structure
