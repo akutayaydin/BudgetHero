@@ -139,7 +139,7 @@ export default function IncomeExpenseBarChart() {
                     <div className="flex items-center gap-1">
                       <span
                         className="w-3 h-3 rounded-full"
-                        style={{ background: "#06B6D4" }}
+                        style={{ background: "#10B981" }}
                       />
                       Income
                     </div>
