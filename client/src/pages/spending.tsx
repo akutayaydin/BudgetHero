@@ -121,25 +121,11 @@ const generatePeriodData = (
       const amt = Math.abs(parseFloat(t.amount));
       if (t.type === "income") {
         income += amt;
-        console.log(`✅ Income transaction: ${t.description} - $${amt} (type: ${t.type}, category: ${t.category})`);
       } else {
         spend += amt;
       }
     });
     
-    // Debug logging for chart calculation
-    console.log(`📊 Chart Debug - Period: ${label}`, {
-      dateRange: `${start.toISOString().slice(0, 10)} to ${end.toISOString().slice(0, 10)}`,
-      filteredTransactions: periodTx.length,
-      totalIncome: income,
-      totalSpend: spend,
-      sampleTransactions: periodTx.slice(0, 2).map(t => ({
-        date: t.date,
-        amount: t.amount,
-        type: t.type,
-        category: t.category
-      }))
-    });
     
     data.push({ label, income, spend });
   };
@@ -215,18 +201,6 @@ const PeriodSpendingChart = ({
     1
   );
   
-  console.log('📊 Chart Rendering Debug:', {
-    period,
-    dataPoints: data.length,
-    maxValue: max,
-    sampleData: data.slice(0, 3).map(d => ({
-      label: d.label,
-      income: d.income,
-      spend: d.spend,
-      incomeHeight: `${(d.income / max) * 100}%`,
-      spendHeight: `${(d.spend / max) * 100}%`
-    }))
-  });
 
   return (
     <div className="p-4 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white">
@@ -388,13 +362,6 @@ export default function SpendingPage() {
     queryKey: ["/api/transactions"],
   });
 
-  // Debug: Log transaction data
-  console.log("Spending Chart Debug - Transactions:", {
-    totalTransactions: transactions.length,
-    sampleTransactions: transactions.slice(0, 3),
-    incomeCount: transactions.filter(t => t.type === "income").length,
-    expenseCount: transactions.filter(t => t.type === "expense").length,
-  });
 
   const expenseTransactions = useMemo(
     () => (transactions || []).filter((t) => t.type === "expense"),

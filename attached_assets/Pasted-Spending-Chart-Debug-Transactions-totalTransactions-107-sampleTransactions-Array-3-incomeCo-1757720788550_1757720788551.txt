@@ -1,0 +1,54 @@
+Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
+spending.tsx:218 📊 Chart Rendering Debug: {period: 'week', dataPoints: 8, maxValue: 6712.46, sampleData: Array(3)}
+spending.tsx:392 Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
+spending.tsx:218 📊 Chart Rendering Debug: {period: 'week', dataPoints: 8, maxValue: 6712.46, sampleData: Array(3)}
+spending.tsx:392 Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
+spending.tsx:218 📊 Chart Rendering Debug: {period: 'week', dataPoints: 8, maxValue: 6712.46, sampleData: Array(3)}
+spending.tsx:392 Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
+spending.tsx:218 📊 Chart Rendering Debug: {period: 'week', dataPoints: 8, maxValue: 6712.46, sampleData: Array(3)}
+spending.tsx:392 Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
+spending.tsx:218 📊 Chart Rendering Debug: {period: 'week', dataPoints: 8, maxValue: 6712.46, sampleData: Array(3)}
+spending.tsx:392 Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
+spending.tsx:218 📊 Chart Rendering Debug: {period: 'week', dataPoints: 8, maxValue: 6712.46, sampleData: Array(3)}
+spending.tsx:392 Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
+spending.tsx:218 📊 Chart Rendering Debug: {period: 'week', dataPoints: 8, maxValue: 6712.46, sampleData: Array(3)}
+spending.tsx:392 Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
+spending.tsx:218 📊 Chart Rendering Debug: {period: 'week', dataPoints: 8, maxValue: 6712.46, sampleData: Array(3)}
+spending.tsx:392 Spending Chart Debug - Transactions: {totalTransactions: 107, sampleTransactions: Array(3), incomeCount: 18, expenseCount: 89}
+spending.tsx:131 📊 Chart Debug - Period: 7/20 {dateRange: '2025-07-20 to 2025-07-27', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:124 ✅ Income transaction: Direct Deposit - TechCorp - $4200 (type: income, category: Income)
+spending.tsx:131 📊 Chart Debug - Period: 7/27 {dateRange: '2025-07-27 to 2025-08-03', filteredTransactions: 9, totalIncome: 4200, totalSpend: 3825.88, sampleTransactions: Array(2)}
+spending.tsx:131 📊 Chart Debug - Period: 8/3 {dateRange: '2025-08-03 to 2025-08-10', filteredTransactions: 5, totalIncome: 0, totalSpend: 469.44, sampleTransactions: Array(2)}
+2spending.tsx:124 ✅ Income transaction: United Airlines - $500 (type: income, category: Travel & Vacation)
+2spending.tsx:124 ✅ Income transaction: INTRST PYMNT - $4.22 (type: income, category: Income)
+spending.tsx:131 📊 Chart Debug - Period: 8/10 {dateRange: '2025-08-10 to 2025-08-17', filteredTransactions: 17, totalIncome: 1008.44, totalSpend: 343.2, sampleTransactions: Array(2)}
+spending.tsx:131 📊 Chart Debug - Period: 8/17 {dateRange: '2025-08-17 to 2025-08-24', filteredTransactions: 2, totalIncome: 0, totalSpend: 102.35000000000001, sampleTransactions: Array(2)}
+spending.tsx:131 📊 Chart Debug - Period: 8/24 {dateRange: '2025-08-24 to 2025-08-31', filteredTransactions: 2, totalIncome: 0, totalSpend: 12.66, sampleTransactions: Array(2)}
+spending.tsx:124 ✅ Income transaction: Direct Deposit - TechCorp - $4200 (type: income, category: Income)
+spending.tsx:131 📊 Chart Debug - Period: 8/31 {dateRange: '2025-08-31 to 2025-09-07', filteredTransactions: 18, totalIncome: 4200, totalSpend: 6712.46, sampleTransactions: Array(2)}
+2spending.tsx:124 ✅ Income transaction: INTRST PYMNT - $4.22 (type: income, category: Income)
+spending.tsx:131 📊 Chart Debug - Period: 9/7 {dateRange: '2025-09-07 to 2025-09-14', filteredTransactions: 10, totalIncome: 8.44, totalSpend: 513.89, sampleTransactions: Array(2)}
+spending.tsx:218 📊 Chart Rendering Debug: {period: 'week', dataPoints: 8, maxValue: 6712.46, sampleData: Array(3)}
+transactions-table.tsx:285 TransactionsTable data: {responseStatus: 200, dataLength: 107, sampleData: Array(2), search: '', categoryFilter: '', …}
+spending.tsx:131 📊 Chart Debug - Period: Oct {dateRange: '2024-10-01 to 2024-11-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:131 📊 Chart Debug - Period: Nov {dateRange: '2024-11-01 to 2024-12-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:131 📊 Chart Debug - Period: Dec {dateRange: '2024-12-01 to 2025-01-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:131 📊 Chart Debug - Period: Jan {dateRange: '2025-01-01 to 2025-02-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:131 📊 Chart Debug - Period: Feb {dateRange: '2025-02-01 to 2025-03-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:131 📊 Chart Debug - Period: Mar {dateRange: '2025-03-01 to 2025-04-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:131 📊 Chart Debug - Period: Apr {dateRange: '2025-04-01 to 2025-05-01', filteredTransactions: 0, totalIncome: 0, totalSpend: 0, sampleTransactions: Array(0)}
+spending.tsx:124 ✅ Income transaction: United Airlines - $500 (type: income, category: Travel & Vacation)
+spending.tsx:131 📊 Chart Debug - Period: May {dateRange: '2025-05-01 to 2025-06-01', filteredTransactions: 7, totalIncome: 500, totalSpend: 73.46, sampleTransactions: Array(2)}
+spending.tsx:124 ✅ Income transaction: Direct Deposit - TechCorp - $4200 (type: income, category: Income)
+2spending.tsx:124 ✅ Income transaction: United Airlines - $500 (type: income, category: Travel & Vacation)
+2spending.tsx:124 ✅ Income transaction: INTRST PYMNT - $4.22 (type: income, category: Income)
+spending.tsx:131 📊 Chart Debug - Period: Jun {dateRange: '2025-06-01 to 2025-07-01', filteredTransactions: 19, totalIncome: 5208.4400000000005, totalSpend: 2619.92, sampleTransactions: Array(2)}
+spending.tsx:124 ✅ Income transaction: Direct Deposit - TechCorp - $4200 (type: income, category: Income)
+2spending.tsx:124 ✅ Income transaction: United Airlines - $500 (type: income, category: Travel & Vacation)
+2spending.tsx:124 ✅ Income transaction: INTRST PYMNT - $4.22 (type: income, category: Income)
+spending.tsx:131 📊 Chart Debug - Period: Jul {dateRange: '2025-07-01 to 2025-08-01', filteredTransactions: 24, totalIncome: 5208.4400000000005, totalSpend: 5220.719999999999, sampleTransactions: Array(2)}
+spending.tsx:124 ✅ Income transaction: Direct Deposit - TechCorp - $4200 (type: income, category: Income)
+2spending.tsx:124 ✅ Income transaction: United Airlines - $500 (type: income, category: Travel & Vacation)
+2spending.tsx:124 ✅ Income transaction: INTRST PYMNT - $4.22 (type: income, category: Income)
+spending.tsx:131 📊 Chart Debug - Period: Aug {dateRange: '2025-08-01 to 2025-09-01', filteredTransactions: 34, totalIncome: 5208.4400000000005, totalSpend: 4789.539999999999, sampleTransactions: Array(2)}
+2spending.tsx:124 ✅ Income transaction: INTRST PYMNT - $4.22 (type: income, category: Income)
