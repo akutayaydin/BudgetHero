@@ -18,7 +18,9 @@ interface CardProps {
   children: React.ReactNode;
 }
 const Card: React.FC<CardProps> = ({ className = "", children }) => (
-  <div className={`rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-zinc-900 shadow-sm ${className}`}>
+  <div
+    className={`relative w-full rounded-2xl border border-border bg-card text-card-foreground shadow-sm ${className}`}
+  >
     {children}
   </div>
 );
@@ -29,10 +31,12 @@ interface CardHeaderProps {
   action?: React.ReactNode;
 }
 const CardHeader: React.FC<CardHeaderProps> = ({ title, subtitle, action }) => (
-  <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-zinc-800">
+  <div className="flex items-center justify-between p-4 border-b border-border">
     <div>
-      <h3 className="text-sm font-semibold text-gray-900 dark:text-zinc-100 flex items-center gap-2">{title}</h3>
-      {subtitle && <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">{subtitle}</p>}
+      <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">{title}</h3>
+      {subtitle && (
+        <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+      )}
     </div>
     {action}
   </div>
@@ -50,7 +54,9 @@ interface TagProps {
   children: React.ReactNode;
 }
 const Tag: React.FC<TagProps> = ({ children }) => (
-  <span className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-200">{children}</span>
+  <span className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 bg-muted text-muted-foreground">
+    {children}
+  </span>
 );
 
 interface SmallStatProps {
@@ -60,14 +66,14 @@ interface SmallStatProps {
 }
 const SmallStat: React.FC<SmallStatProps> = ({ label, value, tone = "neutral" }) => (
   <div className="flex items-center justify-between text-sm py-1">
-    <span className="text-gray-500 dark:text-zinc-400">{label}</span>
+    <span className="text-muted-foreground">{label}</span>
     <span
       className={
         tone === "up"
           ? "text-emerald-600"
           : tone === "down"
           ? "text-rose-600"
-          : "text-gray-900 dark:text-zinc-100"
+          : "text-foreground"
       }
     >
       {value}
