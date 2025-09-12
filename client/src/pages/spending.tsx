@@ -96,48 +96,133 @@ function formatUSD(n: number): string {
   });
 }
 
-// Generate spending trends data for the last 7 days
-const generateSpendingTrends = (transactions: Transaction[]) => {
-  const last7Days = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - i));
-    return date;
-  });
+interface ChartPoint {
+  label: string;
+  income: number;
+  spend: number;
+}
 
-  return last7Days.map(date => {
-    const dateStr = date.toISOString().split('T')[0];
-    const dayTransactions = transactions.filter(t => 
-      t.type === 'expense' && t.date.startsWith(dateStr)
-    );
-    const total = dayTransactions.reduce((sum, t) => sum + Math.abs(parseFloat(t.amount)), 0);
-    
-    return {
-      day: date.toLocaleDateString(undefined, { weekday: 'short' }),
-      amount: total
-    };
-  });
+// Build chart data for various time ranges
+const generatePeriodData = (
+  transactions: Transaction[],
+  period: "week" | "month" | "quarter" | "year"
+): ChartPoint[] => {
+  const now = new Date();
+  const data: ChartPoint[] = [];
+
+  const addPoint = (start: Date, end: Date, label: string) => {
+    const dayTransactions = transactions.filter((t) => {
+      const d = new Date(t.date);
+      return d >= start && d <= end;
+    });
+    let income = 0;
+    let spend = 0;
+    dayTransactions.forEach((t) => {
+      const amt = Math.abs(parseFloat(t.amount));
+      if (t.type === "income") income += amt;
+      else spend += amt;
+    });
+    data.push({ label, income, spend });
+  };
+
+  if (period === "week") {
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      const label = `${d.getMonth() + 1}/${d.getDate()}`;
+      addPoint(d, d, label);
+    }
+  } else if (period === "month") {
+    for (let i = 3; i >= 0; i--) {
+      const end = new Date(now);
+      end.setDate(now.getDate() - i * 7);
+      const start = new Date(end);
+      start.setDate(end.getDate() - 6);
+      const label = `${end.getMonth() + 1}/${end.getDate()}`;
+      addPoint(start, end, label);
+    }
+  } else if (period === "quarter") {
+    for (let i = 2; i >= 0; i--) {
+      const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const start = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+      const end = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+      const label = monthDate.toLocaleDateString(undefined, { month: "short" });
+      addPoint(start, end, label);
+    }
+  } else {
+    for (let i = 11; i >= 0; i--) {
+      const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const start = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+      const end = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+      const label = monthDate.toLocaleDateString(undefined, { month: "short" });
+      addPoint(start, end, label);
+    }
+  }
+
+  return data;
 };
 
-// Simple spending trends chart
-const SpendingTrendsChart = ({ data }: { data: any[] }) => {
-  if (!data.length) return <div className="h-24 bg-gray-50 dark:bg-gray-700 rounded-lg" />;
-  
-  const max = Math.max(...data.map(d => d.amount));
-  
+// Chart component styled like design reference
+const PeriodSpendingChart = ({
+  transactions,
+}: {
+  transactions: Transaction[];
+}) => {
+  const [period, setPeriod] = useState<
+    "week" | "month" | "quarter" | "year"
+  >("week");
+
+  const data = useMemo(
+    () => generatePeriodData(transactions, period),
+    [transactions, period]
+  );
+
+  const max = Math.max(
+    ...data.map((d) => Math.max(d.income, d.spend)),
+    1
+  );
+
   return (
-    <div className="h-24 flex items-end justify-between px-2 space-x-1">
-      {data.map((day, i) => {
-        const height = max > 0 ? Math.max((day.amount / max) * 80, 4) : 4;
-        return (
-          <div key={i} className="flex flex-col items-center flex-1">
-            <div 
-              className="w-full bg-blue-500 rounded-t-sm mb-2 transition-all"
-              style={{ height: `${height}px` }}
-            />
-            <span className="text-xs text-gray-500 dark:text-gray-400">{day.day}</span>
+    <div className="p-4 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white">
+      <div className="flex gap-2 mb-4">
+        {["week", "month", "quarter", "year"].map((p) => (
+          <button
+            key={p}
+            className={`px-3 py-1 rounded-full text-sm transition-colors ${
+              period === p ? "bg-white text-pink-600" : "bg-white/20"
+            }`}
+            onClick={() => setPeriod(p as any)}
+          >
+            {p.charAt(0).toUpperCase() + p.slice(1)}
+          </button>
+        ))}
+      </div>
+      <div className="flex items-end justify-between h-40">
+        {data.map((d, i) => (
+          <div key={i} className="flex flex-col items-center flex-1 mx-1">
+            <div className="w-full bg-white/10 rounded-md flex items-end justify-around h-full p-1">
+              <div
+                className="w-1/2 mx-0.5 bg-white rounded-t-sm"
+                style={{ height: `${(d.income / max) * 100}%` }}
+              />
+              <div
+                className="w-1/2 mx-0.5 rounded-t-sm bg-white/20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:2px_2px]"
+                style={{ height: `${(d.spend / max) * 100}%` }}
+              />
+            </div>
+            <span className="text-xs mt-1">{d.label}</span>
           </div>
-        );
-      })}
+        ))}
+      </div>
+      <div className="flex justify-center gap-4 text-xs mt-4">
+        <div className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-white" /> Income
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-white/20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:2px_2px]" />
+          Total Spend
+        </div>
+      </div>
     </div>
   );
 };
@@ -317,8 +402,6 @@ export default function SpendingPage() {
   const delta = totalSpend - lastMonthTotal;
   const deltaPct = Math.abs(delta) / (lastMonthTotal || 1);
 
-  const spendingTrends = useMemo(() => generateSpendingTrends(transactions || []), [transactions]);
-
   const merchants = useMemo(() => {
     const map = new Map<string, { amount: number; count: number; domain: string }>();
     currentMonthTx.forEach((t) => {
@@ -431,16 +514,11 @@ export default function SpendingPage() {
             <CardBody className="py-4">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Daily Spending (Last 7 Days)</h3>
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Spending Overview</h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Track your spending patterns</p>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    Avg: {formatUSD(spendingTrends.reduce((sum, day) => sum + day.amount, 0) / 7)}
-                  </div>
-                </div>
               </div>
-              <SpendingTrendsChart data={spendingTrends} />
+              <PeriodSpendingChart transactions={transactions || []} />
             </CardBody>
           </Card>
         </div>
