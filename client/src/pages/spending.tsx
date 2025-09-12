@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   MoreHorizontal,
   Calendar as CalendarIcon,
@@ -99,17 +100,6 @@ interface Category {
   lastMonth: number;
 }
 
-const sampleCategories: Category[] = [
-  { name: "Bills & Utilities", amount: 1325.64, lastMonth: 1203.11 },
-  { name: "Shopping", amount: 960.03, lastMonth: 1020.9 },
-  { name: "Groceries", amount: 446.23, lastMonth: 430.11 },
-  { name: "Auto & Transport", amount: 328.56, lastMonth: 210.38 },
-  { name: "Dining", amount: 287.31, lastMonth: 300.2 },
-  { name: "Software & Tech", amount: 240.7, lastMonth: 199.99 },
-  { name: "Personal Care", amount: 200, lastMonth: 185.5 },
-  { name: "Uncategorized", amount: 226.36, lastMonth: 50.0 },
-];
-
 interface Merchant {
   name: string;
   domain: string;
@@ -118,11 +108,15 @@ interface Merchant {
   amount: number;
 }
 
-const merchants: Merchant[] = [
-  { name: "Tesla Supercharging", domain: "tesla.com", count: 11, avg: 18.7, amount: 288.38 },
-  { name: "Trader Joe's", domain: "traderjoes.com", count: 5, avg: 45.9, amount: 275.0 },
-  { name: "Target", domain: "target.com", count: 3, avg: 63.5, amount: 151.6 },
-];
+interface Transaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: string;
+  category: string;
+  type: string;
+  merchant?: string;
+}
 
 // ---------- Helpers ----------
 function formatUSD(n: number): string {
@@ -237,13 +231,127 @@ export default function SpendingPage() {
   const [mode, setMode] = useState("pie");
   const [range, setRange] = useState("This Month");
   const [active, setActive] = useState<number | null>(null);
+  const { data: transactions } = useQuery<Transaction[]>({
+    queryKey: ["/api/transactions"],
+  });
 
-  const donut = useDonutData(sampleCategories);
+  const expenseTransactions = useMemo(
+    () => (transactions || []).filter((t) => t.type === "expense"),
+    [transactions]
+  );
+
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  const lastMonthDate = new Date(currentYear, currentMonth - 1, 1);
+
+  const currentMonthTx = useMemo(
+    () =>
+      expenseTransactions.filter((t) => {
+        const d = new Date(t.date);
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+      }),
+    [expenseTransactions, currentMonth, currentYear]
+  );
+
+  const lastMonthTx = useMemo(
+    () =>
+      expenseTransactions.filter((t) => {
+        const d = new Date(t.date);
+        return (
+          d.getMonth() === lastMonthDate.getMonth() &&
+          d.getFullYear() === lastMonthDate.getFullYear()
+        );
+      }),
+    [expenseTransactions, lastMonthDate]
+  );
+
+  const categories = useMemo(() => {
+    const mapCurrent: Record<string, number> = {};
+    const mapLast: Record<string, number> = {};
+    currentMonthTx.forEach((t) => {
+      const c = t.category || "Uncategorized";
+      const amt = Math.abs(parseFloat(t.amount));
+      mapCurrent[c] = (mapCurrent[c] || 0) + amt;
+    });
+    lastMonthTx.forEach((t) => {
+      const c = t.category || "Uncategorized";
+      const amt = Math.abs(parseFloat(t.amount));
+      mapLast[c] = (mapLast[c] || 0) + amt;
+    });
+    const names = Array.from(
+      new Set([...Object.keys(mapCurrent), ...Object.keys(mapLast)])
+    );
+    return names
+      .map((name) => ({
+        name,
+        amount: mapCurrent[name] || 0,
+        lastMonth: mapLast[name] || 0,
+      }))
+      .sort((a, b) => b.amount - a.amount);
+  }, [currentMonthTx, lastMonthTx]);
+
+  const donut = useDonutData(categories);
   const totalSpend = donut.total;
-  const lastMonthTotal = sampleCategories.reduce((s, c) => s + c.lastMonth, 0);
+  const lastMonthTotal = categories.reduce((s, c) => s + c.lastMonth, 0);
   const delta = totalSpend - lastMonthTotal;
   const deltaPct = Math.abs(delta) / (lastMonthTotal || 1);
   const trendingTone = delta > 0 ? "down" : delta < 0 ? "up" : "neutral";
+
+  const merchants = useMemo(() => {
+    const map = new Map<string, { amount: number; count: number; domain: string }>();
+    currentMonthTx.forEach((t) => {
+      const name = t.merchant || t.description;
+      if (!name) return;
+      const amount = Math.abs(parseFloat(t.amount));
+      const domain = (t.merchant || "").toLowerCase().replace(/\s+/g, "") + ".com";
+      const entry = map.get(name) || { amount: 0, count: 0, domain };
+      entry.amount += amount;
+      entry.count += 1;
+      entry.domain = domain;
+      map.set(name, entry);
+    });
+    return Array.from(map.entries())
+      .map(([name, info]) => ({
+        name,
+        domain: info.domain,
+        count: info.count,
+        avg: info.count ? +(info.amount / info.count).toFixed(1) : 0,
+        amount: info.amount,
+      }))
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 3);
+  }, [currentMonthTx]);
+
+  const largestPurchases = useMemo(
+    () =>
+      currentMonthTx
+        .slice()
+        .sort(
+          (a, b) =>
+            Math.abs(parseFloat(b.amount)) - Math.abs(parseFloat(a.amount))
+        )
+        .slice(0, 3)
+        .map((t) => ({
+          n: t.merchant || t.description,
+          d: new Date(t.date).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+          }),
+          a: Math.abs(parseFloat(t.amount)),
+          domain:
+            (t.merchant || "").toLowerCase().replace(/\s+/g, "") + ".com",
+        })),
+    [currentMonthTx]
+  );
+
+  const uncategorizedCount = useMemo(
+    () =>
+      expenseTransactions.filter(
+        (t) => !t.category || t.category === "Other" || t.category === "Uncategorized"
+      ).length,
+    [expenseTransactions]
+  );
 
   return (
     <div className="min-h-screen w-full bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-zinc-100">
@@ -385,7 +493,7 @@ export default function SpendingPage() {
                   <IncomeExpenseBarChart />
                 </div>
                 <div className="divide-y divide-gray-100 dark:divide-zinc-800">
-                  {sampleCategories.map((c, idx) => {
+                  {categories.map((c, idx) => {
                     const pal =
                       categoryPalette.find((p) => p.key === c.name) || categoryPalette[0];
                     const pct = Math.round((c.amount / totalSpend) * 100);
@@ -452,7 +560,7 @@ export default function SpendingPage() {
                 title="Needs Categorization"
                 action={
                   <button className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                    Update {6}
+                    Update {uncategorizedCount}
                   </button>
                 }
               />
@@ -460,7 +568,7 @@ export default function SpendingPage() {
                 <div className="flex items-start gap-3 text-sm">
                   <AlertCircle className="h-5 w-5 text-amber-500" />
                   <p className="text-gray-600 dark:text-zinc-300">
-                    You have 6 uncategorized transactions. Review them to improve insights.
+                    You have {uncategorizedCount} uncategorized transactions. Review them to improve insights.
                   </p>
                 </div>
               </CardBody>
@@ -515,11 +623,7 @@ export default function SpendingPage() {
             <Card>
               <CardHeader title="Largest Purchases" />
               <CardBody className="space-y-3">
-                {[
-                  { n: "Trader Joe's", d: "Aug 26", a: 63.9, domain: "traderjoes.com" },
-                  { n: "Flight Tickets", d: "Aug 18", a: 252.5, domain: "delta.com" },
-                  { n: "Target", d: "Aug 05", a: 151.6, domain: "target.com" },
-                ].map((x) => (
+                {largestPurchases.map((x) => (
                   <div key={x.n} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <img

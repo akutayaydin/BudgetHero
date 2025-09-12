@@ -110,12 +110,12 @@ const navigation = [
   },
   {
     name: "Cash Flow",
-    href: "/wealth-management",
+    href: "/cash-flow",
     icon: Gauge,
   },
   {
     name: "Net Worth",
-    href: "/assets-liabilities",
+    href: "/wealth-management",
     icon: LineChart,
   },
   {

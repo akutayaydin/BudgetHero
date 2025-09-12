@@ -542,7 +542,7 @@ export default function ProgressiveDisclosureOverview({ className }: Progressive
                         <Button 
                           size="sm" 
                           className="bg-emerald-600 hover:bg-emerald-700"
-                          onClick={() => window.location.href = '/assets-liabilities'}
+                          onClick={() => window.location.href = '/wealth-management'}
                         >
                           Get Started
                         </Button>

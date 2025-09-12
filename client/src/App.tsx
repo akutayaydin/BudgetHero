@@ -28,8 +28,8 @@ import SpendingPage from "@/pages/spending";
 import EarningsPage from "@/pages/earnings";
 import SpendingCategoriesPage from "@/pages/spending-categories";
 import { AccountsPage } from "@/pages/accounts";
-import AssetsLiabilities from "@/pages/assets-liabilities";
 import WealthManagement from "@/pages/wealth-management";
+import CashFlow from "@/pages/cash-flow";
 import ConnectBank from "@/pages/connect-bank";
 import SubscriptionPlans from "@/pages/subscription-plans";
 import SubscriptionSuccess from "@/pages/subscription-success";
@@ -103,8 +103,8 @@ function Router() {
             <Route path="/dashboard" component={OverviewV2} />
             <Route path="/upload" component={Upload} />
             <Route path="/accounts" component={AccountsPage} />
-            <Route path="/assets-liabilities" component={AssetsLiabilities} />
             <Route path="/wealth-management" component={WealthManagement} />
+            <Route path="/cash-flow" component={CashFlow} />
             <Route path="/connect-bank" component={ConnectBank} />
             <Route path="/transactions" component={Transactions} />
             <Route path="/spending" component={SpendingPage} />
