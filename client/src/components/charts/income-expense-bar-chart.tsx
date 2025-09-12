@@ -8,6 +8,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
 } from "recharts";
 
 interface DataPoint {
@@ -18,10 +19,12 @@ interface DataPoint {
 
 const DATA: Record<string, DataPoint[]> = {
   week: [
-    { period: "Week 1", income: 1200, expenses: 900 },
-    { period: "Week 2", income: 1100, expenses: 1000 },
-    { period: "Week 3", income: 1300, expenses: 1050 },
-    { period: "Week 4", income: 1250, expenses: 950 },
+    { period: "8/4", income: 1200, expenses: 900 },
+    { period: "8/11", income: 1100, expenses: 1000 },
+    { period: "8/18", income: 1300, expenses: 1050 },
+    { period: "8/25", income: 1250, expenses: 950 },
+    { period: "9/1", income: 1400, expenses: 1000 },
+    { period: "9/8", income: 1350, expenses: 1100 },
   ],
   month: [
     { period: "Apr", income: 8000, expenses: 6200 },
@@ -51,40 +54,105 @@ export default function IncomeExpenseBarChart() {
 
   return (
     <div className="w-full">
-      <div className="flex justify-end mb-2">
+      {/* Toggle Controls */}
+      <div className="flex justify-start mb-4">
         <ToggleGroup
           type="single"
           value={period}
           onValueChange={(v) => v && setPeriod(v as keyof typeof DATA)}
-          className="border rounded-md p-1"
+          className="rounded-full bg-gray-100 p-1"
         >
-          <ToggleGroupItem value="week" className="text-xs">Week</ToggleGroupItem>
-          <ToggleGroupItem value="month" className="text-xs">Month</ToggleGroupItem>
-          <ToggleGroupItem value="quarter" className="text-xs">Quarter</ToggleGroupItem>
-          <ToggleGroupItem value="year" className="text-xs">Year</ToggleGroupItem>
+          <ToggleGroupItem
+            value="week"
+            className="px-3 py-1 text-xs rounded-full data-[state=on]:bg-white data-[state=on]:shadow"
+          >
+            Week
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="month"
+            className="px-3 py-1 text-xs rounded-full data-[state=on]:bg-white data-[state=on]:shadow"
+          >
+            Month
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="quarter"
+            className="px-3 py-1 text-xs rounded-full data-[state=on]:bg-white data-[state=on]:shadow"
+          >
+            Quarter
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="year"
+            className="px-3 py-1 text-xs rounded-full data-[state=on]:bg-white data-[state=on]:shadow"
+          >
+            Year
+          </ToggleGroupItem>
         </ToggleGroup>
       </div>
+
+      {/* Bar Chart */}
       <div className="w-full overflow-x-auto">
-        <div
-          style={{
-            minWidth: chartData.length * 60,
-            width: "100%",
-            height: 240,
-          }}
-        >
+        <div style={{ minWidth: chartData.length * 48, width: "100%", height: 240 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
+            <BarChart
+              data={chartData}
+              barCategoryGap={32}
+              barGap={4}
+              margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="period" />
-              <YAxis
-                label={{ value: "Amount ($)", angle: -90, position: "insideLeft" }}
-                tickFormatter={(v) => `$${v}`}
-              />
+              <XAxis dataKey="period" axisLine={false} tickLine={false} />
+              <YAxis tickFormatter={(v) => `$${v}`} />
               <Tooltip
                 formatter={(value: number) => [`$${value.toLocaleString()}`, undefined]}
+                cursor={{ fill: "transparent" }}
               />
-              <Bar dataKey="income" fill="#22C55E" name="Income" />
-              <Bar dataKey="expenses" fill="#A855F7" name="Expenses" />
+              <defs>
+                {/* Cross-hatched pattern: vertical + horizontal dashes */}
+                <pattern id="expensePattern" patternUnits="userSpaceOnUse" width={3} height={3}>
+                  <rect x="0" y="0" width="2" height="4" fill="#F59E0B" />
+                  <rect x="0" y="0" width="4" height="2" fill="#FFFFFF" />
+                </pattern>
+
+
+              </defs>
+              {/* Income = solid teal */}
+              <Bar
+                dataKey="income"
+                fill="#3B82F6"
+                name="Income"
+                radius={[24, 24, 0, 0]}
+                barSize={16}
+              />
+              {/* Expenses = cross-hatched orange */}
+              <Bar
+                dataKey="expenses"
+                fill="url(#expensePattern)"
+                name="Expenses"
+                radius={[24, 24, 0, 0]}
+                barSize={16}
+              />
+              <Legend
+                verticalAlign="bottom"
+                align="center"
+                content={() => (
+                  <div className="flex justify-center gap-4 text-xs mt-4">
+                    <div className="flex items-center gap-1">
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{ background: "#06B6D4" }}
+                      />
+                      Income
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {/* Legend uses same cross-hatched pattern */}
+                      <svg width="12" height="12" className="rounded-sm">
+                        <rect width="12" height="12" fill="url(#expensePattern)" />
+                      </svg>
+                      Expenses
+                    </div>
+                  </div>
+                )}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
