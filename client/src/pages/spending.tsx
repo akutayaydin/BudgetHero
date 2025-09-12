@@ -346,8 +346,16 @@ export default function SpendingPage() {
   const [range, setRange] = useState("This Month");
   const [active, setActive] = useState<number | null>(null);
   
-  const { data: transactions } = useQuery<Transaction[]>({
+  const { data: transactions = [] } = useQuery<Transaction[]>({
     queryKey: ["/api/transactions"],
+  });
+
+  // Debug: Log transaction data
+  console.log("Spending Chart Debug - Transactions:", {
+    totalTransactions: transactions.length,
+    sampleTransactions: transactions.slice(0, 3),
+    incomeCount: transactions.filter(t => t.type === "income").length,
+    expenseCount: transactions.filter(t => t.type === "expense").length,
   });
 
   const expenseTransactions = useMemo(

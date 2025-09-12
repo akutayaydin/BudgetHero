@@ -758,19 +758,6 @@ export default function TransactionsTable({
     );
   };
 
-  // Calculate totals for current page
-  const calculatePageTotals = () => {
-    const income = paginatedTransactions
-      .filter((t) => t.type === "income")
-      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-
-    const expenses = paginatedTransactions
-      .filter((t) => t.type === "expense")
-      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-
-    return { income, expenses, net: income - expenses };
-  };
-
   // Advanced filtering logic
   let filteredTransactions = Array.isArray(transactions) ? transactions : [];
 
@@ -2099,40 +2086,6 @@ export default function TransactionsTable({
                   })}
                 </tbody>
 
-                {/* Summary Row */}
-                {paginatedTransactions.length > 0 &&
-                  (() => {
-                    const totals = calculatePageTotals();
-                      return (
-                        <tfoot className="bg-muted/30 border-t-2 border-border">
-                          <tr className="font-semibold">
-                            <td
-                              colSpan={4}
-                              className="px-2 sm:px-4 py-3 text-right text-sm"
-                            >
-                              Page Summary:
-                            </td>
-                            <td className="px-2 sm:px-4 py-3 text-right">
-                              <div className="space-y-1">
-                              <div className="text-green-600 text-xs">
-                                Income: +{formatCurrency(totals.income)}
-                              </div>
-                              <div className="text-red-600 text-xs">
-                                Expenses: -{formatCurrency(totals.expenses)}
-                              </div>
-                              <div
-                                className={`font-bold ${totals.net >= 0 ? "text-green-600" : "text-red-600"}`}
-                              >
-                                Net: {totals.net >= 0 ? "+" : ""}
-                                {formatCurrency(Math.abs(totals.net))}
-                              </div>
-                            </div>
-                            </td>
-                            <td className="px-2 sm:px-4 py-3"></td>
-                          </tr>
-                        </tfoot>
-                      );
-                    })()}
               </table>
             </div>
           </>
