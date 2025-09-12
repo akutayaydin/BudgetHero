@@ -122,6 +122,21 @@ const generatePeriodData = (
       if (t.type === "income") income += amt;
       else spend += amt;
     });
+    
+    // Debug logging for chart calculation
+    console.log(`📊 Chart Debug - Period: ${label}`, {
+      dateRange: `${start.toISOString().slice(0, 10)} to ${end.toISOString().slice(0, 10)}`,
+      filteredTransactions: periodTx.length,
+      totalIncome: income,
+      totalSpend: spend,
+      sampleTransactions: periodTx.slice(0, 2).map(t => ({
+        date: t.date,
+        amount: t.amount,
+        type: t.type,
+        category: t.category
+      }))
+    });
+    
     data.push({ label, income, spend });
   };
 
