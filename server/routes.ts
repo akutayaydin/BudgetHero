@@ -2886,41 +2886,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get categories that are currently used in budgets
+  // Get standard categories for both budgets and transactions
   app.get("/api/budget-categories", async (req, res) => {
     try {
-      const userId = (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ error: "User not authenticated" });
-      }
-
-      // Get categories from current budgets
-      const { budgets } = await import("@shared/schema");
-      const { eq, and, isNotNull } = await import("drizzle-orm");
-      
-      const userBudgets = await db
-        .select({ category: budgets.category })
-        .from(budgets)
-        .where(and(
-          eq(budgets.userId, userId),
-          isNotNull(budgets.category)
-        ))
-        .groupBy(budgets.category);
-
-      const budgetCategoryNames = userBudgets.map(b => b.category).filter(Boolean);
-      
-      // Get matching admin categories
-      const allAdminCategories = await storage.getAdminCategories();
-      const budgetCategories = allAdminCategories.filter((cat: any) => 
-        budgetCategoryNames.includes(cat.name) ||
-        budgetCategoryNames.includes(cat.subcategory) ||
-        budgetCategoryNames.some(budgetCat => 
-          cat.subcategory && `${cat.name} (${cat.subcategory})` === budgetCat ||
-          cat.subcategory && `${cat.name} - ${cat.subcategory}` === budgetCat
-        )
-      );
-
-      res.json(budgetCategories);
+      // Return all standard categories - both budgets and transactions should use the same categories
+      const standardCategories = await storage.getAdminCategories();
+      res.json(standardCategories);
     } catch (error) {
       console.error("Error fetching budget categories:", error);
       res.status(500).json({ error: "Failed to fetch budget categories" });
