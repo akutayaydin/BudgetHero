@@ -12,6 +12,7 @@ import {
   ChartPie,
   Wallet,
   Gauge,
+  LineChart,
   Receipt,
   Goal,
   Sparkles,
@@ -111,6 +112,11 @@ const navigation = [
     name: "Cash Flow",
     href: "/wealth-management",
     icon: Gauge,
+  },
+  {
+    name: "Net Worth",
+    href: "/assets-liabilities",
+    icon: LineChart,
   },
   {
     name: "Bills & Subscriptions",
