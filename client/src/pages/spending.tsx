@@ -111,13 +111,13 @@ const generatePeriodData = (
   const data: ChartPoint[] = [];
 
   const addPoint = (start: Date, end: Date, label: string) => {
-    const dayTransactions = transactions.filter((t) => {
+    const periodTx = transactions.filter((t) => {
       const d = new Date(t.date);
       return d >= start && d <= end;
     });
     let income = 0;
     let spend = 0;
-    dayTransactions.forEach((t) => {
+    periodTx.forEach((t) => {
       const amt = Math.abs(parseFloat(t.amount));
       if (t.type === "income") income += amt;
       else spend += amt;
@@ -126,35 +126,50 @@ const generatePeriodData = (
   };
 
   if (period === "week") {
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(now.getDate() - i);
-      const label = `${d.getMonth() + 1}/${d.getDate()}`;
-      addPoint(d, d, label);
-    }
-  } else if (period === "month") {
-    // last 30 days, grouped by day
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(now.getDate() - i);
-      const label = `${d.getMonth() + 1}/${d.getDate()}`;
-      addPoint(d, d, label);
-    }
-  } else if (period === "quarter") {
-    for (let i = 2; i >= 0; i--) {
-      const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const start = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
-      const end = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
-      const label = monthDate.toLocaleDateString(undefined, { month: "short" });
+    const startOfWeek = (d: Date) => {
+      const s = new Date(d);
+      s.setHours(0, 0, 0, 0);
+      s.setDate(s.getDate() - s.getDay());
+      return s;
+    };
+    const currentStart = startOfWeek(now);
+    for (let i = 7; i >= 0; i--) {
+      const start = new Date(currentStart);
+      start.setDate(start.getDate() - i * 7);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      end.setHours(23, 59, 59, 999);
+      const label = `${start.getMonth() + 1}/${start.getDate()}`;
       addPoint(start, end, label);
     }
-  } else {
+  } else if (period === "month") {
     for (let i = 11; i >= 0; i--) {
       const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const start = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
       const end = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+      end.setHours(23, 59, 59, 999);
       const label = monthDate.toLocaleDateString(undefined, { month: "short" });
       addPoint(start, end, label);
+    }
+  } else if (period === "quarter") {
+    const currentQuarter = Math.floor(now.getMonth() / 3);
+    for (let i = 3; i >= 0; i--) {
+      const qIndex = currentQuarter - i;
+      const year = now.getFullYear() + Math.floor(qIndex / 4);
+      const quarter = ((qIndex % 4) + 4) % 4;
+      const start = new Date(year, quarter * 3, 1);
+      const end = new Date(year, quarter * 3 + 3, 0);
+      end.setHours(23, 59, 59, 999);
+      const label = `Q${quarter + 1} ${year}`;
+      addPoint(start, end, label);
+    }
+  } else {
+    for (let i = 4; i >= 0; i--) {
+      const year = now.getFullYear() - i;
+      const start = new Date(year, 0, 1);
+      const end = new Date(year, 11, 31);
+      end.setHours(23, 59, 59, 999);
+      addPoint(start, end, `${year}`);
     }
   }
 
