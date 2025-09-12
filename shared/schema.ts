@@ -75,6 +75,7 @@ export const transactions = pgTable("transactions", {
 export const adminCategories = pgTable("admin_categories", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
+  slug: text("slug"), // Stable identifier for upserts (e.g., "auto-transport", "groceries") - initially optional
   subcategory: text("subcategory"), // Subcategory name (e.g., "Paychecks", "Gas", "Coffee Shops")
   ledgerType: text("ledger_type", { 
     enum: ["INCOME", "EXPENSE", "TRANSFER", "DEBT_CREDIT", "ADJUSTMENT"] 
@@ -91,7 +92,27 @@ export const adminCategories = pgTable("admin_categories", {
   sortOrder: integer("sort_order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => ({
+  slugIdx: index("admin_categories_slug_idx").on(table.slug),
+}));
+
+// Comprehensive Plaid category to standard category mapping
+export const plaidCategoryMap = pgTable("plaid_category_map", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  plaidPrimary: text("plaid_primary").notNull(), // e.g., "FOOD_AND_DRINK"
+  plaidDetailed: text("plaid_detailed").notNull(), // e.g., "FOOD_AND_DRINK_GROCERIES"
+  adminCategorySlug: text("admin_category_slug").notNull(), // references admin_categories.slug
+  ledgerType: text("ledger_type", { 
+    enum: ["INCOME", "EXPENSE", "TRANSFER", "DEBT_CREDIT", "ADJUSTMENT"] 
+  }).notNull(),
+  confidence: decimal("confidence", { precision: 3, scale: 2 }).default("0.90"), // 0.90 for Plaid mappings
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+  plaidDetailedIdx: index("plaid_category_map_detailed_idx").on(table.plaidDetailed),
+  plaidPrimaryIdx: index("plaid_category_map_primary_idx").on(table.plaidPrimary),
+  uniquePlaidMapping: index("unique_plaid_mapping").on(table.plaidPrimary, table.plaidDetailed),
+}));
 
 // User-specific merchant overrides and subcategories
 export const userMerchantOverrides = pgTable("user_merchant_overrides", {
