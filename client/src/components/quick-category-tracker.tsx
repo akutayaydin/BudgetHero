@@ -111,11 +111,12 @@ const EnhancedProgressBar: React.FC<EnhancedProgressBarProps> = ({
           
           {/* Overspend indicator */}
           {isOverspent && (
-            <div 
+            <div
               className="absolute top-0 h-full bg-red-500 rounded-r-full"
-              style={{ 
-                left: '100%', 
-                width: `${Math.min((overspentAmount / budget) * 100, 50)}%` 
+              style={{
+                left: '100%',
+                // Limit overspend indicator width to keep visual balance
+                width: `${Math.min((overspentAmount / budget) * 25, 25)}%`
               }}
             />
           )}
