@@ -214,6 +214,19 @@ const PeriodSpendingChart = ({
     ...data.map((d) => Math.max(d.income, d.spend)),
     1
   );
+  
+  console.log('📊 Chart Rendering Debug:', {
+    period,
+    dataPoints: data.length,
+    maxValue: max,
+    sampleData: data.slice(0, 3).map(d => ({
+      label: d.label,
+      income: d.income,
+      spend: d.spend,
+      incomeHeight: `${(d.income / max) * 100}%`,
+      spendHeight: `${(d.spend / max) * 100}%`
+    }))
+  });
 
   return (
     <div className="p-4 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white">
@@ -230,17 +243,23 @@ const PeriodSpendingChart = ({
           </button>
         ))}
       </div>
-      <div className="flex items-end justify-between h-40">
+      <div className="flex items-end justify-between h-40 relative">
         {data.map((d, i) => (
           <div key={i} className="flex flex-col items-center flex-1 mx-1">
             <div className="w-full bg-white/10 rounded-md flex items-end justify-around h-full p-1">
               <div
-                className="w-1/2 mx-0.5 bg-white rounded-t-sm"
-                style={{ height: `${(d.income / max) * 100}%` }}
+                className="w-1/2 mx-0.5 bg-white rounded-t-sm min-h-[2px]"
+                style={{ 
+                  height: d.income > 0 ? `${Math.max((d.income / max) * 100, 5)}%` : '0%'
+                }}
+                title={`Income: $${d.income.toFixed(2)}`}
               />
               <div
-                className="w-1/2 mx-0.5 rounded-t-sm bg-white/20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:2px_2px]"
-                style={{ height: `${(d.spend / max) * 100}%` }}
+                className="w-1/2 mx-0.5 rounded-t-sm bg-white/20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:2px_2px] min-h-[2px]"
+                style={{ 
+                  height: d.spend > 0 ? `${Math.max((d.spend / max) * 100, 5)}%` : '0%'
+                }}
+                title={`Spend: $${d.spend.toFixed(2)}`}
               />
             </div>
             <span className="text-xs mt-1">{d.label}</span>
