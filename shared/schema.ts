@@ -75,7 +75,7 @@ export const transactions = pgTable("transactions", {
 export const adminCategories = pgTable("admin_categories", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
-  slug: text("slug"), // Stable identifier for upserts (e.g., "auto-transport", "groceries") - initially optional
+  slug: text("slug").notNull().unique(), // Stable identifier for upserts (e.g., "auto-transport", "groceries")
   subcategory: text("subcategory"), // Subcategory name (e.g., "Paychecks", "Gas", "Coffee Shops")
   ledgerType: text("ledger_type", { 
     enum: ["INCOME", "EXPENSE", "TRANSFER", "DEBT_CREDIT", "ADJUSTMENT"] 

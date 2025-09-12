@@ -40,11 +40,11 @@ export class ComprehensiveCategorizer {
     ledgerType: string;
   }> = [];
 
-  private merchantOverrideCache = new Map<string, {
+  private merchantOverrideCache = new Map<string, Map<string, {
     adminCategoryId: string;
     subcategoryName: string | null;
     confidence: number;
-  }>();
+  }>>();
 
   constructor() {
     this.loadCaches();
@@ -94,7 +94,8 @@ export class ComprehensiveCategorizer {
    * Load user-specific merchant overrides
    */
   private async loadMerchantOverrides(userId: string): Promise<void> {
-    if (this.merchantOverrideCache.size > 0) return; // Already loaded
+    // Check if this user's overrides are already loaded
+    if (this.merchantOverrideCache.has(userId)) return;
 
     try {
       const overrides = await db
@@ -107,13 +108,21 @@ export class ComprehensiveCategorizer {
         .from(userMerchantOverrides)
         .where(eq(userMerchantOverrides.userId, userId));
 
+      const userOverrides = new Map<string, {
+        adminCategoryId: string;
+        subcategoryName: string | null;
+        confidence: number;
+      }>();
+
       for (const override of overrides) {
-        this.merchantOverrideCache.set(override.merchantName.toLowerCase(), {
+        userOverrides.set(override.merchantName.toLowerCase(), {
           adminCategoryId: override.adminCategoryId,
           subcategoryName: override.subcategoryName,
           confidence: Number(override.confidence) || 1.0,
         });
       }
+
+      this.merchantOverrideCache.set(userId, userOverrides);
     } catch (error) {
       console.error("❌ Error loading merchant overrides:", error);
     }
@@ -135,7 +144,7 @@ export class ComprehensiveCategorizer {
 
     // Priority 1: User merchant overrides
     if (transaction.merchant && transaction.userId) {
-      const merchantMatch = this.matchByMerchantOverride(transaction.merchant);
+      const merchantMatch = this.matchByMerchantOverride(transaction.merchant, transaction.userId);
       if (merchantMatch) {
         return merchantMatch;
       }
@@ -170,10 +179,13 @@ export class ComprehensiveCategorizer {
   /**
    * Match using user-specific merchant overrides
    */
-  private matchByMerchantOverride(merchant: string): CategoryMatch | null {
+  private matchByMerchantOverride(merchant: string, userId: string): CategoryMatch | null {
     const normalizedMerchant = merchant.toLowerCase().trim();
-    const override = this.merchantOverrideCache.get(normalizedMerchant);
+    const userOverrides = this.merchantOverrideCache.get(userId);
     
+    if (!userOverrides) return null;
+    
+    const override = userOverrides.get(normalizedMerchant);
     if (!override) return null;
 
     const category = this.adminCategoriesCache.find(cat => cat.id === override.adminCategoryId);
@@ -379,6 +391,46 @@ export class ComprehensiveCategorizer {
       source: "uncategorized",
       budgetType: category.budgetType,
       ledgerType: category.ledgerType,
+    };
+  }
+
+  /**
+   * Refresh all caches (useful after seeding or admin changes)
+   */
+  async refreshCaches(): Promise<void> {
+    // Clear existing caches
+    this.adminCategoriesCache = [];
+    this.plaidMappingCache = [];
+    this.merchantOverrideCache.clear();
+    
+    // Reload global caches
+    await this.loadCaches();
+    
+    console.log("🔄 Comprehensive categorizer caches refreshed");
+  }
+
+  /**
+   * Clear merchant overrides for a specific user
+   */
+  clearUserMerchantCache(userId: string): void {
+    this.merchantOverrideCache.delete(userId);
+  }
+
+  /**
+   * Clear all merchant overrides cache
+   */
+  clearAllMerchantCaches(): void {
+    this.merchantOverrideCache.clear();
+  }
+
+  /**
+   * Get cache statistics for debugging
+   */
+  getCacheStats(): { adminCategories: number; plaidMappings: number; usersWithOverrides: number } {
+    return {
+      adminCategories: this.adminCategoriesCache.length,
+      plaidMappings: this.plaidMappingCache.length,
+      usersWithOverrides: this.merchantOverrideCache.size,
     };
   }
 }
