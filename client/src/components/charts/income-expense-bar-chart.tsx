@@ -109,7 +109,7 @@ export default function IncomeExpenseBarChart() {
               <defs>
                 {/* Cross-hatched pattern: vertical + horizontal dashes */}
                 <pattern id="expensePattern" patternUnits="userSpaceOnUse" width={3} height={3}>
-                  <rect x="0" y="0" width="2" height="4" fill="#F59E0B" />
+                  <rect x="0" y="0" width="2" height="4" fill="#B23091" />
                   <rect x="0" y="0" width="4" height="2" fill="#FFFFFF" />
                 </pattern>
 
@@ -118,7 +118,7 @@ export default function IncomeExpenseBarChart() {
               {/* Income = solid teal */}
               <Bar
                 dataKey="income"
-                fill="#3B82F6"
+                fill="#10B981"
                 name="Income"
                 radius={[24, 24, 0, 0]}
                 barSize={16}
