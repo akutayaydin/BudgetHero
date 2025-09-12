@@ -405,6 +405,14 @@ export default function SpendingPage() {
           </div>
         </div>
 
+        {/* Monthly income vs expense */}
+        <div className="mb-4">
+          <IncomeExpenseBarChart
+            transactions={transactions || []}
+            categories={categories}
+          />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* LEFT: Breakdown & table */}
           <div className="lg:col-span-2 space-y-4">
@@ -489,10 +497,7 @@ export default function SpendingPage() {
             <Card>
               <CardHeader title="Categories" subtitle="Percent of spend · vs last month" />
               <CardBody className="p-0">
-                <div className="p-4">
-                  <IncomeExpenseBarChart />
-                </div>
-                <div className="divide-y divide-gray-100 dark:divide-zinc-800">
+                <div className="divide-y divide-gray-100 dark:divide-zinc-800 pt-4">
                   {categories.map((c, idx) => {
                     const pal =
                       categoryPalette.find((p) => p.key === c.name) || categoryPalette[0];
