@@ -1786,9 +1786,9 @@ export default function TransactionsTable({
                       />
                     </th>
                     {/* Sortable Date Column */}
-                    <th className="px-2 sm:px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-16 sm:w-auto">
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground tracking-wider w-16 sm:w-auto">
                       <button
-                        className="flex items-center justify-center gap-1 hover:text-foreground transition-colors"
+                        className="flex items-center gap-1 hover:text-foreground transition-colors"
                         onClick={() => handleSort("date")}
                       >
                         Date
@@ -1860,7 +1860,7 @@ export default function TransactionsTable({
                         )}
                       </button>
                     </th>
-                    <th className="px-2 sm:px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-20 sm:w-24">
+                    <th className="px-2 sm:px-4 py-3 text-center text-xs font-medium text-muted-foreground tracking-wider w-20 sm:w-24">
                       Actions
                     </th>
                   </tr>
@@ -1879,7 +1879,7 @@ export default function TransactionsTable({
                             data-testid={`checkbox-select-${transaction.id}`}
                           />
                         </td>
-                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-foreground text-center">
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-foreground text-left">
                           {formatDateShort(new Date(transaction.date))}
                         </td>
                         <td className="px-2 sm:px-4 py-3 text-xs sm:text-sm text-foreground min-w-0">

@@ -749,7 +749,12 @@ export default function OverviewDashboard() {
               }
               subtitle="Latest 6 transactions"
               action={
-                <button className="text-xs px-2 py-1 rounded-md border border-border">See all</button>
+                <Link
+                  href="/transactions"
+                  className="text-xs px-2 py-1 rounded-md border border-border"
+                >
+                  See all
+                </Link>
               }
               menuAction={
                 <Link href="/transactions" className="text-xs">
@@ -1003,12 +1008,12 @@ export default function OverviewDashboard() {
               }
             />
             <CardBody className="space-y-4">
-              {upcomingBills.length > 0 ? (
-                <>
-                  <p className="text-sm text-muted-foreground">
-                    You have {upcomingBills.length} recurring charge{upcomingBills.length !== 1 ? 's' : ''} due within the next {maxDays} day{maxDays !== 1 ? 's' : ''} for {formatCurrency(totalAmount)}.
-                  </p>
-                  <div className="p-2 border rounded-xl w-full">
+              {upcomingBills.length > 0 && (
+                <p className="text-sm text-muted-foreground">
+                  You have {upcomingBills.length} recurring charge{upcomingBills.length !== 1 ? 's' : ''} due within the next {maxDays} day{maxDays !== 1 ? 's' : ''} for {formatCurrency(totalAmount)}.
+                </p>
+              )}
+              <div className="p-2 border rounded-xl w-full">
                       <div className="grid grid-cols-7 gap-1 text-center text-xs">
                       {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
                         <div key={d} className="font-medium text-muted-foreground">
@@ -1042,48 +1047,46 @@ export default function OverviewDashboard() {
                       })}
                     </div>
                   </div>
-                  <div className="text-sm divide-y">
-
-                    {upcomingBills.map(bill => (
-                      <div key={bill.id} className="flex items-center justify-between py-2">
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-                            {bill.merchantLogo || getClearbitLogoUrl(bill.name) ? (
-                              <img
-                                src={bill.merchantLogo || getClearbitLogoUrl(bill.name)}
-                                alt={`${bill.name} logo`}
-                                className="w-8 h-8 object-contain"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.style.display = 'none';
-                                  const nextSibling = target.nextElementSibling as HTMLElement;
-                                  if (nextSibling) nextSibling.style.display = 'flex';
-                                }}
-                              />
-                            ) : null}
-                            <span className={cn('text-xs font-semibold', (bill.merchantLogo || getClearbitLogoUrl(bill.name)) && 'hidden')}>
-                              {bill.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-medium truncate">{bill.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {bill.daysUntilDue === 0
-                                ? 'today'
-                                : `in ${bill.daysUntilDue} day${bill.daysUntilDue !== 1 ? 's' : ''}`}
-                            </div>
-                          </div>
+              {upcomingBills.length > 0 ? (
+                <div className="text-sm divide-y">
+                  {upcomingBills.map(bill => (
+                    <div key={bill.id} className="flex items-center justify-between py-2">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+                          {bill.merchantLogo || getClearbitLogoUrl(bill.name) ? (
+                            <img
+                              src={bill.merchantLogo || getClearbitLogoUrl(bill.name)}
+                              alt={`${bill.name} logo`}
+                              className="w-8 h-8 object-contain"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const nextSibling = target.nextElementSibling as HTMLElement;
+                                if (nextSibling) nextSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <span className={cn('text-xs font-semibold', (bill.merchantLogo || getClearbitLogoUrl(bill.name)) && 'hidden')}>
+                            {bill.name.charAt(0).toUpperCase()}
+                          </span>
                         </div>
-                        <div className="text-sm font-medium">
-                          {formatCurrency(bill.amount)}
+                        <div className="min-w-0">
+                          <div className="font-medium truncate">{bill.name}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {bill.daysUntilDue === 0
+                              ? 'today'
+                              : `in ${bill.daysUntilDue} day${bill.daysUntilDue !== 1 ? 's' : ''}`}
+                          </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </>
+                      <div className="text-sm font-medium">
+                        {formatCurrency(bill.amount)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <div className="text-center py-4 text-muted-foreground">
-                  <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p className="text-sm">No upcoming bills</p>
                 </div>
               )}
