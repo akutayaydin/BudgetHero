@@ -753,11 +753,11 @@ export default function SpendingPage() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-500 dark:text-gray-400">Income</span>
-                      <span className="flex justify-end w-28 text-sm font-semibold text-gray-900 dark:text-gray-100">
-                        <span className="w-24 text-right">{formatUSD(totalIncome)}</span>
+                      <span className="w-28 pr-4 text-right text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        {formatUSD(totalIncome)}
                       </span>
                     </div>
-                    <div className="relative">
+                    <div>
                       <button
                         onClick={() => setSpendOpen((s) => !s)}
                         className="flex w-full items-center justify-between"
@@ -771,7 +771,7 @@ export default function SpendingPage() {
                         </span>
                       </button>
                       {spendOpen && (
-                        <div className="absolute right-0 mt-2 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md z-10">
+                        <div className="mt-2 space-y-2">
                           <div className="flex items-center justify-between px-3 py-2 text-sm">
                             <span>Bills & Utilities</span>
                             <span>{formatUSD(billsSpend)}</span>
@@ -785,8 +785,8 @@ export default function SpendingPage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-500 dark:text-gray-400">Left for Savings</span>
-                      <span className="flex justify-end w-28 text-sm font-semibold text-gray-900 dark:text-gray-100">
-                        <span className="w-24 text-right">{formatUSD(leftForSavings)}</span>
+                      <span className="w-28 pr-4 text-right text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        {formatUSD(leftForSavings)}
                       </span>
                     </div>
                   </div>
