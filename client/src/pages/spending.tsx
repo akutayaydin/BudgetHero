@@ -9,6 +9,7 @@ import {
   TrendingDown,
   AlertCircle,
   BadgeDollarSign,
+  ChevronDown,
 } from "lucide-react";
 
 interface CardProps {
@@ -368,6 +369,7 @@ export default function SpendingPage() {
   const [mode, setMode] = useState("pie");
   const [rangeLabel, setRangeLabel] = useState("This Month");
   const [active, setActive] = useState<number | null>(null);
+  const [spendOpen, setSpendOpen] = useState(false);
 
   const { data: transactions = [] } = useQuery<Transaction[]>({
     queryKey: ["/api/transactions"],
@@ -375,6 +377,11 @@ export default function SpendingPage() {
 
   const expenseTransactions = useMemo(
     () => (transactions || []).filter((t) => t.type === "expense"),
+    [transactions]
+  );
+
+  const incomeTransactions = useMemo(
+    () => (transactions || []).filter((t) => t.type === "income"),
     [transactions]
   );
 
@@ -451,6 +458,19 @@ export default function SpendingPage() {
   const previousTotal = categories.reduce((s, c) => s + c.previous, 0);
   const delta = totalSpend - previousTotal;
   const deltaPct = Math.abs(delta) / (previousTotal || 1);
+
+  const totalIncome = useMemo(
+    () =>
+      incomeTransactions.reduce(
+        (sum, t) => sum + Math.abs(parseFloat(t.amount)),
+        0
+      ),
+    [incomeTransactions]
+  );
+  const billsSpend =
+    categories.find((c) => c.name === "Bills & Utilities")?.amount || 0;
+  const otherSpend = totalSpend - billsSpend;
+  const netIncome = totalIncome - totalSpend;
 
   const merchants = useMemo(() => {
     const map = new Map<string, { amount: number; count: number; domain: string }>();
@@ -714,8 +734,53 @@ export default function SpendingPage() {
             </Card>
           </div>
 
-          {/* RIGHT: Most Categorization (2/5) */}
-          <div className="lg:col-span-2">
+          {/* RIGHT: Summary & Most Categorization (2/5) */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardHeader title="Summary" />
+              <CardBody>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Income</span>
+                    <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {formatUSD(totalIncome)}
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <button
+                      onClick={() => setSpendOpen((s) => !s)}
+                      className="flex w-full items-center justify-between"
+                    >
+                      <span className="text-sm text-gray-500 dark:text-gray-400">Total Spend</span>
+                      <span className="flex items-center gap-1 text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        {formatUSD(totalSpend)}
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform ${spendOpen ? 'rotate-180' : ''}`}
+                        />
+                      </span>
+                    </button>
+                    {spendOpen && (
+                      <div className="absolute right-0 mt-2 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md z-10">
+                        <div className="flex items-center justify-between px-3 py-2 text-sm">
+                          <span>Bills & Utilities</span>
+                          <span>{formatUSD(billsSpend)}</span>
+                        </div>
+                        <div className="flex items-center justify-between px-3 py-2 text-sm">
+                          <span>Spending</span>
+                          <span>{formatUSD(otherSpend)}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Net Income</span>
+                    <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {formatUSD(netIncome)}
+                    </span>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
             <Card>
               <CardHeader title="Most Categorization" />
               <CardBody>
