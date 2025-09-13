@@ -220,18 +220,21 @@ const PeriodSpendingChart = ({
       <div className="flex items-end justify-between h-40 relative">
         {data.map((d, i) => (
           <div key={i} className="flex flex-col items-center flex-1 mx-1">
-            <div className="w-full bg-white/10 rounded-md flex items-end justify-around h-full p-1">
+            <div className="w-full bg-white/10 rounded-md flex items-end justify-around" style={{ height: '140px' }}>
               <div
-                className="w-1/2 mx-0.5 bg-white rounded-t-sm min-h-[2px]"
+                className="w-1/2 mx-0.5 bg-white rounded-t-sm"
                 style={{ 
-                  height: d.income > 0 ? `${Math.max((d.income / max) * 100, 10)}%` : '2px'
+                  height: d.income > 0 ? `${Math.max((d.income / max) * 100, 15)}%` : '8px',
+                  minHeight: '8px'
                 }}
                 title={`Income: $${d.income.toFixed(2)}`}
               />
               <div
-                className="w-1/2 mx-0.5 rounded-t-sm bg-white/20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:2px_2px] min-h-[2px]"
+                className="w-1/2 mx-0.5 rounded-t-sm bg-white border-2 border-dashed border-white/60"
                 style={{ 
-                  height: d.spend > 0 ? `${Math.max((d.spend / max) * 100, 10)}%` : '2px'
+                  height: d.spend > 0 ? `${Math.max((d.spend / max) * 100, 15)}%` : '8px',
+                  minHeight: '8px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.6)'
                 }}
                 title={`Spend: $${d.spend.toFixed(2)}`}
               />
@@ -245,7 +248,7 @@ const PeriodSpendingChart = ({
           <span className="w-2 h-2 rounded-full bg-white" /> Income
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-white/20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:2px_2px]" />
+          <span className="w-2 h-2 rounded-full bg-white/60 border-2 border-dashed border-white" />
           Total Spend
         </div>
       </div>
