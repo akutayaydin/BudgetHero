@@ -66,7 +66,7 @@ const categoryColors: string[] = [
 interface Category {
   name: string;
   amount: number;
-  lastMonth: number;
+  previous: number;
 }
 
 interface Merchant {
@@ -100,6 +100,8 @@ interface ChartPoint {
   label: string;
   income: number;
   spend: number;
+  start: Date;
+  end: Date;
 }
 
 // Build chart data for various time ranges
@@ -127,7 +129,7 @@ const generatePeriodData = (
     });
     
     
-    data.push({ label, income, spend });
+    data.push({ label, income, spend, start, end });
   };
 
   if (period === "week") {
@@ -184,8 +186,10 @@ const generatePeriodData = (
 // Chart component styled like design reference
 const PeriodSpendingChart = ({
   transactions,
+  onSelect,
 }: {
   transactions: Transaction[];
+  onSelect?: (range: { start: Date; end: Date; label: string }) => void;
 }) => {
   const [period, setPeriod] = useState<
     "week" | "month" | "quarter" | "year"
@@ -219,11 +223,15 @@ const PeriodSpendingChart = ({
       </div>
       <div className="flex items-end justify-between h-40 relative">
         {data.map((d, i) => (
-          <div key={i} className="flex flex-col items-center flex-1 mx-1">
+          <div
+            key={i}
+            className="flex flex-col items-center flex-1 mx-1 cursor-pointer"
+            onClick={() => onSelect?.({ start: d.start, end: d.end, label: d.label })}
+          >
             <div className="w-full bg-white/10 rounded-md flex items-end justify-around" style={{ height: '140px' }}>
               <div
                 className="w-1/2 mx-0.5 bg-white rounded-t-sm"
-                style={{ 
+                style={{
                   height: d.income > 0 ? `${Math.max((d.income / max) * 100, 15)}%` : '8px',
                   minHeight: '8px'
                 }}
@@ -231,7 +239,7 @@ const PeriodSpendingChart = ({
               />
               <div
                 className="w-1/2 mx-0.5 rounded-t-sm bg-white border-2 border-dashed border-white/60"
-                style={{ 
+                style={{
                   height: d.spend > 0 ? `${Math.max((d.spend / max) * 100, 15)}%` : '8px',
                   minHeight: '8px',
                   backgroundColor: 'rgba(255, 255, 255, 0.6)'
@@ -358,13 +366,12 @@ const DonutChart: React.FC<DonutChartProps> = ({ data, active, setActive }) => {
 // Main Spending Page Component
 export default function SpendingPage() {
   const [mode, setMode] = useState("pie");
-  const [range, setRange] = useState("This Month");
+  const [rangeLabel, setRangeLabel] = useState("This Month");
   const [active, setActive] = useState<number | null>(null);
-  
+
   const { data: transactions = [] } = useQuery<Transaction[]>({
     queryKey: ["/api/transactions"],
   });
-
 
   const expenseTransactions = useMemo(
     () => (transactions || []).filter((t) => t.type === "expense"),
@@ -374,67 +381,80 @@ export default function SpendingPage() {
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
-  const lastMonthDate = new Date(currentYear, currentMonth - 1, 1);
+  const thisMonthStart = new Date(currentYear, currentMonth, 1);
+  const thisMonthEnd = new Date(currentYear, currentMonth + 1, 0);
+  thisMonthEnd.setHours(23, 59, 59, 999);
+  const lastMonthStart = new Date(currentYear, currentMonth - 1, 1);
+  const lastMonthEnd = new Date(currentYear, currentMonth, 0);
+  lastMonthEnd.setHours(23, 59, 59, 999);
 
-  const currentMonthTx = useMemo(
-    () =>
-      expenseTransactions.filter((t) => {
-        const d = new Date(t.date);
-        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-      }),
-    [expenseTransactions, currentMonth, currentYear]
+  const [selectedRange, setSelectedRange] = useState<{ start: Date; end: Date}>(
+    { start: thisMonthStart, end: thisMonthEnd }
   );
 
-  const lastMonthTx = useMemo(
+  const previousRange = useMemo(() => {
+    const diff = selectedRange.end.getTime() - selectedRange.start.getTime();
+    const end = new Date(selectedRange.start.getTime() - 1);
+    const start = new Date(end.getTime() - diff);
+    return { start, end };
+  }, [selectedRange]);
+
+  const currentTx = useMemo(
     () =>
       expenseTransactions.filter((t) => {
         const d = new Date(t.date);
-        return (
-          d.getMonth() === lastMonthDate.getMonth() &&
-          d.getFullYear() === lastMonthDate.getFullYear()
-        );
+        return d >= selectedRange.start && d <= selectedRange.end;
       }),
-    [expenseTransactions, lastMonthDate]
+    [expenseTransactions, selectedRange]
+  );
+
+  const previousTx = useMemo(
+    () =>
+      expenseTransactions.filter((t) => {
+        const d = new Date(t.date);
+        return d >= previousRange.start && d <= previousRange.end;
+      }),
+    [expenseTransactions, previousRange]
   );
 
   const categories = useMemo(() => {
     const mapCurrent: Record<string, number> = {};
-    const mapLast: Record<string, number> = {};
-    
-    currentMonthTx.forEach((t) => {
+    const mapPrev: Record<string, number> = {};
+
+    currentTx.forEach((t) => {
       const c = t.category || "Uncategorized";
       const amt = Math.abs(parseFloat(t.amount));
       mapCurrent[c] = (mapCurrent[c] || 0) + amt;
     });
-    
-    lastMonthTx.forEach((t) => {
+
+    previousTx.forEach((t) => {
       const c = t.category || "Uncategorized";
       const amt = Math.abs(parseFloat(t.amount));
-      mapLast[c] = (mapLast[c] || 0) + amt;
+      mapPrev[c] = (mapPrev[c] || 0) + amt;
     });
-    
+
     const names = Array.from(
-      new Set([...Object.keys(mapCurrent), ...Object.keys(mapLast)])
+      new Set([...Object.keys(mapCurrent), ...Object.keys(mapPrev)])
     );
-    
+
     return names
       .map((name) => ({
         name,
         amount: mapCurrent[name] || 0,
-        lastMonth: mapLast[name] || 0,
+        previous: mapPrev[name] || 0,
       }))
       .sort((a, b) => b.amount - a.amount);
-  }, [currentMonthTx, lastMonthTx]);
+  }, [currentTx, previousTx]);
 
   const donut = useDonutData(categories);
   const totalSpend = donut.total;
-  const lastMonthTotal = categories.reduce((s, c) => s + c.lastMonth, 0);
-  const delta = totalSpend - lastMonthTotal;
-  const deltaPct = Math.abs(delta) / (lastMonthTotal || 1);
+  const previousTotal = categories.reduce((s, c) => s + c.previous, 0);
+  const delta = totalSpend - previousTotal;
+  const deltaPct = Math.abs(delta) / (previousTotal || 1);
 
   const merchants = useMemo(() => {
     const map = new Map<string, { amount: number; count: number; domain: string }>();
-    currentMonthTx.forEach((t) => {
+    currentTx.forEach((t) => {
       const name = t.merchant || t.description;
       if (!name) return;
       const amount = Math.abs(parseFloat(t.amount));
@@ -455,11 +475,11 @@ export default function SpendingPage() {
       }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 4);
-  }, [currentMonthTx]);
+  }, [currentTx]);
 
   const largestPurchases = useMemo(
     () =>
-      currentMonthTx
+      currentTx
         .slice()
         .sort(
           (a, b) =>
@@ -475,15 +495,15 @@ export default function SpendingPage() {
           amount: Math.abs(parseFloat(t.amount)),
           domain: (t.merchant || "").toLowerCase().replace(/\s+/g, "") + ".com",
         })),
-    [currentMonthTx]
+    [currentTx]
   );
 
   const uncategorizedCount = useMemo(
     () =>
-      expenseTransactions.filter(
+      currentTx.filter(
         (t) => !t.category || t.category === "Other" || t.category === "Uncategorized"
       ).length,
-    [expenseTransactions]
+    [currentTx]
   );
 
   return (
@@ -497,9 +517,16 @@ export default function SpendingPage() {
               {["Last Month", "This Month", "Custom"].map((r) => (
                 <button
                   key={r}
-                  onClick={() => setRange(r)}
+                  onClick={() => {
+                    setRangeLabel(r);
+                    if (r === "This Month") {
+                      setSelectedRange({ start: thisMonthStart, end: thisMonthEnd });
+                    } else if (r === "Last Month") {
+                      setSelectedRange({ start: lastMonthStart, end: lastMonthEnd });
+                    }
+                  }}
                   className={`text-sm rounded-md px-4 py-2 border transition ${
-                    range === r
+                    rangeLabel === r
                       ? "border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
                       : "border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
@@ -511,7 +538,7 @@ export default function SpendingPage() {
           </div>
           <div className="flex items-center gap-3">
             <button className="inline-flex items-center gap-2 text-sm rounded-md px-4 py-2 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800">
-              <CalendarIcon className="h-4 w-4" /> {range}
+              <CalendarIcon className="h-4 w-4" /> {rangeLabel}
             </button>
             <div className="flex rounded-md border border-gray-200 dark:border-gray-600 overflow-hidden">
               <button
@@ -548,7 +575,13 @@ export default function SpendingPage() {
                   <p className="text-xs text-gray-500 dark:text-gray-400">Track your spending patterns</p>
                 </div>
               </div>
-              <PeriodSpendingChart transactions={transactions || []} />
+              <PeriodSpendingChart
+                transactions={transactions || []}
+                onSelect={({ start, end, label }) => {
+                  setSelectedRange({ start, end });
+                  setRangeLabel(label);
+                }}
+              />
             </CardBody>
           </Card>
         </div>
@@ -567,11 +600,11 @@ export default function SpendingPage() {
                         "No change"
                       ) : delta > 0 ? (
                         <span className="inline-flex items-center gap-1 text-red-600">
-                          <TrendingUp className="h-3 w-3" /> +{Math.round(deltaPct * 100)}% vs last month
+                          <TrendingUp className="h-3 w-3" /> +{Math.round(deltaPct * 100)}% vs previous period
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-green-600">
-                          <TrendingDown className="h-3 w-3" /> {Math.round(deltaPct * 100)}% vs last month
+                          <TrendingDown className="h-3 w-3" /> {Math.round(deltaPct * 100)}% vs previous period
                         </span>
                       )}
                     </Tag>
@@ -637,14 +670,14 @@ export default function SpendingPage() {
             <Card>
               <CardHeader 
                 title="Categories" 
-                subtitle="Percent of spend • Change vs last month"
+                subtitle="Percent of spend • Change vs previous period"
               />
               <CardBody className="p-0">
                 <div className="divide-y divide-gray-100 dark:divide-gray-700">
                   {categories.slice(0, 10).map((c, idx) => {
                     const pct = Math.round((c.amount / totalSpend) * 100);
-                    const diff = c.amount - c.lastMonth;
-                    const diffPct = Math.abs(Math.round((diff / (c.lastMonth || 1)) * 100));
+                    const diff = c.amount - c.previous;
+                    const diffPct = Math.abs(Math.round((diff / (c.previous || 1)) * 100));
                     const color = categoryColors[idx % categoryColors.length];
                     
                     return (
